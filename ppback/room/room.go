@@ -108,8 +108,15 @@ func SetCurrentTicket(r *model.Room, ticketID string) error {
 }
 
 // NextTicket advances to the next pending ticket. If no pending tickets remain,
-// the room goes idle.
+// the room goes idle. If the current ticket was still in voting state, it is
+// marked as skipped.
 func NextTicket(r *model.Room) error {
+	if r.CurrentTicketID != "" {
+		current := findTicket(r, r.CurrentTicketID)
+		if current != nil && current.Status == model.TicketStatusVoting {
+			current.Status = model.TicketStatusSkipped
+		}
+	}
 	for _, t := range r.Tickets {
 		if t.Status == model.TicketStatusPending {
 			return SetCurrentTicket(r, t.ID)

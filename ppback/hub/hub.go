@@ -426,9 +426,26 @@ func (h *Hub) rpcNextTicket(data []byte) ([]byte, error) {
 }
 
 // handleDisconnect marks the user as disconnected and broadcasts updated state.
+// It checks whether the user still has other active connections (e.g. multiple
+// tabs or a reconnect) before marking them offline.
 func (h *Hub) handleDisconnect(clientID string) {
 	info, ok := h.unregisterClient(clientID)
 	if !ok {
+		return
+	}
+
+	// Check if the user still has another active connection to this room.
+	h.mu.RLock()
+	stillConnected := false
+	for _, ci := range h.clients {
+		if ci.UserID == info.UserID && ci.RoomID == info.RoomID {
+			stillConnected = true
+			break
+		}
+	}
+	h.mu.RUnlock()
+
+	if stillConnected {
 		return
 	}
 
