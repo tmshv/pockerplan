@@ -205,6 +205,7 @@ func (h *Hub) rpcCreateRoom(client *centrifuge.Client, data []byte) ([]byte, err
 	}
 
 	h.registerClient(client.ID(), userID, r.ID)
+	h.broadcastRoomState(r.ID)
 
 	resp := model.CreateRoomResponse{
 		RoomID:      r.ID,

@@ -78,7 +78,7 @@ describe("HomePage", () => {
       userName: "Alice",
       avatarId: "cat",
     });
-    expect(mockNavigate).toHaveBeenCalledWith("/room/room-123?admin=secret-abc");
+    expect(mockNavigate).toHaveBeenCalledWith("/room/room-123");
   });
 
   it("shows error when create fails", async () => {

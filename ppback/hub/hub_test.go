@@ -220,7 +220,9 @@ func TestVotingFlow(t *testing.T) {
 		t.Fatalf("add_ticket: %v", err)
 	}
 	var addResp model.AddTicketResponse
-	json.Unmarshal(addResult.Data, &addResp)
+	if err := json.Unmarshal(addResult.Data, &addResp); err != nil {
+		t.Fatalf("unmarshal add_ticket response: %v", err)
+	}
 	if addResp.TicketID == "" {
 		t.Error("expected non-empty ticket ID")
 	}

@@ -216,8 +216,8 @@ func TestManagerConcurrentWithRoom(t *testing.T) {
 	wg.Wait()
 
 	got, _ := m.Get(r.ID)
-	if len(got.Users) == 0 {
-		t.Error("expected users after concurrent adds")
+	if len(got.Users) != 50 {
+		t.Errorf("expected 50 users after concurrent adds, got %d", len(got.Users))
 	}
 }
 

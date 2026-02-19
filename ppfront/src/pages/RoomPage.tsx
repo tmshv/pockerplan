@@ -20,9 +20,7 @@ export function RoomPage() {
     const adminSecret = searchParams.get("admin");
     if (adminSecret) {
       const existing = loadRoomInfo(id);
-      if (existing) {
-        saveRoomInfo(id, { ...existing, adminSecret });
-      }
+      saveRoomInfo(id, { userId: existing?.userId ?? "", adminSecret });
     }
   }, [id, searchParams]);
 
@@ -30,7 +28,7 @@ export function RoomPage() {
   useEffect(() => {
     if (!id) return;
     const info = loadRoomInfo(id);
-    if (!info) {
+    if (!info?.userId) {
       navigate(`/room/${id}/join`, { replace: true });
     }
   }, [id, navigate]);

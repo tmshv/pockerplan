@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { getCentrifuge } from "../api/centrifuge";
 import { loadRoomInfo } from "./useUser";
 import type {
@@ -46,10 +46,7 @@ export function useRoom(roomId: string | undefined): UseRoomResult {
   const [error, setError] = useState<RoomError | null>(null);
   const subRef = useRef<Subscription | null>(null);
 
-  const loading = useMemo(() => {
-    if (!roomId) return false;
-    return !roomState && !error;
-  }, [roomId, roomState, error]);
+  const loading = !!roomId && !roomState && !error;
 
   useEffect(() => {
     if (!roomId) return;

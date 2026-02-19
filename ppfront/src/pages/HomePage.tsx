@@ -40,7 +40,7 @@ export function HomePage() {
         adminSecret: resp.adminSecret,
       });
 
-      navigate(`/room/${resp.roomId}?admin=${resp.adminSecret}`);
+      navigate(`/room/${resp.roomId}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create room");
     } finally {
