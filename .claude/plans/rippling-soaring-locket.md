@@ -177,12 +177,12 @@ Vite dev server proxies `/api/*` and `/connection/*` to `localhost:8080` for dev
 ## Implementation Tasks
 
 ### Task 1: Project scaffolding
-- [ ] Initialize `ppfront/` with Vite + React + TypeScript
-- [ ] Create `ppback/` directory structure with packages
-- [ ] Add Go dependencies (`centrifuge`, `uuid`)
-- [ ] Create `Makefile`
-- [ ] Configure `vite.config.ts` with dev proxy
-- [ ] Configure `vitest.config.ts`
+- [x] Initialize `ppfront/` with Vite + React + TypeScript
+- [x] Create `ppback/` directory structure with packages
+- [x] Add Go dependencies (`centrifuge`, `uuid`)
+- [x] Create `Makefile`
+- [x] Configure `vite.config.ts` with dev proxy
+- [x] Configure `vitest.config.ts`
 
 ### Task 2: Backend models, scales, avatars
 - [ ] Implement `ppback/model/types.go`

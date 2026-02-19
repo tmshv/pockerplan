@@ -1,0 +1,9 @@
+# build output
+bin/
+
+# frontend
+ppfront/node_modules/
+ppfront/dist/
+
+# ralphex progress logs
+.ralphex/progress/
