@@ -79,10 +79,10 @@ Features are ordered by dependency:
 ---
 
 ## Task 5: Room Opens Immediately
-- [ ] Remove the loading/spinner early return in `RoomPage.tsx` (lines 111-120)
-- [ ] Render the room layout always; pass `roomState?.users ?? []` etc.
-- [ ] Keep the error early return as-is
-- [ ] Existing components already handle null/empty gracefully: `TicketPanel` shows "No ticket selected", `VotingPanel`/`VoteResults` only render when state matches
+- [x] Remove the loading/spinner early return in `RoomPage.tsx` (lines 111-120)
+- [x] Render the room layout always; pass `roomState?.users ?? []` etc.
+- [x] Keep the error early return as-is
+- [x] Existing components already handle null/empty gracefully: `TicketPanel` shows "No ticket selected", `VotingPanel`/`VoteResults` only render when state matches
 
 **Files:** `ppfront/src/pages/RoomPage.tsx`
 

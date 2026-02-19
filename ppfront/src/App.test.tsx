@@ -82,7 +82,7 @@ describe("App routing", () => {
       JSON.stringify({ userId: "u1" }),
     );
     renderWithRoute("/room/abc");
-    expect(screen.getByText("Connecting...")).toBeInTheDocument();
+    expect(screen.getByText("Reconnecting...")).toBeInTheDocument();
   });
 
   it("renders NotFound for unknown routes", () => {

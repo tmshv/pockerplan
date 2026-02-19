@@ -50,7 +50,6 @@ function RoomPageContent({ roomId }: { roomId: string }) {
     roomState,
     connected,
     error,
-    loading,
     submitVote,
     addTicket,
     updateRoomName,
@@ -110,29 +109,20 @@ function RoomPageContent({ roomId }: { roomId: string }) {
     );
   }
 
-  if (loading || !roomState) {
-    return (
-      <div className="page room-page">
-        <div className="loading-state">
-          <div className="loading-spinner" />
-          <p>{connected ? "Loading room..." : "Connecting..."}</p>
-        </div>
-      </div>
-    );
-  }
-
+  const tickets = roomState?.tickets ?? [];
+  const users = roomState?.users ?? [];
   const currentTicket =
-    roomState.tickets.find((t) => t.id === roomState.currentTicketId) ?? null;
+    tickets.find((t) => t.id === roomState?.currentTicketId) ?? null;
 
   const myVote = currentTicket?.votes.find((v) => v.userId === userId);
-  const isRevealed = roomState.state === "revealed";
-  const isVoting = roomState.state === "voting";
+  const isRevealed = roomState?.state === "revealed";
+  const isVoting = roomState?.state === "voting";
 
   return (
     <div className="page room-page">
       <div className="room-header">
         <RoomNameEditor
-          name={roomState.name}
+          name={roomState?.name ?? ""}
           isAdmin={isAdmin}
           onSave={updateRoomName}
         />
@@ -147,7 +137,7 @@ function RoomPageContent({ roomId }: { roomId: string }) {
 
           {isVoting && (
             <VotingPanel
-              scaleId={roomState.scale}
+              scaleId={roomState?.scale ?? ""}
               selectedValue={myVote?.value ?? null}
               disabled={false}
               onVote={submitVote}
@@ -155,14 +145,14 @@ function RoomPageContent({ roomId }: { roomId: string }) {
           )}
 
           {isRevealed && currentTicket && (
-            <VoteResults votes={currentTicket.votes} users={roomState.users} />
+            <VoteResults votes={currentTicket.votes} users={users} />
           )}
 
           {isAdmin && (
             <>
               <AdminControls
-                roomState={roomState.state}
-                hasTickets={roomState.tickets.length > 0}
+                roomState={roomState?.state ?? "voting"}
+                hasTickets={tickets.length > 0}
                 onReveal={revealVotes}
                 onReset={resetVotes}
                 onNextTicket={nextTicket}
@@ -178,7 +168,7 @@ function RoomPageContent({ roomId }: { roomId: string }) {
 
         <div className="room-sidebar">
           <UserList
-            users={roomState.users}
+            users={users}
             votes={currentTicket?.votes ?? []}
             revealed={isRevealed}
           />
