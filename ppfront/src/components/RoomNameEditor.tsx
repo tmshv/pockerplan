@@ -10,6 +10,7 @@ export function RoomNameEditor({ name, isAdmin, onSave }: RoomNameEditorProps) {
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(name);
   const inputRef = useRef<HTMLInputElement>(null);
+  const savedRef = useRef(false);
 
   useEffect(() => {
     if (!editing) {
@@ -19,13 +20,15 @@ export function RoomNameEditor({ name, isAdmin, onSave }: RoomNameEditorProps) {
 
   useEffect(() => {
     if (editing) {
+      savedRef.current = false;
       inputRef.current?.focus();
       inputRef.current?.select();
     }
   }, [editing]);
 
   const handleSave = () => {
-    if (!editing) return;
+    if (!editing || savedRef.current) return;
+    savedRef.current = true;
     const trimmed = value.trim();
     setEditing(false);
     if (trimmed !== name) {
