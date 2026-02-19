@@ -29,7 +29,7 @@ export interface UseRoomResult {
   error: RoomError | null;
   loading: boolean;
   submitVote: (value: string) => Promise<void>;
-  addTicket: (title: string, description: string) => Promise<string>;
+  addTicket: (content: string) => Promise<string>;
   updateRoomName: (name: string) => Promise<void>;
   revealVotes: () => Promise<void>;
   resetVotes: () => Promise<void>;
@@ -187,7 +187,7 @@ export function useRoom(roomId: string | undefined): UseRoomResult {
   );
 
   const addTicket = useCallback(
-    async (title: string, description: string): Promise<string> => {
+    async (content: string): Promise<string> => {
       if (!roomId) throw new Error("No room");
       const info = loadRoomInfo(roomId);
       if (!info?.adminSecret) throw new Error("Not admin");
@@ -195,8 +195,7 @@ export function useRoom(roomId: string | undefined): UseRoomResult {
       const req: AddTicketRequest = {
         roomId,
         adminSecret: info.adminSecret,
-        title,
-        description,
+        content,
       };
       const result = await client.rpc("add_ticket", req);
       const resp = result.data as unknown as AddTicketResponse;

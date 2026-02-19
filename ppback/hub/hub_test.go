@@ -214,8 +214,7 @@ func TestVotingFlow(t *testing.T) {
 	addData, _ := json.Marshal(model.AddTicketRequest{
 		RoomID:      created.RoomID,
 		AdminSecret: created.AdminSecret,
-		Title:       "Ticket 1",
-		Description: "Do the thing",
+		Content:     "# Ticket 1\nDo the thing",
 	})
 	addResult, err := admin.RPC(context.Background(), "add_ticket", addData)
 	if err != nil {
@@ -416,7 +415,7 @@ func TestAdminAuthRequired(t *testing.T) {
 		data   interface{}
 	}{
 		{"add_ticket", "add_ticket", model.AddTicketRequest{
-			RoomID: created.RoomID, AdminSecret: wrongSecret, Title: "T",
+			RoomID: created.RoomID, AdminSecret: wrongSecret, Content: "T",
 		}},
 		{"reveal_votes", "reveal_votes", model.AdminActionRequest{
 			RoomID: created.RoomID, AdminSecret: wrongSecret,
@@ -524,7 +523,7 @@ func TestSubscribeBroadcast(t *testing.T) {
 	addData, _ := json.Marshal(model.AddTicketRequest{
 		RoomID:      created.RoomID,
 		AdminSecret: created.AdminSecret,
-		Title:       "Test",
+		Content:     "Test",
 	})
 	if _, err := client.RPC(context.Background(), "add_ticket", addData); err != nil {
 		t.Fatalf("add_ticket: %v", err)

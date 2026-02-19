@@ -1,16 +1,16 @@
 import { useState } from "react";
+import { MarkdownEditor } from "./MarkdownEditor";
 
 interface TicketFormProps {
-  onAdd: (title: string, description: string) => Promise<void>;
+  onAdd: (content: string) => Promise<void>;
 }
 
 export function TicketForm({ onAdd }: TicketFormProps) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [content, setContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  const canSubmit = title.trim() !== "" && !submitting;
+  const canSubmit = content.trim() !== "" && !submitting;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -18,9 +18,8 @@ export function TicketForm({ onAdd }: TicketFormProps) {
     setError("");
     setSubmitting(true);
     try {
-      await onAdd(title.trim(), description.trim());
-      setTitle("");
-      setDescription("");
+      await onAdd(content.trim());
+      setContent("");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to add ticket");
     } finally {
@@ -31,19 +30,10 @@ export function TicketForm({ onAdd }: TicketFormProps) {
   return (
     <form className="ticket-form" onSubmit={handleSubmit}>
       <h3>Add Ticket</h3>
-      <input
-        type="text"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Ticket title"
-        aria-label="Ticket title"
-      />
-      <textarea
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        placeholder="Description (markdown)"
-        aria-label="Ticket description"
-        rows={3}
+      <MarkdownEditor
+        value={content}
+        onChange={setContent}
+        placeholder="Ticket content (markdown)"
       />
       {error && <p className="error">{error}</p>}
       <button type="submit" disabled={!canSubmit}>

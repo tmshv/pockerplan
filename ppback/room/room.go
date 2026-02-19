@@ -151,11 +151,10 @@ func Snapshot(r *model.Room) *model.RoomSnapshot {
 	tickets := make([]*model.TicketSnapshot, 0, len(r.Tickets))
 	for _, t := range r.Tickets {
 		ts := &model.TicketSnapshot{
-			ID:          t.ID,
-			Title:       t.Title,
-			Description: t.Description,
-			Status:      t.Status,
-			Votes:       make([]model.VoteInfo, 0, len(t.Votes)),
+			ID:      t.ID,
+			Content: t.Content,
+			Status:  t.Status,
+			Votes:   make([]model.VoteInfo, 0, len(t.Votes)),
 		}
 		for _, v := range t.Votes {
 			vi := model.VoteInfo{UserID: v.UserID}

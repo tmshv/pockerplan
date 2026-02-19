@@ -49,21 +49,21 @@ Features are ordered by dependency:
 ## Task 3: Single Ticket Field + CodeMirror
 
 ### Backend
-- [ ] Replace `Title`+`Description` with `Content string` in `Ticket`, `TicketSnapshot`, `AddTicketRequest` (`ppback/model/types.go`)
-- [ ] Update `Snapshot()` in `ppback/room/room.go` to use `Content`
-- [ ] Update `rpcAddTicket` validation: check `req.Content` instead of `req.Title`
-- [ ] Update all Go test files for the new field name
+- [x] Replace `Title`+`Description` with `Content string` in `Ticket`, `TicketSnapshot`, `AddTicketRequest` (`ppback/model/types.go`)
+- [x] Update `Snapshot()` in `ppback/room/room.go` to use `Content`
+- [x] Update `rpcAddTicket` validation: check `req.Content` instead of `req.Title`
+- [x] Update all Go test files for the new field name
 
 ### Frontend
-- [ ] Install CodeMirror 6: `@codemirror/lang-markdown`, `@codemirror/language-data`, `codemirror`, `@codemirror/view`, `@codemirror/state`, `@codemirror/theme-one-dark`
-- [ ] Update `Ticket`, `TicketSnapshot`, `AddTicketRequest` types to use `content` field
-- [ ] Create `MarkdownEditor` component: thin CodeMirror 6 wrapper with markdown mode and dark theme
-- [ ] Rewrite `TicketForm`: single `MarkdownEditor` replaces title input + description textarea
-- [ ] Update `TicketPanel`: render `ticket.content` as markdown (no `<h2>` title, just full markdown block)
-- [ ] Update `addTicket` in `useRoom.ts`: signature changes to `(content: string)`
-- [ ] Update `RoomPage.tsx` `onAdd` callback
-- [ ] Create mock `MarkdownEditor` for tests (CodeMirror doesn't work in jsdom)
-- [ ] Update `TicketForm.test.tsx` and `TicketPanel.test.tsx`
+- [x] Install CodeMirror 6: `@codemirror/lang-markdown`, `@codemirror/language-data`, `codemirror`, `@codemirror/view`, `@codemirror/state`, `@codemirror/theme-one-dark`
+- [x] Update `Ticket`, `TicketSnapshot`, `AddTicketRequest` types to use `content` field
+- [x] Create `MarkdownEditor` component: thin CodeMirror 6 wrapper with markdown mode and dark theme
+- [x] Rewrite `TicketForm`: single `MarkdownEditor` replaces title input + description textarea
+- [x] Update `TicketPanel`: render `ticket.content` as markdown (no `<h2>` title, just full markdown block)
+- [x] Update `addTicket` in `useRoom.ts`: signature changes to `(content: string)`
+- [x] Update `RoomPage.tsx` `onAdd` callback
+- [x] Create mock `MarkdownEditor` for tests (CodeMirror doesn't work in jsdom)
+- [x] Update `TicketForm.test.tsx` and `TicketPanel.test.tsx`
 
 **Files:** `ppback/model/types.go`, `ppback/room/room.go`, `ppback/hub/hub.go`, `ppback/room/room_test.go`, `ppback/hub/hub_test.go`, `ppfront/package.json`, `ppfront/src/types/index.ts`, `ppfront/src/hooks/useRoom.ts`, `ppfront/src/pages/RoomPage.tsx`, `ppfront/src/components/TicketForm.tsx`, `ppfront/src/components/TicketPanel.tsx`, NEW `ppfront/src/components/MarkdownEditor.tsx`
 

@@ -406,18 +406,22 @@
   margin: 0;
 }
 
-.ticket-form input,
-.ticket-form textarea {
-  padding: 0.5em;
-  font-size: 1em;
-  border-radius: 6px;
-  border: 1px solid #555;
-  background: inherit;
-  color: inherit;
-  font-family: inherit;
-}
-
 .ticket-form button {
   align-self: flex-start;
   padding: 0.5em 1.5em;
+}
+
+/* Markdown editor */
+
+.markdown-editor .cm-editor {
+  border-radius: 6px;
+  border: 1px solid #555;
+  min-height: 100px;
+  max-height: 300px;
+  overflow: auto;
+}
+
+.markdown-editor .cm-editor.cm-focused {
+  border-color: #646cff;
+  outline: none;
 }

@@ -25,11 +25,10 @@ type Vote struct {
 }
 
 type Ticket struct {
-	ID          string          `json:"id"`
-	Title       string          `json:"title"`
-	Description string          `json:"description"`
-	Status      TicketStatus    `json:"status"`
-	Votes       map[string]Vote `json:"votes"`
+	ID      string          `json:"id"`
+	Content string          `json:"content"`
+	Status  TicketStatus    `json:"status"`
+	Votes   map[string]Vote `json:"votes"`
 }
 
 type User struct {
@@ -89,8 +88,7 @@ type SubmitVoteRequest struct {
 type AddTicketRequest struct {
 	RoomID      string `json:"roomId"`
 	AdminSecret string `json:"adminSecret"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
+	Content     string `json:"content"`
 }
 
 type AddTicketResponse struct {
@@ -121,11 +119,10 @@ type RoomSnapshot struct {
 }
 
 type TicketSnapshot struct {
-	ID          string       `json:"id"`
-	Title       string       `json:"title"`
-	Description string       `json:"description"`
-	Status      TicketStatus `json:"status"`
-	Votes       []VoteInfo   `json:"votes"`
+	ID      string       `json:"id"`
+	Content string       `json:"content"`
+	Status  TicketStatus `json:"status"`
+	Votes   []VoteInfo   `json:"votes"`
 }
 
 // VoteInfo represents a vote in a snapshot.

@@ -9,23 +9,10 @@ describe("TicketPanel", () => {
     expect(screen.getByText(/no ticket selected/i)).toBeInTheDocument();
   });
 
-  it("renders ticket title", () => {
+  it("renders ticket content as markdown", () => {
     const ticket: TicketSnapshot = {
       id: "t1",
-      title: "Add login page",
-      description: "",
-      status: "voting",
-      votes: [],
-    };
-    render(<TicketPanel ticket={ticket} />);
-    expect(screen.getByText("Add login page")).toBeInTheDocument();
-  });
-
-  it("renders markdown description", () => {
-    const ticket: TicketSnapshot = {
-      id: "t1",
-      title: "Test ticket",
-      description: "Some **bold** text",
+      content: "Some **bold** text",
       status: "voting",
       votes: [],
     };
@@ -36,12 +23,22 @@ describe("TicketPanel", () => {
   it("shows ticket status", () => {
     const ticket: TicketSnapshot = {
       id: "t1",
-      title: "Test",
-      description: "",
+      content: "Test",
       status: "revealed",
       votes: [],
     };
     render(<TicketPanel ticket={ticket} />);
     expect(screen.getByText("revealed")).toBeInTheDocument();
+  });
+
+  it("handles empty content gracefully", () => {
+    const ticket: TicketSnapshot = {
+      id: "t1",
+      content: "",
+      status: "pending",
+      votes: [],
+    };
+    render(<TicketPanel ticket={ticket} />);
+    expect(screen.getByText("pending")).toBeInTheDocument();
   });
 });

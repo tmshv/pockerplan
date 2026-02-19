@@ -122,7 +122,7 @@ func TestRemoveUserNonExistent(t *testing.T) {
 func TestSubmitVote(t *testing.T) {
 	r := newTestRoom()
 	AddUser(r, &model.User{ID: "u1", Name: "Alice", AvatarID: "cat"})
-	AddTicket(r, &model.Ticket{ID: "t1", Title: "Task 1"})
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "Task 1"})
 	if err := SetCurrentTicket(r, "t1"); err != nil {
 		t.Fatal(err)
 	}
@@ -144,7 +144,7 @@ func TestSubmitVote(t *testing.T) {
 func TestSubmitVoteChangeVote(t *testing.T) {
 	r := newTestRoom()
 	AddUser(r, &model.User{ID: "u1", Name: "Alice", AvatarID: "cat"})
-	AddTicket(r, &model.Ticket{ID: "t1", Title: "Task 1"})
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "Task 1"})
 	_ = SetCurrentTicket(r, "t1")
 
 	_ = SubmitVote(r, "u1", "5")
@@ -169,7 +169,7 @@ func TestSubmitVoteNotVoting(t *testing.T) {
 func TestSubmitVoteInvalidValue(t *testing.T) {
 	r := newTestRoom()
 	AddUser(r, &model.User{ID: "u1", Name: "Alice", AvatarID: "cat"})
-	AddTicket(r, &model.Ticket{ID: "t1", Title: "Task 1"})
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "Task 1"})
 	_ = SetCurrentTicket(r, "t1")
 
 	err := SubmitVote(r, "u1", "999")
@@ -180,7 +180,7 @@ func TestSubmitVoteInvalidValue(t *testing.T) {
 
 func TestSubmitVoteUnknownUser(t *testing.T) {
 	r := newTestRoom()
-	AddTicket(r, &model.Ticket{ID: "t1", Title: "Task 1"})
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "Task 1"})
 	_ = SetCurrentTicket(r, "t1")
 
 	err := SubmitVote(r, "nonexistent", "5")
@@ -192,7 +192,7 @@ func TestSubmitVoteUnknownUser(t *testing.T) {
 func TestRevealVotes(t *testing.T) {
 	r := newTestRoom()
 	AddUser(r, &model.User{ID: "u1", Name: "Alice", AvatarID: "cat"})
-	AddTicket(r, &model.Ticket{ID: "t1", Title: "Task 1"})
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "Task 1"})
 	_ = SetCurrentTicket(r, "t1")
 	_ = SubmitVote(r, "u1", "5")
 
@@ -221,7 +221,7 @@ func TestRevealVotesNotVoting(t *testing.T) {
 func TestResetVotes(t *testing.T) {
 	r := newTestRoom()
 	AddUser(r, &model.User{ID: "u1", Name: "Alice", AvatarID: "cat"})
-	AddTicket(r, &model.Ticket{ID: "t1", Title: "Task 1"})
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "Task 1"})
 	_ = SetCurrentTicket(r, "t1")
 	_ = SubmitVote(r, "u1", "5")
 	_ = RevealVotes(r)
@@ -253,7 +253,7 @@ func TestResetVotesNoCurrentTicket(t *testing.T) {
 
 func TestAddTicket(t *testing.T) {
 	r := newTestRoom()
-	AddTicket(r, &model.Ticket{ID: "t1", Title: "Task 1", Description: "# Description"})
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "# Description"})
 
 	if len(r.Tickets) != 1 {
 		t.Fatalf("expected 1 ticket, got %d", len(r.Tickets))
@@ -268,7 +268,7 @@ func TestAddTicket(t *testing.T) {
 
 func TestSetCurrentTicket(t *testing.T) {
 	r := newTestRoom()
-	AddTicket(r, &model.Ticket{ID: "t1", Title: "Task 1"})
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "Task 1"})
 
 	err := SetCurrentTicket(r, "t1")
 	if err != nil {
@@ -293,8 +293,8 @@ func TestSetCurrentTicketNotFound(t *testing.T) {
 
 func TestNextTicket(t *testing.T) {
 	r := newTestRoom()
-	AddTicket(r, &model.Ticket{ID: "t1", Title: "Task 1"})
-	AddTicket(r, &model.Ticket{ID: "t2", Title: "Task 2"})
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "Task 1"})
+	AddTicket(r, &model.Ticket{ID: "t2", Content: "Task 2"})
 
 	// Start voting on t1
 	_ = SetCurrentTicket(r, "t1")
@@ -316,7 +316,7 @@ func TestNextTicket(t *testing.T) {
 
 func TestNextTicketNoPending(t *testing.T) {
 	r := newTestRoom()
-	AddTicket(r, &model.Ticket{ID: "t1", Title: "Task 1"})
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "Task 1"})
 	_ = SetCurrentTicket(r, "t1")
 	_ = RevealVotes(r)
 
@@ -337,7 +337,7 @@ func TestSnapshotHidesVotesDuringVoting(t *testing.T) {
 	r := newTestRoom()
 	AddUser(r, &model.User{ID: "u1", Name: "Alice", AvatarID: "cat"})
 	AddUser(r, &model.User{ID: "u2", Name: "Bob", AvatarID: "dog"})
-	AddTicket(r, &model.Ticket{ID: "t1", Title: "Task 1"})
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "Task 1"})
 	_ = SetCurrentTicket(r, "t1")
 	_ = SubmitVote(r, "u1", "5")
 	_ = SubmitVote(r, "u2", "8")
@@ -367,7 +367,7 @@ func TestSnapshotHidesVotesDuringVoting(t *testing.T) {
 func TestSnapshotShowsVotesAfterReveal(t *testing.T) {
 	r := newTestRoom()
 	AddUser(r, &model.User{ID: "u1", Name: "Alice", AvatarID: "cat"})
-	AddTicket(r, &model.Ticket{ID: "t1", Title: "Task 1"})
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "Task 1"})
 	_ = SetCurrentTicket(r, "t1")
 	_ = SubmitVote(r, "u1", "5")
 	_ = RevealVotes(r)
@@ -416,8 +416,8 @@ func TestFullVotingFlow(t *testing.T) {
 	AddUser(r, &model.User{ID: "u2", Name: "Bob", AvatarID: "dog"})
 
 	// Add tickets
-	AddTicket(r, &model.Ticket{ID: "t1", Title: "Task 1", Description: "# Task 1\nDo the thing"})
-	AddTicket(r, &model.Ticket{ID: "t2", Title: "Task 2", Description: "# Task 2\nDo another thing"})
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "# Task 1\nDo the thing"})
+	AddTicket(r, &model.Ticket{ID: "t2", Content: "# Task 2\nDo another thing"})
 
 	// Start voting on t1
 	if err := SetCurrentTicket(r, "t1"); err != nil {

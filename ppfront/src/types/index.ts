@@ -13,8 +13,7 @@ export interface Vote {
 // Ticket within a room
 export interface Ticket {
   id: string;
-  title: string;
-  description: string;
+  content: string;
   status: TicketStatus;
   votes: Record<string, Vote>;
 }
@@ -56,8 +55,7 @@ export interface RoomSnapshot {
 // Sanitized ticket in a snapshot
 export interface TicketSnapshot {
   id: string;
-  title: string;
-  description: string;
+  content: string;
   status: TicketStatus;
   votes: VoteInfo[];
 }
@@ -104,8 +102,7 @@ export interface SubmitVoteRequest {
 export interface AddTicketRequest {
   roomId: string;
   adminSecret: string;
-  title: string;
-  description: string;
+  content: string;
 }
 
 export interface AddTicketResponse {

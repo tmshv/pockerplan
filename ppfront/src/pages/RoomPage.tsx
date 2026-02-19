@@ -168,8 +168,8 @@ function RoomPageContent({ roomId }: { roomId: string }) {
                 onNextTicket={nextTicket}
               />
               <TicketForm
-                onAdd={async (title, description) => {
-                  await addTicket(title, description);
+                onAdd={async (content) => {
+                  await addTicket(content);
                 }}
               />
             </>

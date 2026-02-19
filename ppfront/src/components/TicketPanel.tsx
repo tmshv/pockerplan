@@ -16,10 +16,9 @@ export function TicketPanel({ ticket }: TicketPanelProps) {
 
   return (
     <div className="ticket-panel">
-      <h2>{ticket.title}</h2>
-      {ticket.description && (
+      {ticket.content && (
         <div className="ticket-description">
-          <Markdown>{ticket.description}</Markdown>
+          <Markdown>{ticket.content}</Markdown>
         </div>
       )}
       <span className={`ticket-status status-${ticket.status}`}>

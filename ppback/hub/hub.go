@@ -346,7 +346,7 @@ func (h *Hub) rpcAddTicket(data []byte) ([]byte, error) {
 	if err := json.Unmarshal(data, &req); err != nil {
 		return nil, centrifuge.ErrorBadRequest
 	}
-	if req.RoomID == "" || req.AdminSecret == "" || req.Title == "" {
+	if req.RoomID == "" || req.AdminSecret == "" || req.Content == "" {
 		return nil, centrifuge.ErrorBadRequest
 	}
 
@@ -356,9 +356,8 @@ func (h *Hub) rpcAddTicket(data []byte) ([]byte, error) {
 			return room.ErrInvalidAdmin
 		}
 		room.AddTicket(r, &model.Ticket{
-			ID:          ticketID,
-			Title:       req.Title,
-			Description: req.Description,
+			ID:      ticketID,
+			Content: req.Content,
 		})
 		return nil
 	})
