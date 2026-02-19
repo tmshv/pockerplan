@@ -5,9 +5,8 @@ import {
   useParams,
   useSearchParams,
 } from "react-router-dom";
-import { AdminControls } from "../components/AdminControls";
+import { FloatingAdminPanel } from "../components/FloatingAdminPanel";
 import { RoomNameEditor } from "../components/RoomNameEditor";
-import { TicketForm } from "../components/TicketForm";
 import { TicketPanel } from "../components/TicketPanel";
 import { UserList } from "../components/UserList";
 import { VoteResults } from "../components/VoteResults";
@@ -147,23 +146,6 @@ function RoomPageContent({ roomId }: { roomId: string }) {
           {isRevealed && currentTicket && (
             <VoteResults votes={currentTicket.votes} users={users} />
           )}
-
-          {isAdmin && (
-            <>
-              <AdminControls
-                roomState={roomState?.state ?? "voting"}
-                hasTickets={tickets.length > 0}
-                onReveal={revealVotes}
-                onReset={resetVotes}
-                onNextTicket={nextTicket}
-              />
-              <TicketForm
-                onAdd={async (content) => {
-                  await addTicket(content);
-                }}
-              />
-            </>
-          )}
         </div>
 
         <div className="room-sidebar">
@@ -174,6 +156,20 @@ function RoomPageContent({ roomId }: { roomId: string }) {
           />
         </div>
       </div>
+
+      {isAdmin && (
+        <FloatingAdminPanel
+          roomId={roomId}
+          roomState={roomState?.state ?? "voting"}
+          hasTickets={tickets.length > 0}
+          onReveal={revealVotes}
+          onReset={resetVotes}
+          onNextTicket={nextTicket}
+          onAddTicket={async (content) => {
+            await addTicket(content);
+          }}
+        />
+      )}
     </div>
   );
 }

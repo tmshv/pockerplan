@@ -431,6 +431,54 @@
   background: rgba(100, 108, 255, 0.1);
 }
 
+/* Floating admin panel */
+
+.floating-admin-panel {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 100;
+  background: #1a1a2e;
+  border: 1px solid #444;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  max-width: 360px;
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.floating-admin-panel.collapsed {
+  max-height: none;
+}
+
+.floating-admin-toggle {
+  padding: 0.5em 1em;
+  border: none;
+  border-radius: 10px 10px 0 0;
+  background: #2a2a4a;
+  color: inherit;
+  cursor: pointer;
+  font-size: 0.85em;
+  text-align: center;
+}
+
+.floating-admin-panel.collapsed .floating-admin-toggle {
+  border-radius: 10px;
+}
+
+.floating-admin-toggle:hover {
+  background: #3a3a5a;
+}
+
+.floating-admin-content {
+  padding: 1rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 /* Markdown editor */
 
 .markdown-editor .cm-editor {

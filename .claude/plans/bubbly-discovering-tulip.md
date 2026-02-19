@@ -89,14 +89,14 @@ Features are ordered by dependency:
 ---
 
 ## Task 6: Layout Redesign - Floating Admin Panel
-- [ ] Create `FloatingAdminPanel` component containing: `ShareButton`, `AdminControls`, `TicketForm`
-- [ ] Add collapse/expand toggle
-- [ ] Restructure `RoomPage`: remove inline admin controls, add `FloatingAdminPanel` rendered outside the layout flow
-- [ ] Put `RoomNameEditor` in the room header (inline-editable for admin, read-only for guest)
-- [ ] Room layout is now identical for admin and guest: header + main (ticket/voting/results) + sidebar (users)
-- [ ] Add CSS for floating panel: `position: fixed`, bottom-right, `z-index: 100`, dark background, border, shadow, scrollable
-- [ ] Add collapsed state style
-- [ ] Add test for `FloatingAdminPanel`
+- [x] Create `FloatingAdminPanel` component containing: `ShareButton`, `AdminControls`, `TicketForm`
+- [x] Add collapse/expand toggle
+- [x] Restructure `RoomPage`: remove inline admin controls, add `FloatingAdminPanel` rendered outside the layout flow
+- [x] Put `RoomNameEditor` in the room header (inline-editable for admin, read-only for guest)
+- [x] Room layout is now identical for admin and guest: header + main (ticket/voting/results) + sidebar (users)
+- [x] Add CSS for floating panel: `position: fixed`, bottom-right, `z-index: 100`, dark background, border, shadow, scrollable
+- [x] Add collapsed state style
+- [x] Add test for `FloatingAdminPanel`
 
 **Files:** NEW `ppfront/src/components/FloatingAdminPanel.tsx`, `ppfront/src/pages/RoomPage.tsx`, `ppfront/src/App.css`
 
