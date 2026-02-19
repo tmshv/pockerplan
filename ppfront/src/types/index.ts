@@ -45,6 +45,7 @@ export interface Avatar {
 // Sanitized room snapshot sent to clients
 export interface RoomSnapshot {
   id: string;
+  name: string;
   scale: string;
   state: RoomState;
   users: User[];
@@ -114,6 +115,12 @@ export interface AddTicketResponse {
 export interface AdminActionRequest {
   roomId: string;
   adminSecret: string;
+}
+
+export interface UpdateRoomNameRequest {
+  roomId: string;
+  adminSecret: string;
+  name: string;
 }
 
 // Local storage types

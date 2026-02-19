@@ -6,6 +6,7 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { AdminControls } from "../components/AdminControls";
+import { RoomNameEditor } from "../components/RoomNameEditor";
 import { TicketForm } from "../components/TicketForm";
 import { TicketPanel } from "../components/TicketPanel";
 import { UserList } from "../components/UserList";
@@ -52,6 +53,7 @@ function RoomPageContent({ roomId }: { roomId: string }) {
     loading,
     submitVote,
     addTicket,
+    updateRoomName,
     revealVotes,
     resetVotes,
     nextTicket,
@@ -129,7 +131,11 @@ function RoomPageContent({ roomId }: { roomId: string }) {
   return (
     <div className="page room-page">
       <div className="room-header">
-        <h1>Room</h1>
+        <RoomNameEditor
+          name={roomState.name}
+          isAdmin={isAdmin}
+          onSave={updateRoomName}
+        />
         {!connected && (
           <span className="connection-status">Reconnecting...</span>
         )}

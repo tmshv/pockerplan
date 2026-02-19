@@ -185,6 +185,43 @@
   flex-shrink: 0;
 }
 
+/* Room name editor */
+
+.room-name-display {
+  font-size: 1.5em;
+  font-weight: bold;
+  background: none;
+  border: none;
+  color: inherit;
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+  cursor: default;
+}
+
+.room-name-editable {
+  cursor: pointer;
+  border-bottom: 1px dashed #555;
+}
+
+.room-name-editable:hover {
+  border-bottom-color: #646cff;
+}
+
+.room-name-input {
+  font-size: 1.5em;
+  font-weight: bold;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-bottom: 2px solid #646cff;
+  background: none;
+  color: inherit;
+  font-family: inherit;
+  outline: none;
+  width: 300px;
+}
+
 /* Ticket panel */
 
 .ticket-panel h2 {

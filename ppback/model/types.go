@@ -42,6 +42,7 @@ type User struct {
 
 type Room struct {
 	ID              string           `json:"id"`
+	Name            string           `json:"name"`
 	AdminSecret     string           `json:"-"`
 	Scale           string           `json:"scale"`
 	State           RoomState        `json:"state"`
@@ -101,10 +102,17 @@ type AdminActionRequest struct {
 	AdminSecret string `json:"adminSecret"`
 }
 
+type UpdateRoomNameRequest struct {
+	RoomID      string `json:"roomId"`
+	AdminSecret string `json:"adminSecret"`
+	Name        string `json:"name"`
+}
+
 // RoomSnapshot is the sanitized room state sent to clients.
 // When state is "voting", vote values are hidden.
 type RoomSnapshot struct {
 	ID              string            `json:"id"`
+	Name            string            `json:"name"`
 	Scale           string            `json:"scale"`
 	State           RoomState         `json:"state"`
 	Users           []*User           `json:"users"`

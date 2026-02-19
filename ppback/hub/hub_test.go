@@ -292,6 +292,118 @@ func TestVotingFlow(t *testing.T) {
 	}
 }
 
+func TestUpdateRoomName(t *testing.T) {
+	env := newTestEnv(t)
+	client := env.newClient(t)
+	created := rpcCreateRoom(t, client, "fibonacci", "Alice", "cat")
+
+	data, _ := json.Marshal(model.UpdateRoomNameRequest{
+		RoomID:      created.RoomID,
+		AdminSecret: created.AdminSecret,
+		Name:        "Sprint 42",
+	})
+	_, err := client.RPC(context.Background(), "update_room_name", data)
+	if err != nil {
+		t.Fatalf("update_room_name: %v", err)
+	}
+
+	r, _ := env.rooms.Get(created.RoomID)
+	if r.Name != "Sprint 42" {
+		t.Errorf("expected name 'Sprint 42', got %q", r.Name)
+	}
+}
+
+func TestUpdateRoomNameEmpty(t *testing.T) {
+	env := newTestEnv(t)
+	client := env.newClient(t)
+	created := rpcCreateRoom(t, client, "fibonacci", "Alice", "cat")
+
+	// Set a name first
+	data, _ := json.Marshal(model.UpdateRoomNameRequest{
+		RoomID:      created.RoomID,
+		AdminSecret: created.AdminSecret,
+		Name:        "Sprint 42",
+	})
+	_, err := client.RPC(context.Background(), "update_room_name", data)
+	if err != nil {
+		t.Fatalf("update_room_name: %v", err)
+	}
+
+	// Clear the name
+	data, _ = json.Marshal(model.UpdateRoomNameRequest{
+		RoomID:      created.RoomID,
+		AdminSecret: created.AdminSecret,
+		Name:        "",
+	})
+	_, err = client.RPC(context.Background(), "update_room_name", data)
+	if err != nil {
+		t.Fatalf("update_room_name: %v", err)
+	}
+
+	r, _ := env.rooms.Get(created.RoomID)
+	if r.Name != "" {
+		t.Errorf("expected empty name, got %q", r.Name)
+	}
+}
+
+func TestUpdateRoomNameBroadcasts(t *testing.T) {
+	env := newTestEnv(t)
+	client := env.newClient(t)
+	created := rpcCreateRoom(t, client, "fibonacci", "Alice", "cat")
+
+	sub, err := client.NewSubscription("room:" + created.RoomID)
+	if err != nil {
+		t.Fatalf("new subscription: %v", err)
+	}
+
+	published := make(chan []byte, 10)
+	sub.OnPublication(func(e centrifugecli.PublicationEvent) {
+		published <- e.Data
+	})
+
+	if err := sub.Subscribe(); err != nil {
+		t.Fatalf("subscribe: %v", err)
+	}
+
+	data, _ := json.Marshal(model.UpdateRoomNameRequest{
+		RoomID:      created.RoomID,
+		AdminSecret: created.AdminSecret,
+		Name:        "Sprint 42",
+	})
+	if _, err := client.RPC(context.Background(), "update_room_name", data); err != nil {
+		t.Fatalf("update_room_name: %v", err)
+	}
+
+	select {
+	case d := <-published:
+		var snap model.RoomSnapshot
+		if err := json.Unmarshal(d, &snap); err != nil {
+			t.Fatalf("unmarshal: %v", err)
+		}
+		if snap.Name != "Sprint 42" {
+			t.Errorf("expected name 'Sprint 42' in broadcast, got %q", snap.Name)
+		}
+	case <-time.After(2 * time.Second):
+		t.Error("timed out waiting for broadcast")
+	}
+}
+
+func TestUpdateRoomNameWrongSecret(t *testing.T) {
+	env := newTestEnv(t)
+	client := env.newClient(t)
+	created := rpcCreateRoom(t, client, "fibonacci", "Alice", "cat")
+
+	data, _ := json.Marshal(model.UpdateRoomNameRequest{
+		RoomID:      created.RoomID,
+		AdminSecret: "wrong-secret",
+		Name:        "Sprint 42",
+	})
+	_, err := client.RPC(context.Background(), "update_room_name", data)
+	if err == nil {
+		t.Error("expected permission denied")
+	}
+}
+
 func TestAdminAuthRequired(t *testing.T) {
 	env := newTestEnv(t)
 	client := env.newClient(t)

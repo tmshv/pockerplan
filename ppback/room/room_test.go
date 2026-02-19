@@ -20,6 +20,47 @@ func newTestRoom() *model.Room {
 	}
 }
 
+func TestSetName(t *testing.T) {
+	r := newTestRoom()
+	SetName(r, "Sprint 42")
+
+	if r.Name != "Sprint 42" {
+		t.Errorf("expected name 'Sprint 42', got %q", r.Name)
+	}
+}
+
+func TestSetNameEmpty(t *testing.T) {
+	r := newTestRoom()
+	SetName(r, "Sprint 42")
+	SetName(r, "")
+
+	if r.Name != "" {
+		t.Errorf("expected empty name, got %q", r.Name)
+	}
+}
+
+func TestSetNameUpdatesLastActivity(t *testing.T) {
+	r := newTestRoom()
+	originalTime := r.LastActivityAt
+
+	time.Sleep(time.Millisecond)
+	SetName(r, "Sprint 42")
+
+	if !r.LastActivityAt.After(originalTime) {
+		t.Error("expected LastActivityAt to be updated")
+	}
+}
+
+func TestSnapshotIncludesName(t *testing.T) {
+	r := newTestRoom()
+	r.Name = "Sprint 42"
+
+	snap := Snapshot(r)
+	if snap.Name != "Sprint 42" {
+		t.Errorf("expected snapshot name 'Sprint 42', got %q", snap.Name)
+	}
+}
+
 func TestAddUser(t *testing.T) {
 	r := newTestRoom()
 	u := &model.User{ID: "u1", Name: "Alice", AvatarID: "cat"}

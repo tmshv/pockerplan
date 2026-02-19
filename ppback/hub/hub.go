@@ -187,6 +187,8 @@ func (h *Hub) handleRPC(client *centrifuge.Client, method string, data []byte) (
 		return h.rpcResetVotes(data)
 	case "next_ticket":
 		return h.rpcNextTicket(data)
+	case "update_room_name":
+		return h.rpcUpdateRoomName(data)
 	default:
 		return nil, centrifuge.ErrorMethodNotFound
 	}
@@ -456,6 +458,36 @@ func (h *Hub) rpcNextTicket(data []byte) ([]byte, error) {
 			return nil, centrifuge.ErrorPermissionDenied
 		}
 		return nil, &centrifuge.Error{Code: 400, Message: err.Error()}
+	}
+
+	h.broadcastRoomState(req.RoomID)
+	return []byte(`{}`), nil
+}
+
+func (h *Hub) rpcUpdateRoomName(data []byte) ([]byte, error) {
+	var req model.UpdateRoomNameRequest
+	if err := json.Unmarshal(data, &req); err != nil {
+		return nil, centrifuge.ErrorBadRequest
+	}
+	if req.RoomID == "" || req.AdminSecret == "" {
+		return nil, centrifuge.ErrorBadRequest
+	}
+
+	err := h.rooms.WithRoom(req.RoomID, func(r *model.Room) error {
+		if r.AdminSecret != req.AdminSecret {
+			return room.ErrInvalidAdmin
+		}
+		room.SetName(r, req.Name)
+		return nil
+	})
+	if err != nil {
+		if errors.Is(err, room.ErrRoomNotFound) {
+			return nil, errorNotFound
+		}
+		if errors.Is(err, room.ErrInvalidAdmin) {
+			return nil, centrifuge.ErrorPermissionDenied
+		}
+		return nil, centrifuge.ErrorInternal
 	}
 
 	h.broadcastRoomState(req.RoomID)

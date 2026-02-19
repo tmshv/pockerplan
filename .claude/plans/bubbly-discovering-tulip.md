@@ -29,18 +29,18 @@ Features are ordered by dependency:
 ## Task 2: Editable Room Name
 
 ### Backend
-- [ ] Add `Name string` field to `Room` and `RoomSnapshot` in `ppback/model/types.go`
-- [ ] Add `UpdateRoomNameRequest` type: `{RoomID, AdminSecret, Name}`
-- [ ] Add `SetName(r, name)` function in `ppback/room/room.go`
-- [ ] Include `Name` in `Snapshot()` output
-- [ ] Add `update_room_name` RPC handler in `ppback/hub/hub.go` (follows existing admin RPC pattern: validate admin secret, call `SetName`, broadcast)
-- [ ] Add tests for `SetName` and `update_room_name` RPC
+- [x] Add `Name string` field to `Room` and `RoomSnapshot` in `ppback/model/types.go`
+- [x] Add `UpdateRoomNameRequest` type: `{RoomID, AdminSecret, Name}`
+- [x] Add `SetName(r, name)` function in `ppback/room/room.go`
+- [x] Include `Name` in `Snapshot()` output
+- [x] Add `update_room_name` RPC handler in `ppback/hub/hub.go` (follows existing admin RPC pattern: validate admin secret, call `SetName`, broadcast)
+- [x] Add tests for `SetName` and `update_room_name` RPC
 
 ### Frontend
-- [ ] Add `name` to `RoomSnapshot` and `UpdateRoomNameRequest` type in `types/index.ts`
-- [ ] Add `updateRoomName(name)` action to `useRoom.ts` hook
-- [ ] Create `RoomNameEditor` component: shows name as text, click-to-edit for admin, read-only for guest. Placeholder: "Unnamed Room"
-- [ ] Add test for `RoomNameEditor`
+- [x] Add `name` to `RoomSnapshot` and `UpdateRoomNameRequest` type in `types/index.ts`
+- [x] Add `updateRoomName(name)` action to `useRoom.ts` hook
+- [x] Create `RoomNameEditor` component: shows name as text, click-to-edit for admin, read-only for guest. Placeholder: "Unnamed Room"
+- [x] Add test for `RoomNameEditor`
 
 **Files:** `ppback/model/types.go`, `ppback/room/room.go`, `ppback/hub/hub.go`, `ppback/room/room_test.go`, `ppback/hub/hub_test.go`, `ppfront/src/types/index.ts`, `ppfront/src/hooks/useRoom.ts`, NEW `ppfront/src/components/RoomNameEditor.tsx`
 

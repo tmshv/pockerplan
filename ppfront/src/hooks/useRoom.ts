@@ -8,6 +8,7 @@ import type {
   JoinRoomResponse,
   RoomSnapshot,
   SubmitVoteRequest,
+  UpdateRoomNameRequest,
 } from "../types";
 import { loadRoomInfo, loadUser } from "./useUser";
 
@@ -29,6 +30,7 @@ export interface UseRoomResult {
   loading: boolean;
   submitVote: (value: string) => Promise<void>;
   addTicket: (title: string, description: string) => Promise<string>;
+  updateRoomName: (name: string) => Promise<void>;
   revealVotes: () => Promise<void>;
   resetVotes: () => Promise<void>;
   nextTicket: () => Promise<void>;
@@ -203,6 +205,22 @@ export function useRoom(roomId: string | undefined): UseRoomResult {
     [roomId],
   );
 
+  const updateRoomName = useCallback(
+    async (name: string) => {
+      if (!roomId) return;
+      const info = loadRoomInfo(roomId);
+      if (!info?.adminSecret) throw new Error("Not admin");
+      const client = getCentrifuge();
+      const req: UpdateRoomNameRequest = {
+        roomId,
+        adminSecret: info.adminSecret,
+        name,
+      };
+      await client.rpc("update_room_name", req);
+    },
+    [roomId],
+  );
+
   const adminAction = useCallback(
     async (method: string) => {
       if (!roomId) return;
@@ -238,6 +256,7 @@ export function useRoom(roomId: string | undefined): UseRoomResult {
     loading,
     submitVote,
     addTicket,
+    updateRoomName,
     revealVotes,
     resetVotes,
     nextTicket,

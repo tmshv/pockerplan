@@ -17,6 +17,12 @@ var (
 	ErrNoCurrentTicket = errors.New("no current ticket")
 )
 
+// SetName sets the room name.
+func SetName(r *model.Room, name string) {
+	r.Name = name
+	touch(r)
+}
+
 // AddUser adds a user to the room. If a user with the given ID already exists,
 // it updates their info and marks them connected.
 func AddUser(r *model.Room, u *model.User) {
@@ -163,6 +169,7 @@ func Snapshot(r *model.Room) *model.RoomSnapshot {
 
 	return &model.RoomSnapshot{
 		ID:              r.ID,
+		Name:            r.Name,
 		Scale:           r.Scale,
 		State:           r.State,
 		Users:           users,
