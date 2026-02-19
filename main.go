@@ -4,7 +4,6 @@ import (
 	"context"
 	"embed"
 	"io/fs"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -14,12 +13,17 @@ import (
 	"pockerplan/ppback/hub"
 	"pockerplan/ppback/room"
 	"pockerplan/ppback/server"
+
+	"github.com/rs/zerolog"
 )
 
 //go:embed ppfront/dist
 var frontendFS embed.FS
 
 func main() {
+	logger := zerolog.New(zerolog.ConsoleWriter{Out: os.Stderr}).
+		With().Timestamp().Logger()
+
 	addr := os.Getenv("ADDR")
 	if addr == "" {
 		addr = ":8080"
@@ -28,7 +32,7 @@ func main() {
 	// Frontend FS: strip the ppfront/dist prefix so files are served from root
 	frontFS, err := fs.Sub(frontendFS, "ppfront/dist")
 	if err != nil {
-		log.Fatalf("frontend fs: %v", err)
+		logger.Fatal().Err(err).Msg("frontend fs")
 	}
 
 	// Room manager with periodic cleanup
@@ -37,16 +41,16 @@ func main() {
 	rm.StartCleanup(10*time.Minute, cleanupDone)
 
 	// Centrifuge hub
-	h, err := hub.New(rm)
+	h, err := hub.New(rm, logger.With().Str("component", "hub").Logger())
 	if err != nil {
-		log.Fatalf("create hub: %v", err)
+		logger.Fatal().Err(err).Msg("create hub")
 	}
 	if err := h.Run(); err != nil {
-		log.Fatalf("run hub: %v", err)
+		logger.Fatal().Err(err).Msg("run hub")
 	}
 
 	// HTTP server
-	srv := server.New(h, frontFS)
+	srv := server.New(h, frontFS, logger.With().Str("component", "server").Logger())
 	httpServer := &http.Server{
 		Addr:    addr,
 		Handler: srv,
@@ -58,14 +62,14 @@ func main() {
 
 	go func() {
 		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen: %v", err)
+			logger.Fatal().Err(err).Msg("listen")
 		}
 	}()
 
-	log.Printf("pockerplan server started on %s", addr)
+	logger.Info().Str("addr", addr).Msg("server started")
 
 	<-quit
-	log.Println("shutting down...")
+	logger.Info().Msg("shutting down")
 
 	close(cleanupDone)
 
@@ -73,11 +77,11 @@ func main() {
 	defer cancel()
 
 	if err := httpServer.Shutdown(ctx); err != nil {
-		log.Printf("http shutdown: %v", err)
+		logger.Error().Err(err).Msg("http shutdown")
 	}
 	if err := h.Shutdown(); err != nil {
-		log.Printf("hub shutdown: %v", err)
+		logger.Error().Err(err).Msg("hub shutdown")
 	}
 
-	log.Println("server stopped")
+	logger.Info().Msg("server stopped")
 }

@@ -14,6 +14,7 @@ import (
 
 	"github.com/centrifugal/centrifuge"
 	centrifugecli "github.com/centrifugal/centrifuge-go"
+	"github.com/rs/zerolog"
 )
 
 type testEnv struct {
@@ -26,7 +27,8 @@ type testEnv struct {
 func newTestEnv(t *testing.T) *testEnv {
 	t.Helper()
 	rm := room.NewManager()
-	h, err := New(rm)
+	logger := zerolog.Nop()
+	h, err := New(rm, logger)
 	if err != nil {
 		t.Fatalf("create hub: %v", err)
 	}

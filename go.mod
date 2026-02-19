@@ -3,19 +3,25 @@ module pockerplan
 go 1.25.0
 
 require (
+	github.com/centrifugal/centrifuge v0.38.0
+	github.com/centrifugal/centrifuge-go v0.10.11
+	github.com/google/uuid v1.6.0
+	github.com/rs/zerolog v1.34.0
+)
+
+require (
 	github.com/FZambia/eagle v0.2.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
-	github.com/centrifugal/centrifuge v0.38.0 // indirect
-	github.com/centrifugal/centrifuge-go v0.10.11 // indirect
 	github.com/centrifugal/protocol v0.17.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/dolthub/maphash v0.1.0 // indirect
 	github.com/gammazero/deque v0.2.1 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/jpillora/backoff v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/maypok86/otter v1.2.4 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/planetscale/vtprotobuf v0.6.0 // indirect

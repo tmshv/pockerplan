@@ -3,29 +3,43 @@ package server
 import (
 	"encoding/json"
 	"io/fs"
-	"log"
 	"net/http"
+	"time"
 
 	"pockerplan/ppback/avatar"
 	"pockerplan/ppback/hub"
 	"pockerplan/ppback/scale"
 
 	"github.com/centrifugal/centrifuge"
+	"github.com/rs/zerolog"
 )
+
+// responseWriter wraps http.ResponseWriter to capture the status code.
+type responseWriter struct {
+	http.ResponseWriter
+	status int
+}
+
+func (rw *responseWriter) WriteHeader(code int) {
+	rw.status = code
+	rw.ResponseWriter.WriteHeader(code)
+}
 
 // Server holds the HTTP server dependencies.
 type Server struct {
-	hub       *hub.Hub
-	frontFS   fs.FS
-	mux       *http.ServeMux
+	hub     *hub.Hub
+	frontFS fs.FS
+	logger  zerolog.Logger
+	mux     *http.ServeMux
 }
 
 // New creates a new Server with all routes configured.
 // frontFS should be the subdirectory of the embedded FS pointing at the built frontend (e.g. ppfront/dist).
-func New(h *hub.Hub, frontFS fs.FS) *Server {
+func New(h *hub.Hub, frontFS fs.FS, logger zerolog.Logger) *Server {
 	s := &Server{
 		hub:     h,
 		frontFS: frontFS,
+		logger:  logger,
 		mux:     http.NewServeMux(),
 	}
 	s.routes()
@@ -34,7 +48,16 @@ func New(h *hub.Hub, frontFS fs.FS) *Server {
 
 // ServeHTTP implements http.Handler.
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	s.mux.ServeHTTP(w, r)
+	start := time.Now()
+	rw := &responseWriter{ResponseWriter: w, status: http.StatusOK}
+	s.mux.ServeHTTP(rw, r)
+	s.logger.Info().
+		Str("method", r.Method).
+		Str("path", r.URL.Path).
+		Int("status", rw.status).
+		Dur("duration", time.Since(start)).
+		Str("remote", r.RemoteAddr).
+		Msg("request")
 }
 
 func (s *Server) routes() {
@@ -106,6 +129,6 @@ func (s *Server) spaHandler() http.Handler {
 
 // ListenAndServe starts the HTTP server on the given address.
 func (s *Server) ListenAndServe(addr string) error {
-	log.Printf("listening on %s", addr)
+	s.logger.Info().Str("addr", addr).Msg("listening")
 	return http.ListenAndServe(addr, s)
 }

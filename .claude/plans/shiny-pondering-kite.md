@@ -63,17 +63,17 @@ Tasks 4 and 5 both modify `main.go`, so they are done together. Task 2 (README) 
 **Problem**: Backend uses stdlib `log` with no structured logging and no request logging.
 
 ### Steps:
-- [ ] `go get github.com/rs/zerolog`
-- [ ] Create `zerolog.Logger` in `main.go` with `ConsoleWriter` + timestamp
-- [ ] Replace all `log.Printf`/`log.Fatalf`/`log.Println` in `main.go` with zerolog equivalents
-- [ ] Add `logger zerolog.Logger` field to `Hub` struct, update `New(rm, logger)` signature
-- [ ] Bridge Centrifuge `LogHandler` to zerolog with proper log levels
-- [ ] Replace `log.Printf` calls in `hub.go` with `h.logger`
-- [ ] Add `logger zerolog.Logger` field to `Server` struct, update `New(h, frontFS, logger)` signature
-- [ ] Add `responseWriter` wrapper and `requestLogger` middleware in `server.go` that logs method, path, status, duration, remote addr
-- [ ] Wire middleware into `ServeHTTP`
-- [ ] Replace `log.Printf` in `server.go` with `s.logger`
-- [ ] Pass logger from `main.go` to `hub.New()` and `server.New()`
+- [x] `go get github.com/rs/zerolog`
+- [x] Create `zerolog.Logger` in `main.go` with `ConsoleWriter` + timestamp
+- [x] Replace all `log.Printf`/`log.Fatalf`/`log.Println` in `main.go` with zerolog equivalents
+- [x] Add `logger zerolog.Logger` field to `Hub` struct, update `New(rm, logger)` signature
+- [x] Bridge Centrifuge `LogHandler` to zerolog with proper log levels
+- [x] Replace `log.Printf` calls in `hub.go` with `h.logger`
+- [x] Add `logger zerolog.Logger` field to `Server` struct, update `New(h, frontFS, logger)` signature
+- [x] Add `responseWriter` wrapper and `requestLogger` middleware in `server.go` that logs method, path, status, duration, remote addr
+- [x] Wire middleware into `ServeHTTP`
+- [x] Replace `log.Printf` in `server.go` with `s.logger`
+- [x] Pass logger from `main.go` to `hub.New()` and `server.New()`
 
 **Files**: `go.mod`, `main.go`, `ppback/hub/hub.go`, `ppback/server/server.go`
 

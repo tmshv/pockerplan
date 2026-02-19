@@ -12,12 +12,15 @@ import (
 	"pockerplan/ppback/hub"
 	"pockerplan/ppback/room"
 	"pockerplan/ppback/scale"
+
+	"github.com/rs/zerolog"
 )
 
 func newTestServer(t *testing.T) (*Server, func()) {
 	t.Helper()
+	logger := zerolog.Nop()
 	rm := room.NewManager()
-	h, err := hub.New(rm)
+	h, err := hub.New(rm, logger)
 	if err != nil {
 		t.Fatalf("create hub: %v", err)
 	}
@@ -31,7 +34,7 @@ func newTestServer(t *testing.T) (*Server, func()) {
 		"assets/app.js":        {Data: []byte("console.log('app')")},
 	}
 
-	srv := New(h, frontFS)
+	srv := New(h, frontFS, logger)
 	cleanup := func() {
 		_ = h.Shutdown()
 	}

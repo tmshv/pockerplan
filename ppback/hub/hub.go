@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"strings"
 	"sync"
 	"time"
@@ -17,6 +16,7 @@ import (
 
 	"github.com/centrifugal/centrifuge"
 	"github.com/google/uuid"
+	"github.com/rs/zerolog"
 )
 
 var errorNotFound = &centrifuge.Error{Code: 404, Message: "not found"}
@@ -31,15 +31,38 @@ type clientInfo struct {
 type Hub struct {
 	node    *centrifuge.Node
 	rooms   *room.Manager
+	logger  zerolog.Logger
 	mu      sync.RWMutex
 	clients map[string]clientInfo // centrifuge client ID -> clientInfo
 }
 
+// centrifugeLogLevel maps centrifuge log levels to zerolog levels.
+func centrifugeLogLevel(lvl centrifuge.LogLevel) zerolog.Level {
+	switch lvl {
+	case centrifuge.LogLevelTrace:
+		return zerolog.TraceLevel
+	case centrifuge.LogLevelDebug:
+		return zerolog.DebugLevel
+	case centrifuge.LogLevelInfo:
+		return zerolog.InfoLevel
+	case centrifuge.LogLevelWarn:
+		return zerolog.WarnLevel
+	case centrifuge.LogLevelError:
+		return zerolog.ErrorLevel
+	default:
+		return zerolog.InfoLevel
+	}
+}
+
 // New creates and configures a new Hub.
-func New(rm *room.Manager) (*Hub, error) {
+func New(rm *room.Manager, logger zerolog.Logger) (*Hub, error) {
 	node, err := centrifuge.New(centrifuge.Config{
-		LogLevel:   centrifuge.LogLevelInfo,
-		LogHandler: func(e centrifuge.LogEntry) { log.Printf("[centrifuge] %s: %v", e.Message, e.Fields) },
+		LogLevel: centrifuge.LogLevelInfo,
+		LogHandler: func(e centrifuge.LogEntry) {
+			logger.WithLevel(centrifugeLogLevel(e.Level)).
+				Fields(e.Fields).
+				Msg(e.Message)
+		},
 	})
 	if err != nil {
 		return nil, fmt.Errorf("create centrifuge node: %w", err)
@@ -48,6 +71,7 @@ func New(rm *room.Manager) (*Hub, error) {
 	h := &Hub{
 		node:    node,
 		rooms:   rm,
+		logger:  logger,
 		clients: make(map[string]clientInfo),
 	}
 
@@ -137,12 +161,12 @@ func (h *Hub) broadcastRoomState(roomID string) {
 	}
 	data, err := json.Marshal(snap)
 	if err != nil {
-		log.Printf("marshal room snapshot: %v", err)
+		h.logger.Error().Err(err).Msg("marshal room snapshot")
 		return
 	}
 	_, err = h.node.Publish("room:"+roomID, data)
 	if err != nil {
-		log.Printf("publish room state: %v", err)
+		h.logger.Error().Err(err).Str("room", roomID).Msg("publish room state")
 	}
 }
 
