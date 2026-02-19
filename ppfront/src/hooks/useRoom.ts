@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { getCentrifuge } from "../api/centrifuge";
-import { loadRoomInfo } from "./useUser";
+import { loadRoomInfo, loadUser } from "./useUser";
 import type {
   RoomSnapshot,
+  JoinRoomResponse,
   SubmitVoteRequest,
   AddTicketRequest,
   AddTicketResponse,
@@ -63,6 +64,25 @@ export function useRoom(roomId: string | undefined): UseRoomResult {
     sub.on("subscribed", () => {
       setConnected(true);
       setError(null);
+      // Issue join_room RPC to get initial state and register the client mapping.
+      // This runs on first subscribe and on reconnect.
+      const info = loadRoomInfo(roomId);
+      const userPrefs = loadUser();
+      if (info?.userId && userPrefs) {
+        client.rpc("join_room", {
+          roomId,
+          userName: userPrefs.name,
+          avatarId: userPrefs.avatarId,
+          userId: info.userId,
+        }).then((result) => {
+          const resp = result.data as unknown as JoinRoomResponse;
+          if (resp.state) {
+            setRoomState(resp.state);
+          }
+        }).catch(() => {
+          // broadcast will deliver state; non-critical if this fails
+        });
+      }
     });
 
     sub.on("unsubscribed", (ctx) => {

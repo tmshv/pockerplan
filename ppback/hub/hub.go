@@ -154,7 +154,7 @@ func (h *Hub) handleRPC(client *centrifuge.Client, method string, data []byte) (
 	case "join_room":
 		return h.rpcJoinRoom(client, data)
 	case "submit_vote":
-		return h.rpcSubmitVote(data)
+		return h.rpcSubmitVote(client, data)
 	case "add_ticket":
 		return h.rpcAddTicket(data)
 	case "reveal_votes":
@@ -188,6 +188,10 @@ func (h *Hub) rpcCreateRoom(client *centrifuge.Client, data []byte) ([]byte, err
 		return nil, centrifuge.ErrorInternal
 	}
 
+	// Capture immutable fields before any concurrent access is possible.
+	roomID := r.ID
+	adminSecret := r.AdminSecret
+
 	userID := uuid.New().String()
 	u := &model.User{
 		ID:       userID,
@@ -196,22 +200,24 @@ func (h *Hub) rpcCreateRoom(client *centrifuge.Client, data []byte) ([]byte, err
 		IsAdmin:  true,
 	}
 
-	err = h.rooms.WithRoom(r.ID, func(r *model.Room) error {
+	var state model.RoomState
+	err = h.rooms.WithRoom(roomID, func(r *model.Room) error {
 		room.AddUser(r, u)
+		state = r.State
 		return nil
 	})
 	if err != nil {
 		return nil, centrifuge.ErrorInternal
 	}
 
-	h.registerClient(client.ID(), userID, r.ID)
-	h.broadcastRoomState(r.ID)
+	h.registerClient(client.ID(), userID, roomID)
+	h.broadcastRoomState(roomID)
 
 	resp := model.CreateRoomResponse{
-		RoomID:      r.ID,
-		AdminSecret: r.AdminSecret,
+		RoomID:      roomID,
+		AdminSecret: adminSecret,
 		UserID:      userID,
-		State:       r.State,
+		State:       state,
 	}
 	return json.Marshal(resp)
 }
@@ -265,13 +271,21 @@ func (h *Hub) rpcJoinRoom(client *centrifuge.Client, data []byte) ([]byte, error
 	return json.Marshal(resp)
 }
 
-func (h *Hub) rpcSubmitVote(data []byte) ([]byte, error) {
+func (h *Hub) rpcSubmitVote(client *centrifuge.Client, data []byte) ([]byte, error) {
 	var req model.SubmitVoteRequest
 	if err := json.Unmarshal(data, &req); err != nil {
 		return nil, centrifuge.ErrorBadRequest
 	}
 	if req.RoomID == "" || req.UserID == "" || req.Value == "" {
 		return nil, centrifuge.ErrorBadRequest
+	}
+
+	// Verify the caller is the user they claim to be.
+	h.mu.RLock()
+	info, ok := h.clients[client.ID()]
+	h.mu.RUnlock()
+	if !ok || info.UserID != req.UserID || info.RoomID != req.RoomID {
+		return nil, centrifuge.ErrorPermissionDenied
 	}
 
 	err := h.rooms.WithRoom(req.RoomID, func(r *model.Room) error {

@@ -4,7 +4,7 @@ import type { StoredUser, StoredRoomInfo } from "../types";
 const USER_KEY = "pockerplan_user";
 const ROOM_KEY_PREFIX = "pockerplan_room_";
 
-function loadUser(): StoredUser | null {
+export function loadUser(): StoredUser | null {
   try {
     const raw = localStorage.getItem(USER_KEY);
     if (!raw) return null;
