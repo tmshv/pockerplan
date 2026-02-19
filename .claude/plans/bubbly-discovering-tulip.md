@@ -17,10 +17,10 @@ Features are ordered by dependency:
 ---
 
 ## Task 1: Log Centrifuge Events
-- [ ] In `rpcCreateRoom` (hub.go ~line 238), log room creation with room ID, user ID, user name, scale
-- [ ] In `rpcJoinRoom` (hub.go ~line 288), log user connection with room ID, user ID, user name
-- [ ] In `handleDisconnect` (hub.go ~line 483), log user disconnection with room ID, user ID
-- [ ] Add debug-level log for "client disconnected but user still has active connections" case
+- [x] In `rpcCreateRoom` (hub.go ~line 238), log room creation with room ID, user ID, user name, scale
+- [x] In `rpcJoinRoom` (hub.go ~line 288), log user connection with room ID, user ID, user name
+- [x] In `handleDisconnect` (hub.go ~line 483), log user disconnection with room ID, user ID
+- [x] Add debug-level log for "client disconnected but user still has active connections" case
 
 **Files:** `ppback/hub/hub.go`
 

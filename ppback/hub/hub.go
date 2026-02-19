@@ -237,6 +237,13 @@ func (h *Hub) rpcCreateRoom(client *centrifuge.Client, data []byte) ([]byte, err
 	h.registerClient(client.ID(), userID, roomID)
 	h.broadcastRoomState(roomID)
 
+	h.logger.Info().
+		Str("room_id", roomID).
+		Str("user_id", userID).
+		Str("user_name", req.UserName).
+		Str("scale", req.ScaleID).
+		Msg("room created")
+
 	resp := model.CreateRoomResponse{
 		RoomID:      roomID,
 		AdminSecret: adminSecret,
@@ -287,6 +294,12 @@ func (h *Hub) rpcJoinRoom(client *centrifuge.Client, data []byte) ([]byte, error
 
 	h.registerClient(client.ID(), userID, req.RoomID)
 	h.broadcastRoomState(req.RoomID)
+
+	h.logger.Info().
+		Str("room_id", req.RoomID).
+		Str("user_id", userID).
+		Str("user_name", req.UserName).
+		Msg("user joined room")
 
 	resp := model.JoinRoomResponse{
 		UserID: userID,
@@ -470,8 +483,17 @@ func (h *Hub) handleDisconnect(clientID string) {
 	h.mu.RUnlock()
 
 	if stillConnected {
+		h.logger.Debug().
+			Str("room_id", info.RoomID).
+			Str("user_id", info.UserID).
+			Msg("client disconnected but user still has active connections")
 		return
 	}
+
+	h.logger.Info().
+		Str("room_id", info.RoomID).
+		Str("user_id", info.UserID).
+		Msg("user disconnected")
 
 	err := h.rooms.WithRoom(info.RoomID, func(r *model.Room) error {
 		room.RemoveUser(r, info.UserID)
