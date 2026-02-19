@@ -7,8 +7,18 @@ import { JoinPage } from "./pages/JoinPage";
 import { RoomPage } from "./pages/RoomPage";
 import { Routes, Route } from "react-router-dom";
 
+const mockSub = {
+  on: vi.fn(),
+  subscribe: vi.fn(),
+  unsubscribe: vi.fn(),
+  removeAllListeners: vi.fn(),
+};
 vi.mock("./api/centrifuge", () => ({
-  getCentrifuge: () => ({ rpc: vi.fn() }),
+  getCentrifuge: () => ({
+    rpc: vi.fn(),
+    newSubscription: () => mockSub,
+    removeSubscription: vi.fn(),
+  }),
 }));
 
 function renderWithRoute(path: string) {
@@ -36,8 +46,18 @@ describe("App routing", () => {
     expect(screen.getByRole("heading", { name: "Join Room" })).toBeInTheDocument();
   });
 
-  it("renders RoomPage at /room/:id", () => {
+  it("redirects to join when not joined", () => {
     renderWithRoute("/room/abc");
-    expect(screen.getByText("Room abc")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Join Room" })).toBeInTheDocument();
+  });
+
+  it("renders RoomPage when room info exists", () => {
+    localStorage.setItem(
+      "pockerplan_room_abc",
+      JSON.stringify({ userId: "u1" })
+    );
+    renderWithRoute("/room/abc");
+    expect(screen.getByText("Connecting...")).toBeInTheDocument();
+    localStorage.clear();
   });
 });

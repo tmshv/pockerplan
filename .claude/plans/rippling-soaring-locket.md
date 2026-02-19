@@ -224,11 +224,11 @@ Vite dev server proxies `/api/*` and `/connection/*` to `localhost:8080` for dev
 - [x] Write component tests
 
 ### Task 8: Frontend room experience
-- [ ] Implement `useRoom` hook + `RoomContext`
-- [ ] Build VoteCard, VotingPanel, UserList, TicketPanel
-- [ ] Build VoteResults, AdminControls, TicketForm
-- [ ] Build RoomPage integrating all components
-- [ ] Write component tests
+- [x] Implement `useRoom` hook + `RoomContext`
+- [x] Build VoteCard, VotingPanel, UserList, TicketPanel
+- [x] Build VoteResults, AdminControls, TicketForm
+- [x] Build RoomPage integrating all components
+- [x] Write component tests
 
 ### Task 9: Integration and polish
 - [ ] End-to-end manual testing of full flow
