@@ -3,6 +3,7 @@ module pockerplan
 go 1.25.0
 
 require (
+	github.com/alecthomas/kong v1.14.0
 	github.com/centrifugal/centrifuge v0.38.0
 	github.com/centrifugal/centrifuge-go v0.10.11
 	github.com/google/uuid v1.6.0

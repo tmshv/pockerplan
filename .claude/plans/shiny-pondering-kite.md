@@ -84,10 +84,10 @@ Tasks 4 and 5 both modify `main.go`, so they are done together. Task 2 (README) 
 **Problem**: No CLI framework, address is read via `os.Getenv("ADDR")` only.
 
 ### Steps:
-- [ ] `go get github.com/alecthomas/kong`
-- [ ] Define `var cli struct { Addr string }` with `default:":8080" env:"ADDR"` tags in `main.go`
-- [ ] Call `kong.Parse(&cli)` at top of `main()`
-- [ ] Replace `os.Getenv("ADDR")` block with `cli.Addr`
+- [x] `go get github.com/alecthomas/kong`
+- [x] Define `var cli struct { Addr string }` with `default:":8080" env:"ADDR"` tags in `main.go`
+- [x] Call `kong.Parse(&cli)` at top of `main()`
+- [x] Replace `os.Getenv("ADDR")` block with `cli.Addr`
 
 **Files**: `go.mod`, `main.go`
 

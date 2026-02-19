@@ -14,20 +14,24 @@ import (
 	"pockerplan/ppback/room"
 	"pockerplan/ppback/server"
 
+	"github.com/alecthomas/kong"
 	"github.com/rs/zerolog"
 )
+
+var cli struct {
+	Addr string `default:":8080" env:"ADDR" help:"Listen address."`
+}
 
 //go:embed ppfront/dist
 var frontendFS embed.FS
 
 func main() {
+	kong.Parse(&cli)
+
 	logger := zerolog.New(zerolog.ConsoleWriter{Out: os.Stderr}).
 		With().Timestamp().Logger()
 
-	addr := os.Getenv("ADDR")
-	if addr == "" {
-		addr = ":8080"
-	}
+	addr := cli.Addr
 
 	// Frontend FS: strip the ppfront/dist prefix so files are served from root
 	frontFS, err := fs.Sub(frontendFS, "ppfront/dist")
