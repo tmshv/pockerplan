@@ -15,8 +15,8 @@
 
 ## Стек технологий
 
-- Backend: Go, Centrifuge (WebSocket)
-- Frontend: React, TypeScript, Vite, React Router
+- Backend: Go, Centrifuge (WebSocket), Kong (CLI), Zerolog (логирование)
+- Frontend: React, TypeScript, Vite, React Router, Biome (линтер/форматтер)
 - Коммуникация: WebSocket через Centrifuge
 - Единый бинарник: фронтенд встраивается в Go-бинарник через `go:embed`
 
@@ -53,10 +53,22 @@ make build
 ./bin/pockerplan
 ```
 
-По умолчанию сервер слушает на `:8080`. Адрес можно изменить переменной окружения:
+По умолчанию сервер слушает на `:8080`. Адрес можно изменить флагом `--addr` или переменной окружения `ADDR`:
+
+```sh
+./bin/pockerplan --addr :3000
+```
+
+или
 
 ```sh
 ADDR=:3000 ./bin/pockerplan
+```
+
+Справка по доступным флагам:
+
+```sh
+./bin/pockerplan --help
 ```
 
 ## Разработка
@@ -97,6 +109,20 @@ make test-backend
 
 ```sh
 make test-frontend
+```
+
+## Линтинг и форматирование
+
+Проверка кода (lint):
+
+```sh
+cd ppfront && npm run lint
+```
+
+Автоформатирование:
+
+```sh
+cd ppfront && npm run format
 ```
 
 ## API

@@ -141,7 +141,11 @@ export function useRoom(roomId: string | undefined): UseRoomResult {
       setConnected(false);
     };
     const onClientConnected = () => {
-      setError((prev) => (prev?.type === "connection_lost" ? null : prev));
+      setError((prev) =>
+        prev?.type === "connection_lost" || prev?.type === "timeout"
+          ? null
+          : prev,
+      );
     };
 
     client.on("disconnected", onClientDisconnected);

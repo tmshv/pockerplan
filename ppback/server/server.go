@@ -1,8 +1,11 @@
 package server
 
 import (
+	"bufio"
 	"encoding/json"
+	"errors"
 	"io/fs"
+	"net"
 	"net/http"
 	"time"
 
@@ -23,6 +26,27 @@ type responseWriter struct {
 func (rw *responseWriter) WriteHeader(code int) {
 	rw.status = code
 	rw.ResponseWriter.WriteHeader(code)
+}
+
+// Unwrap returns the underlying ResponseWriter for Go 1.20+ interface detection.
+func (rw *responseWriter) Unwrap() http.ResponseWriter {
+	return rw.ResponseWriter
+}
+
+// Hijack implements http.Hijacker, required for WebSocket upgrades.
+func (rw *responseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	h, ok := rw.ResponseWriter.(http.Hijacker)
+	if !ok {
+		return nil, nil, errors.New("underlying ResponseWriter does not implement http.Hijacker")
+	}
+	return h.Hijack()
+}
+
+// Flush implements http.Flusher for streaming responses.
+func (rw *responseWriter) Flush() {
+	if f, ok := rw.ResponseWriter.(http.Flusher); ok {
+		f.Flush()
+	}
 }
 
 // Server holds the HTTP server dependencies.
@@ -48,6 +72,11 @@ func New(h *hub.Hub, frontFS fs.FS, logger zerolog.Logger) *Server {
 
 // ServeHTTP implements http.Handler.
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	// Skip request logging for WebSocket connections (long-lived, misleading duration).
+	if r.URL.Path == "/connection/websocket" {
+		s.mux.ServeHTTP(w, r)
+		return
+	}
 	start := time.Now()
 	rw := &responseWriter{ResponseWriter: w, status: http.StatusOK}
 	s.mux.ServeHTTP(rw, r)
@@ -125,10 +154,4 @@ func (s *Server) spaHandler() http.Handler {
 		// File exists — serve it
 		fileServer.ServeHTTP(w, r)
 	})
-}
-
-// ListenAndServe starts the HTTP server on the given address.
-func (s *Server) ListenAndServe(addr string) error {
-	s.logger.Info().Str("addr", addr).Msg("listening")
-	return http.ListenAndServe(addr, s)
 }

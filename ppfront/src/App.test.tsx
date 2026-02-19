@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { Link, Route, Routes } from "react-router-dom";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { UserProvider } from "./context/UserContext";
 import { HomePage } from "./pages/HomePage";
 import { JoinPage } from "./pages/JoinPage";
@@ -53,6 +53,10 @@ function renderWithRoute(path: string) {
 }
 
 describe("App routing", () => {
+  afterEach(() => {
+    localStorage.clear();
+  });
+
   it("renders HomePage at /", () => {
     renderWithRoute("/");
     expect(screen.getByText("Planning Poker")).toBeInTheDocument();
@@ -79,7 +83,6 @@ describe("App routing", () => {
     );
     renderWithRoute("/room/abc");
     expect(screen.getByText("Connecting...")).toBeInTheDocument();
-    localStorage.clear();
   });
 
   it("renders NotFound for unknown routes", () => {
