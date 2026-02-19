@@ -11,7 +11,7 @@ import type {
 } from "../types";
 import type { Subscription } from "centrifuge";
 
-export type RoomErrorType = "not_found" | "connection_lost" | "unknown";
+export type RoomErrorType = "not_found" | "connection_lost" | "timeout" | "unknown";
 
 export interface RoomError {
   type: RoomErrorType;
@@ -55,6 +55,13 @@ export function useRoom(roomId: string | undefined): UseRoomResult {
     const client = getCentrifuge();
     const channel = `room:${roomId}`;
     const sub = client.newSubscription(channel);
+    let subscribed = false;
+
+    const timeoutId = setTimeout(() => {
+      if (!subscribed) {
+        setError({ type: "timeout", message: "Connection timed out. The server may be unreachable." });
+      }
+    }, 10_000);
 
     sub.on("publication", (ctx) => {
       const snapshot = ctx.data as RoomSnapshot;
@@ -62,6 +69,8 @@ export function useRoom(roomId: string | undefined): UseRoomResult {
     });
 
     sub.on("subscribed", () => {
+      subscribed = true;
+      clearTimeout(timeoutId);
       setConnected(true);
       setError(null);
       // Issue join_room RPC to get initial state and register the client mapping.
@@ -97,10 +106,28 @@ export function useRoom(roomId: string | undefined): UseRoomResult {
       setError(err);
     });
 
+    const onClientDisconnected = () => {
+      setConnected(false);
+    };
+    const onClientConnecting = () => {
+      setConnected(false);
+    };
+    const onClientConnected = () => {
+      setError((prev) => (prev?.type === "connection_lost" ? null : prev));
+    };
+
+    client.on("disconnected", onClientDisconnected);
+    client.on("connecting", onClientConnecting);
+    client.on("connected", onClientConnected);
+
     sub.subscribe();
     subRef.current = sub;
 
     return () => {
+      clearTimeout(timeoutId);
+      client.off("disconnected", onClientDisconnected);
+      client.off("connecting", onClientConnecting);
+      client.off("connected", onClientConnected);
       sub.unsubscribe();
       sub.removeAllListeners();
       client.removeSubscription(sub);

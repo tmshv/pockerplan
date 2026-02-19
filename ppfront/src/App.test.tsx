@@ -18,6 +18,8 @@ vi.mock("./api/centrifuge", () => ({
     rpc: vi.fn(),
     newSubscription: () => mockSub,
     removeSubscription: vi.fn(),
+    on: vi.fn(),
+    off: vi.fn(),
   }),
 }));
 

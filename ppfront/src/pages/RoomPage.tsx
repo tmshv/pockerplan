@@ -14,7 +14,8 @@ export function RoomPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  // Persist admin secret from URL to localStorage
+  // Persist admin secret from URL and redirect to join if not joined yet.
+  // These must be atomic: save the secret before checking join status.
   useEffect(() => {
     if (!id) return;
     const adminSecret = searchParams.get("admin");
@@ -22,16 +23,11 @@ export function RoomPage() {
       const existing = loadRoomInfo(id);
       saveRoomInfo(id, { userId: existing?.userId ?? "", adminSecret });
     }
-  }, [id, searchParams]);
-
-  // Redirect to join if not joined yet
-  useEffect(() => {
-    if (!id) return;
     const info = loadRoomInfo(id);
     if (!info?.userId) {
       navigate(`/room/${id}/join`, { replace: true });
     }
-  }, [id, navigate]);
+  }, [id, searchParams, navigate]);
 
   const info = id ? loadRoomInfo(id) : null;
   if (!info) return null;
@@ -67,6 +63,13 @@ function RoomPageContent({ roomId }: { roomId: string }) {
               <h2>Connection Lost</h2>
               <p>{error.message}</p>
               <div className="loading-spinner" />
+            </>
+          )}
+          {error.type === "timeout" && (
+            <>
+              <h2>Connection Timed Out</h2>
+              <p>{error.message}</p>
+              <button className="error-home-link" onClick={() => window.location.reload()}>Reload</button>
             </>
           )}
           {error.type === "unknown" && (

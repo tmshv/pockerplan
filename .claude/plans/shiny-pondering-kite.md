@@ -18,12 +18,12 @@ Tasks 4 and 5 both modify `main.go`, so they are done together. Task 2 (README) 
 - Race condition between two independent `useEffect` hooks in `RoomPage.tsx`
 
 ### Steps:
-- [ ] Add `"timeout"` to `RoomErrorType` in `useRoom.ts`
-- [ ] Add 10s timeout timer in the `useEffect` -- if `subscribed` hasn't fired, set timeout error
-- [ ] Add client-level `disconnected`/`connecting`/`connected` event handlers in `useRoom.ts` to surface connection errors and clear them on reconnect
-- [ ] Clear timeout in cleanup function
-- [ ] Merge two `useEffect` hooks in `RoomPage.tsx` into one (admin secret save + redirect check atomically)
-- [ ] Add timeout error UI in `RoomPageContent` with a reload button
+- [x] Add `"timeout"` to `RoomErrorType` in `useRoom.ts`
+- [x] Add 10s timeout timer in the `useEffect` -- if `subscribed` hasn't fired, set timeout error
+- [x] Add client-level `disconnected`/`connecting`/`connected` event handlers in `useRoom.ts` to surface connection errors and clear them on reconnect
+- [x] Clear timeout in cleanup function
+- [x] Merge two `useEffect` hooks in `RoomPage.tsx` into one (admin secret save + redirect check atomically)
+- [x] Add timeout error UI in `RoomPageContent` with a reload button
 
 **Files**: `ppfront/src/hooks/useRoom.ts`, `ppfront/src/pages/RoomPage.tsx`
 
