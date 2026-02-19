@@ -198,11 +198,11 @@ Vite dev server proxies `/api/*` and `/connection/*` to `localhost:8080` for dev
 - [x] Write unit tests including concurrency tests
 
 ### Task 4: Centrifuge hub (real-time layer)
-- [ ] Implement `ppback/hub/hub.go` — Node setup, event handlers
-- [ ] Implement RPC dispatch for all methods
-- [ ] Implement OnDisconnect (update presence, broadcast)
-- [ ] Implement broadcastRoomState
-- [ ] Write integration tests
+- [x] Implement `ppback/hub/hub.go` — Node setup, event handlers
+- [x] Implement RPC dispatch for all methods
+- [x] Implement OnDisconnect (update presence, broadcast)
+- [x] Implement broadcastRoomState
+- [x] Write integration tests
 
 ### Task 5: HTTP server and entry point
 - [ ] Implement `ppback/server/server.go` — routes, SPA fallback
