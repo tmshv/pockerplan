@@ -217,11 +217,11 @@ Vite dev server proxies `/api/*` and `/connection/*` to `localhost:8080` for dev
 - [x] Write hook tests
 
 ### Task 7: Frontend join flow
-- [ ] Build NameInput, AvatarPicker, ScalePicker components
-- [ ] Build HomePage (create room)
-- [ ] Build JoinPage (join room)
-- [ ] Set up routing in App.tsx
-- [ ] Write component tests
+- [x] Build NameInput, AvatarPicker, ScalePicker components
+- [x] Build HomePage (create room)
+- [x] Build JoinPage (join room)
+- [x] Set up routing in App.tsx
+- [x] Write component tests
 
 ### Task 8: Frontend room experience
 - [ ] Implement `useRoom` hook + `RoomContext`
