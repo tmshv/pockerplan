@@ -73,14 +73,26 @@ describe("JoinPage", () => {
     expect(mockNavigate).toHaveBeenCalledWith("/room/room-123");
   });
 
-  it("shows error when join fails", async () => {
-    mockRpc.mockRejectedValueOnce(new Error("room not found"));
+  it("shows error when join fails with room not found", async () => {
+    mockRpc.mockRejectedValueOnce(new Error("not found"));
 
     renderJoinPage();
     await userEvent.type(screen.getByLabelText("Your Name"), "Bob");
     await userEvent.click(screen.getByRole("radio", { name: "Dog" }));
     await userEvent.click(screen.getByRole("button", { name: "Join Room" }));
 
-    expect(await screen.findByText("room not found")).toBeInTheDocument();
+    expect(await screen.findByText("This room does not exist. It may have expired.")).toBeInTheDocument();
+    expect(screen.getByText("Create a New Room")).toBeInTheDocument();
+  });
+
+  it("shows error when join fails with generic error", async () => {
+    mockRpc.mockRejectedValueOnce(new Error("network error"));
+
+    renderJoinPage();
+    await userEvent.type(screen.getByLabelText("Your Name"), "Bob");
+    await userEvent.click(screen.getByRole("radio", { name: "Dog" }));
+    await userEvent.click(screen.getByRole("button", { name: "Join Room" }));
+
+    expect(await screen.findByText("network error")).toBeInTheDocument();
   });
 });

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { getCentrifuge } from "../api/centrifuge";
 import { loadRoomInfo } from "./useUser";
 import type {
@@ -10,10 +10,18 @@ import type {
 } from "../types";
 import type { Subscription } from "centrifuge";
 
+export type RoomErrorType = "not_found" | "connection_lost" | "unknown";
+
+export interface RoomError {
+  type: RoomErrorType;
+  message: string;
+}
+
 export interface UseRoomResult {
   roomState: RoomSnapshot | null;
   connected: boolean;
-  error: string | null;
+  error: RoomError | null;
+  loading: boolean;
   submitVote: (value: string) => Promise<void>;
   addTicket: (title: string, description: string) => Promise<string>;
   revealVotes: () => Promise<void>;
@@ -21,11 +29,27 @@ export interface UseRoomResult {
   nextTicket: () => Promise<void>;
 }
 
+function classifyError(errMessage: string | undefined, code?: number): RoomError {
+  const msg = errMessage ?? "Unknown error";
+  if (code === 403 || code === 404 || msg.includes("not found") || msg.includes("permission denied")) {
+    return { type: "not_found", message: "Room not found. It may have expired or the link is invalid." };
+  }
+  if (msg.includes("disconnect") || msg.includes("transport") || msg.includes("timeout")) {
+    return { type: "connection_lost", message: "Connection lost. Trying to reconnect..." };
+  }
+  return { type: "unknown", message: msg };
+}
+
 export function useRoom(roomId: string | undefined): UseRoomResult {
   const [roomState, setRoomState] = useState<RoomSnapshot | null>(null);
   const [connected, setConnected] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<RoomError | null>(null);
   const subRef = useRef<Subscription | null>(null);
+
+  const loading = useMemo(() => {
+    if (!roomId) return false;
+    return !roomState && !error;
+  }, [roomId, roomState, error]);
 
   useEffect(() => {
     if (!roomId) return;
@@ -44,12 +68,16 @@ export function useRoom(roomId: string | undefined): UseRoomResult {
       setError(null);
     });
 
-    sub.on("unsubscribed", () => {
+    sub.on("unsubscribed", (ctx) => {
       setConnected(false);
+      if (ctx.code !== 0 && ctx.code !== 3000) {
+        setError(classifyError(ctx.reason, ctx.code));
+      }
     });
 
     sub.on("error", (ctx) => {
-      setError(ctx.error?.message ?? "Subscription error");
+      const err = classifyError(ctx.error?.message, ctx.error?.code);
+      setError(err);
     });
 
     sub.subscribe();
@@ -122,6 +150,7 @@ export function useRoom(roomId: string | undefined): UseRoomResult {
     roomState,
     connected,
     error,
+    loading,
     submitVote,
     addTicket,
     revealVotes,

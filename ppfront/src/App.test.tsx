@@ -5,7 +5,7 @@ import { UserProvider } from "./context/UserContext";
 import { HomePage } from "./pages/HomePage";
 import { JoinPage } from "./pages/JoinPage";
 import { RoomPage } from "./pages/RoomPage";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Link } from "react-router-dom";
 
 const mockSub = {
   on: vi.fn(),
@@ -21,6 +21,18 @@ vi.mock("./api/centrifuge", () => ({
   }),
 }));
 
+function NotFound() {
+  return (
+    <div className="page">
+      <div className="error-state">
+        <h2>Page Not Found</h2>
+        <p>The page you are looking for does not exist.</p>
+        <Link to="/" className="error-home-link">Go Home</Link>
+      </div>
+    </div>
+  );
+}
+
 function renderWithRoute(path: string) {
   return render(
     <MemoryRouter initialEntries={[path]}>
@@ -29,6 +41,7 @@ function renderWithRoute(path: string) {
           <Route path="/" element={<HomePage />} />
           <Route path="/room/:id/join" element={<JoinPage />} />
           <Route path="/room/:id" element={<RoomPage />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </UserProvider>
     </MemoryRouter>
@@ -59,5 +72,11 @@ describe("App routing", () => {
     renderWithRoute("/room/abc");
     expect(screen.getByText("Connecting...")).toBeInTheDocument();
     localStorage.clear();
+  });
+
+  it("renders NotFound for unknown routes", () => {
+    renderWithRoute("/unknown-page");
+    expect(screen.getByText("Page Not Found")).toBeInTheDocument();
+    expect(screen.getByText("Go Home")).toBeInTheDocument();
   });
 });

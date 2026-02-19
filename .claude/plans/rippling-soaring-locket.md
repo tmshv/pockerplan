@@ -231,10 +231,10 @@ Vite dev server proxies `/api/*` and `/connection/*` to `localhost:8080` for dev
 - [x] Write component tests
 
 ### Task 9: Integration and polish
-- [ ] End-to-end manual testing of full flow
-- [ ] Error states (room not found, connection lost)
-- [ ] Loading states
-- [ ] Verify single-binary build works correctly
+- [x] End-to-end manual testing of full flow
+- [x] Error states (room not found, connection lost)
+- [x] Loading states
+- [x] Verify single-binary build works correctly
 
 ## Verification
 

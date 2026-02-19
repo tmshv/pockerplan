@@ -1,4 +1,4 @@
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams, Link } from "react-router-dom";
 import { useEffect } from "react";
 import { RoomProvider, useRoomContext } from "../context/RoomContext";
 import { loadRoomInfo, saveRoomInfo } from "../hooks/useUser";
@@ -46,7 +46,7 @@ export function RoomPage() {
 }
 
 function RoomPageContent({ roomId }: { roomId: string }) {
-  const { roomState, connected, error, submitVote, addTicket, revealVotes, resetVotes, nextTicket } =
+  const { roomState, connected, error, loading, submitVote, addTicket, revealVotes, resetVotes, nextTicket } =
     useRoomContext();
 
   const info = loadRoomInfo(roomId);
@@ -56,15 +56,40 @@ function RoomPageContent({ roomId }: { roomId: string }) {
   if (error) {
     return (
       <div className="page room-page">
-        <p className="error">Error: {error}</p>
+        <div className="error-state">
+          {error.type === "not_found" && (
+            <>
+              <h2>Room Not Found</h2>
+              <p>{error.message}</p>
+              <Link to="/" className="error-home-link">Create a New Room</Link>
+            </>
+          )}
+          {error.type === "connection_lost" && (
+            <>
+              <h2>Connection Lost</h2>
+              <p>{error.message}</p>
+              <div className="loading-spinner" />
+            </>
+          )}
+          {error.type === "unknown" && (
+            <>
+              <h2>Something Went Wrong</h2>
+              <p>{error.message}</p>
+              <Link to="/" className="error-home-link">Go Home</Link>
+            </>
+          )}
+        </div>
       </div>
     );
   }
 
-  if (!roomState) {
+  if (loading || !roomState) {
     return (
       <div className="page room-page">
-        <p>{connected ? "Loading room..." : "Connecting..."}</p>
+        <div className="loading-state">
+          <div className="loading-spinner" />
+          <p>{connected ? "Loading room..." : "Connecting..."}</p>
+        </div>
       </div>
     );
   }
