@@ -191,11 +191,11 @@ Vite dev server proxies `/api/*` and `/connection/*` to `localhost:8080` for dev
 - [x] Write unit tests for scales and avatar validation
 
 ### Task 3: Room manager (core business logic)
-- [ ] Implement `ppback/room/manager.go` — Create, Get, AddUser, RemoveUser
-- [ ] Implement vote logic — SubmitVote, RevealVotes, ResetVotes
-- [ ] Implement ticket logic — AddTicket, SetCurrentTicket, NextTicket
-- [ ] Implement Snapshot (sanitization) and TTL cleanup
-- [ ] Write unit tests including concurrency tests
+- [x] Implement `ppback/room/manager.go` — Create, Get, AddUser, RemoveUser
+- [x] Implement vote logic — SubmitVote, RevealVotes, ResetVotes
+- [x] Implement ticket logic — AddTicket, SetCurrentTicket, NextTicket
+- [x] Implement Snapshot (sanitization) and TTL cleanup
+- [x] Write unit tests including concurrency tests
 
 ### Task 4: Centrifuge hub (real-time layer)
 - [ ] Implement `ppback/hub/hub.go` — Node setup, event handlers
