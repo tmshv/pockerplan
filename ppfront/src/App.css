@@ -413,6 +413,26 @@
 
 /* Markdown editor */
 
+/* Share button */
+
+.share-button {
+  padding: 0.5em 1em;
+  border-radius: 6px;
+  border: 1px solid #555;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.share-button:hover {
+  border-color: #646cff;
+  background: rgba(100, 108, 255, 0.1);
+}
+
+/* Markdown editor */
+
 .markdown-editor .cm-editor {
   border-radius: 6px;
   border: 1px solid #555;

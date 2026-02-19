@@ -70,9 +70,9 @@ Features are ordered by dependency:
 ---
 
 ## Task 4: Share Button
-- [ ] Create `ShareButton` component: copies `{origin}/room/{roomId}/join` to clipboard, shows "Copied!" feedback for 2s
-- [ ] Add styles in `App.css`
-- [ ] Add test for `ShareButton`
+- [x] Create `ShareButton` component: copies `{origin}/room/{roomId}/join` to clipboard, shows "Copied!" feedback for 2s
+- [x] Add styles in `App.css`
+- [x] Add test for `ShareButton`
 
 **Files:** NEW `ppfront/src/components/ShareButton.tsx`, `ppfront/src/App.css`
 
