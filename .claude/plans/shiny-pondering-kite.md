@@ -34,7 +34,7 @@ Tasks 4 and 5 both modify `main.go`, so they are done together. Task 2 (README) 
 **Problem**: README is just `# pockerplan`.
 
 ### Steps:
-- [ ] Write README.md with Russian description: what it does, features, tech stack, build/run/dev/test commands, `--addr` flag docs
+- [x] Write README.md with Russian description: what it does, features, tech stack, build/run/dev/test commands, `--addr` flag docs
 
 **Files**: `README.md`
 
