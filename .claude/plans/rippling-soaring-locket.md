@@ -185,10 +185,10 @@ Vite dev server proxies `/api/*` and `/connection/*` to `localhost:8080` for dev
 - [x] Configure `vitest.config.ts`
 
 ### Task 2: Backend models, scales, avatars
-- [ ] Implement `ppback/model/types.go`
-- [ ] Implement `ppback/scale/scale.go` with all four scales
-- [ ] Implement `ppback/avatar/avatar.go`
-- [ ] Write unit tests for scales and avatar validation
+- [x] Implement `ppback/model/types.go`
+- [x] Implement `ppback/scale/scale.go` with all four scales
+- [x] Implement `ppback/avatar/avatar.go`
+- [x] Write unit tests for scales and avatar validation
 
 ### Task 3: Room manager (core business logic)
 - [ ] Implement `ppback/room/manager.go` — Create, Get, AddUser, RemoveUser
