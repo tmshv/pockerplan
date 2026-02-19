@@ -5,7 +5,12 @@ interface VoteCardProps {
   onClick: () => void;
 }
 
-export function VoteCard({ value, selected, disabled, onClick }: VoteCardProps) {
+export function VoteCard({
+  value,
+  selected,
+  disabled,
+  onClick,
+}: VoteCardProps) {
   return (
     <button
       type="button"

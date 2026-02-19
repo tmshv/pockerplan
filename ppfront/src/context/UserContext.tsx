@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react";
-import type { StoredUser } from "../types";
 import { useUser } from "../hooks/useUser";
+import type { StoredUser } from "../types";
 
 interface UserContextValue {
   user: StoredUser | null;

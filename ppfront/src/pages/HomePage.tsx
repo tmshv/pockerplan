@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { NameInput } from "../components/NameInput";
+import { getCentrifuge } from "../api/centrifuge";
 import { AvatarPicker } from "../components/AvatarPicker";
+import { NameInput } from "../components/NameInput";
 import { ScalePicker } from "../components/ScalePicker";
 import { useUserContext } from "../context/UserContext";
-import { getCentrifuge } from "../api/centrifuge";
 import { saveRoomInfo } from "../hooks/useUser";
 import type { CreateRoomResponse } from "../types";
 

@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useNavigate, useParams, Link } from "react-router-dom";
-import { NameInput } from "../components/NameInput";
-import { AvatarPicker } from "../components/AvatarPicker";
-import { useUserContext } from "../context/UserContext";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { getCentrifuge } from "../api/centrifuge";
+import { AvatarPicker } from "../components/AvatarPicker";
+import { NameInput } from "../components/NameInput";
+import { useUserContext } from "../context/UserContext";
 import { loadRoomInfo, saveRoomInfo } from "../hooks/useUser";
 import type { JoinRoomResponse } from "../types";
 
@@ -77,7 +77,9 @@ export function JoinPage() {
         <AvatarPicker selected={avatarId} onSelect={setAvatarId} />
         {error && <p className="error">{error}</p>}
         {roomNotFound && (
-          <Link to="/" className="error-home-link">Create a New Room</Link>
+          <Link to="/" className="error-home-link">
+            Create a New Room
+          </Link>
         )}
         <button type="submit" disabled={!canSubmit}>
           {submitting ? "Joining..." : "Join Room"}

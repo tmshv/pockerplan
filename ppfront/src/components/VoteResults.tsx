@@ -1,4 +1,4 @@
-import type { VoteInfo, User } from "../types";
+import type { User, VoteInfo } from "../types";
 
 interface VoteResultsProps {
   votes: VoteInfo[];
@@ -17,12 +17,14 @@ export function VoteResults({ votes, users }: VoteResultsProps) {
 
   const numericVotes = votes
     .filter((v) => v.value && v.value !== "?")
-    .map((v) => parseFloat(v.value!))
-    .filter((n) => !isNaN(n));
+    .map((v) => Number.parseFloat(v.value!))
+    .filter((n) => !Number.isNaN(n));
 
   const average =
     numericVotes.length > 0
-      ? (numericVotes.reduce((a, b) => a + b, 0) / numericVotes.length).toFixed(1)
+      ? (numericVotes.reduce((a, b) => a + b, 0) / numericVotes.length).toFixed(
+          1,
+        )
       : null;
 
   return (
@@ -32,9 +34,9 @@ export function VoteResults({ votes, users }: VoteResultsProps) {
       <div className="vote-distribution">
         {Array.from(valueCounts.entries())
           .sort(([a], [b]) => {
-            const na = parseFloat(a);
-            const nb = parseFloat(b);
-            if (!isNaN(na) && !isNaN(nb)) return na - nb;
+            const na = Number.parseFloat(a);
+            const nb = Number.parseFloat(b);
+            if (!Number.isNaN(na) && !Number.isNaN(nb)) return na - nb;
             return a.localeCompare(b);
           })
           .map(([value, count]) => (

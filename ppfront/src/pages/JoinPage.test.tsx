@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { UserProvider } from "../context/UserContext";
 import { JoinPage } from "./JoinPage";
 
@@ -24,7 +24,7 @@ function renderJoinPage(roomId = "room-123") {
           <Route path="/room/:id/join" element={<JoinPage />} />
         </Routes>
       </UserProvider>
-    </MemoryRouter>
+    </MemoryRouter>,
   );
 }
 
@@ -36,9 +36,13 @@ describe("JoinPage", () => {
 
   it("renders the join form", () => {
     renderJoinPage();
-    expect(screen.getByRole("heading", { name: "Join Room" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Join Room" }),
+    ).toBeInTheDocument();
     expect(screen.getByLabelText("Your Name")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Join Room" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Join Room" }),
+    ).toBeInTheDocument();
   });
 
   it("does not show scale picker", () => {
@@ -55,7 +59,14 @@ describe("JoinPage", () => {
     mockRpc.mockResolvedValueOnce({
       data: {
         userId: "user-789",
-        state: { id: "room-123", scale: "fibonacci", state: "idle", users: [], tickets: [], currentTicketId: "" },
+        state: {
+          id: "room-123",
+          scale: "fibonacci",
+          state: "idle",
+          users: [],
+          tickets: [],
+          currentTicketId: "",
+        },
       },
     });
 
@@ -81,7 +92,9 @@ describe("JoinPage", () => {
     await userEvent.click(screen.getByRole("radio", { name: "Dog" }));
     await userEvent.click(screen.getByRole("button", { name: "Join Room" }));
 
-    expect(await screen.findByText("This room does not exist. It may have expired.")).toBeInTheDocument();
+    expect(
+      await screen.findByText("This room does not exist. It may have expired."),
+    ).toBeInTheDocument();
     expect(screen.getByText("Create a New Room")).toBeInTheDocument();
   });
 

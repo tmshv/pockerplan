@@ -1,12 +1,18 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
-import { UserList } from "./UserList";
+import { describe, expect, it } from "vitest";
 import type { User, VoteInfo } from "../types";
+import { UserList } from "./UserList";
 
 const users: User[] = [
   { id: "u1", name: "Alice", avatarId: "cat", isAdmin: true, connected: true },
   { id: "u2", name: "Bob", avatarId: "dog", isAdmin: false, connected: true },
-  { id: "u3", name: "Charlie", avatarId: "fox", isAdmin: false, connected: false },
+  {
+    id: "u3",
+    name: "Charlie",
+    avatarId: "fox",
+    isAdmin: false,
+    connected: false,
+  },
 ];
 
 describe("UserList", () => {
@@ -35,7 +41,9 @@ describe("UserList", () => {
   });
 
   it("marks disconnected users", () => {
-    const { container } = render(<UserList users={users} votes={[]} revealed={false} />);
+    const { container } = render(
+      <UserList users={users} votes={[]} revealed={false} />,
+    );
     const disconnected = container.querySelectorAll(".disconnected");
     expect(disconnected).toHaveLength(1);
   });

@@ -22,12 +22,19 @@ export function UserList({ users, votes, revealed }: UserListProps) {
           const vote = voteMap.get(user.id);
           const hasVoted = !!vote;
           return (
-            <li key={user.id} className={`user-item${user.connected ? "" : " disconnected"}`}>
+            <li
+              key={user.id}
+              className={`user-item${user.connected ? "" : " disconnected"}`}
+            >
               <span className="user-avatar">{getEmoji(user.avatarId)}</span>
               <span className="user-name">{user.name}</span>
               {user.isAdmin && <span className="user-badge">Admin</span>}
               <span className="user-vote-status">
-                {hasVoted ? (revealed && vote.value ? vote.value : "Voted") : "—"}
+                {hasVoted
+                  ? revealed && vote.value
+                    ? vote.value
+                    : "Voted"
+                  : "—"}
               </span>
             </li>
           );

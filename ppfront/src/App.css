@@ -90,7 +90,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .name-input {
@@ -208,8 +210,12 @@
   background: #333;
 }
 
-.ticket-status.status-voting { background: #2d5a27; }
-.ticket-status.status-revealed { background: #5a4227; }
+.ticket-status.status-voting {
+  background: #2d5a27;
+}
+.ticket-status.status-revealed {
+  background: #5a4227;
+}
 
 /* Vote cards */
 

@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { ScalePicker } from "./ScalePicker";
 
 describe("ScalePicker", () => {
@@ -16,7 +16,9 @@ describe("ScalePicker", () => {
 
   it("shows the selected value", () => {
     render(<ScalePicker selected="tshirt" onSelect={() => {}} />);
-    const select = screen.getByLabelText("Estimation Scale") as HTMLSelectElement;
+    const select = screen.getByLabelText(
+      "Estimation Scale",
+    ) as HTMLSelectElement;
     expect(select.value).toBe("tshirt");
   });
 

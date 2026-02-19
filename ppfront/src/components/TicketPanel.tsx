@@ -22,7 +22,9 @@ export function TicketPanel({ ticket }: TicketPanelProps) {
           <Markdown>{ticket.description}</Markdown>
         </div>
       )}
-      <span className={`ticket-status status-${ticket.status}`}>{ticket.status}</span>
+      <span className={`ticket-status status-${ticket.status}`}>
+        {ticket.status}
+      </span>
     </div>
   );
 }

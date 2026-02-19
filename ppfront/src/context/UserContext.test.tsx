@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { renderHook, act } from "@testing-library/react";
-import { UserProvider, useUserContext } from "./UserContext";
+import { act, renderHook } from "@testing-library/react";
 import type { ReactNode } from "react";
+import { beforeEach, describe, expect, it } from "vitest";
+import { UserProvider, useUserContext } from "./UserContext";
 
 const wrapper = ({ children }: { children: ReactNode }) => (
   <UserProvider>{children}</UserProvider>

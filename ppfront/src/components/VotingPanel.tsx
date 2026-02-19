@@ -1,5 +1,5 @@
-import { VoteCard } from "./VoteCard";
 import { scales } from "../data/scales";
+import { VoteCard } from "./VoteCard";
 
 interface VotingPanelProps {
   scaleId: string;
@@ -8,7 +8,12 @@ interface VotingPanelProps {
   onVote: (value: string) => void;
 }
 
-export function VotingPanel({ scaleId, selectedValue, disabled, onVote }: VotingPanelProps) {
+export function VotingPanel({
+  scaleId,
+  selectedValue,
+  disabled,
+  onVote,
+}: VotingPanelProps) {
   const scale = scales.find((s) => s.id === scaleId);
   const values = scale?.values ?? [];
 

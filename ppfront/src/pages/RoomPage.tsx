@@ -1,13 +1,18 @@
-import { useParams, useNavigate, useSearchParams, Link } from "react-router-dom";
 import { useEffect } from "react";
-import { RoomProvider, useRoomContext } from "../context/RoomContext";
-import { loadRoomInfo, saveRoomInfo } from "../hooks/useUser";
-import { VotingPanel } from "../components/VotingPanel";
-import { UserList } from "../components/UserList";
-import { TicketPanel } from "../components/TicketPanel";
-import { VoteResults } from "../components/VoteResults";
+import {
+  Link,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { AdminControls } from "../components/AdminControls";
 import { TicketForm } from "../components/TicketForm";
+import { TicketPanel } from "../components/TicketPanel";
+import { UserList } from "../components/UserList";
+import { VoteResults } from "../components/VoteResults";
+import { VotingPanel } from "../components/VotingPanel";
+import { RoomProvider, useRoomContext } from "../context/RoomContext";
+import { loadRoomInfo, saveRoomInfo } from "../hooks/useUser";
 
 export function RoomPage() {
   const { id } = useParams<{ id: string }>();
@@ -40,8 +45,17 @@ export function RoomPage() {
 }
 
 function RoomPageContent({ roomId }: { roomId: string }) {
-  const { roomState, connected, error, loading, submitVote, addTicket, revealVotes, resetVotes, nextTicket } =
-    useRoomContext();
+  const {
+    roomState,
+    connected,
+    error,
+    loading,
+    submitVote,
+    addTicket,
+    revealVotes,
+    resetVotes,
+    nextTicket,
+  } = useRoomContext();
 
   const info = loadRoomInfo(roomId);
   const isAdmin = !!info?.adminSecret;
@@ -55,7 +69,9 @@ function RoomPageContent({ roomId }: { roomId: string }) {
             <>
               <h2>Room Not Found</h2>
               <p>{error.message}</p>
-              <Link to="/" className="error-home-link">Create a New Room</Link>
+              <Link to="/" className="error-home-link">
+                Create a New Room
+              </Link>
             </>
           )}
           {error.type === "connection_lost" && (
@@ -69,14 +85,22 @@ function RoomPageContent({ roomId }: { roomId: string }) {
             <>
               <h2>Connection Timed Out</h2>
               <p>{error.message}</p>
-              <button className="error-home-link" onClick={() => window.location.reload()}>Reload</button>
+              <button
+                type="button"
+                className="error-home-link"
+                onClick={() => window.location.reload()}
+              >
+                Reload
+              </button>
             </>
           )}
           {error.type === "unknown" && (
             <>
               <h2>Something Went Wrong</h2>
               <p>{error.message}</p>
-              <Link to="/" className="error-home-link">Go Home</Link>
+              <Link to="/" className="error-home-link">
+                Go Home
+              </Link>
             </>
           )}
         </div>
@@ -106,7 +130,9 @@ function RoomPageContent({ roomId }: { roomId: string }) {
     <div className="page room-page">
       <div className="room-header">
         <h1>Room</h1>
-        {!connected && <span className="connection-status">Reconnecting...</span>}
+        {!connected && (
+          <span className="connection-status">Reconnecting...</span>
+        )}
       </div>
 
       <div className="room-layout">

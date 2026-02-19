@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MemoryRouter } from "react-router-dom";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { UserProvider } from "../context/UserContext";
 import { HomePage } from "./HomePage";
 
@@ -22,7 +22,7 @@ function renderHomePage() {
       <UserProvider>
         <HomePage />
       </UserProvider>
-    </MemoryRouter>
+    </MemoryRouter>,
   );
 }
 
@@ -37,7 +37,9 @@ describe("HomePage", () => {
     expect(screen.getByText("Planning Poker")).toBeInTheDocument();
     expect(screen.getByLabelText("Your Name")).toBeInTheDocument();
     expect(screen.getByLabelText("Estimation Scale")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Create Room" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Create Room" }),
+    ).toBeInTheDocument();
   });
 
   it("disables submit when name is empty", () => {

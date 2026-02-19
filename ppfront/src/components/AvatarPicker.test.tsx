@@ -1,14 +1,16 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi } from "vitest";
-import { AvatarPicker } from "./AvatarPicker";
+import { describe, expect, it, vi } from "vitest";
 import { avatars } from "../data/avatars";
+import { AvatarPicker } from "./AvatarPicker";
 
 describe("AvatarPicker", () => {
   it("renders all avatars", () => {
     render(<AvatarPicker selected="" onSelect={() => {}} />);
     for (const avatar of avatars) {
-      expect(screen.getByRole("radio", { name: avatar.label })).toBeInTheDocument();
+      expect(
+        screen.getByRole("radio", { name: avatar.label }),
+      ).toBeInTheDocument();
     }
   });
 

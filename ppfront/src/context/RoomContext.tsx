@@ -14,7 +14,6 @@ export function RoomProvider({ roomId, children }: RoomProviderProps) {
   return <RoomContext.Provider value={value}>{children}</RoomContext.Provider>;
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function useRoomContext(): UseRoomResult {
   const ctx = useContext(RoomContext);
   if (!ctx) {

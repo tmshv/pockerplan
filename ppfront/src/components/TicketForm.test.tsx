@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { TicketForm } from "./TicketForm";
 
 describe("TicketForm", () => {
@@ -8,7 +8,9 @@ describe("TicketForm", () => {
     render(<TicketForm onAdd={async () => {}} />);
     expect(screen.getByLabelText("Ticket title")).toBeInTheDocument();
     expect(screen.getByLabelText("Ticket description")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Add Ticket" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Add Ticket" }),
+    ).toBeInTheDocument();
   });
 
   it("disables submit when title is empty", () => {
@@ -26,7 +28,10 @@ describe("TicketForm", () => {
     const onAdd = vi.fn().mockResolvedValue(undefined);
     render(<TicketForm onAdd={onAdd} />);
     await userEvent.type(screen.getByLabelText("Ticket title"), "My ticket");
-    await userEvent.type(screen.getByLabelText("Ticket description"), "Some details");
+    await userEvent.type(
+      screen.getByLabelText("Ticket description"),
+      "Some details",
+    );
     await userEvent.click(screen.getByRole("button", { name: "Add Ticket" }));
     expect(onAdd).toHaveBeenCalledWith("My ticket", "Some details");
   });

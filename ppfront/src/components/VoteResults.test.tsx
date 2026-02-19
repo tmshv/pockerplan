@@ -1,12 +1,18 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
-import { VoteResults } from "./VoteResults";
+import { describe, expect, it } from "vitest";
 import type { User, VoteInfo } from "../types";
+import { VoteResults } from "./VoteResults";
 
 const users: User[] = [
   { id: "u1", name: "Alice", avatarId: "cat", isAdmin: true, connected: true },
   { id: "u2", name: "Bob", avatarId: "dog", isAdmin: false, connected: true },
-  { id: "u3", name: "Charlie", avatarId: "fox", isAdmin: false, connected: true },
+  {
+    id: "u3",
+    name: "Charlie",
+    avatarId: "fox",
+    isAdmin: false,
+    connected: true,
+  },
 ];
 
 describe("VoteResults", () => {

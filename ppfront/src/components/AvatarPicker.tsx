@@ -9,7 +9,11 @@ export function AvatarPicker({ selected, onSelect }: AvatarPickerProps) {
   return (
     <div className="avatar-picker">
       <label>Pick an Avatar</label>
-      <div className="avatar-grid" role="radiogroup" aria-label="Pick an avatar">
+      <div
+        className="avatar-grid"
+        role="radiogroup"
+        aria-label="Pick an avatar"
+      >
         {avatars.map((avatar) => (
           <button
             key={avatar.id}

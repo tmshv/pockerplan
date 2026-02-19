@@ -26,18 +26,10 @@ export function AdminControls({
         >
           Reveal Votes
         </button>
-        <button
-          type="button"
-          onClick={onReset}
-          disabled={roomState === "idle"}
-        >
+        <button type="button" onClick={onReset} disabled={roomState === "idle"}>
           Reset Votes
         </button>
-        <button
-          type="button"
-          onClick={onNextTicket}
-          disabled={!hasTickets}
-        >
+        <button type="button" onClick={onNextTicket} disabled={!hasTickets}>
           Next Ticket
         </button>
       </div>

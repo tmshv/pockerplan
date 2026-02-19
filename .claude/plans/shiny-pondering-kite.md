@@ -45,14 +45,14 @@ Tasks 4 and 5 both modify `main.go`, so they are done together. Task 2 (README) 
 **Problem**: User wants Biome for linting and formatting instead of ESLint.
 
 ### Steps:
-- [ ] Remove ESLint devDependencies from `package.json`: `eslint`, `@eslint/js`, `eslint-plugin-react-hooks`, `eslint-plugin-react-refresh`, `globals`, `typescript-eslint`
-- [ ] Delete `ppfront/eslint.config.js`
-- [ ] Install `@biomejs/biome` as exact devDependency
-- [ ] Create `ppfront/biome.json` with recommended rules + `useExhaustiveDependencies` (warn) + `useHookAtTopLevel` (error)
-- [ ] Update `package.json` scripts: `lint` -> `biome check .`, add `format` -> `biome format --write .`
-- [ ] Remove `// eslint-disable-next-line` comment in `RoomContext.tsx:17`
-- [ ] Run `biome check --fix .` and `biome format --write .` to auto-format
-- [ ] `rm -rf node_modules && npm install` to clean up
+- [x] Remove ESLint devDependencies from `package.json`: `eslint`, `@eslint/js`, `eslint-plugin-react-hooks`, `eslint-plugin-react-refresh`, `globals`, `typescript-eslint`
+- [x] Delete `ppfront/eslint.config.js`
+- [x] Install `@biomejs/biome` as exact devDependency
+- [x] Create `ppfront/biome.json` with recommended rules + `useExhaustiveDependencies` (warn) + `useHookAtTopLevel` (error)
+- [x] Update `package.json` scripts: `lint` -> `biome check .`, add `format` -> `biome format --write .`
+- [x] Remove `// eslint-disable-next-line` comment in `RoomContext.tsx:17`
+- [x] Run `biome check --fix .` and `biome format --write .` to auto-format
+- [x] `rm -rf node_modules && npm install` to clean up
 
 **Files**: `ppfront/package.json`, `ppfront/eslint.config.js` (delete), `ppfront/biome.json` (new), `ppfront/src/context/RoomContext.tsx`, various auto-formatted `.ts/.tsx` files
 

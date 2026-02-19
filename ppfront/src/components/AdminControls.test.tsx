@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { AdminControls } from "./AdminControls";
 
 describe("AdminControls", () => {
@@ -12,7 +12,7 @@ describe("AdminControls", () => {
         onReveal={() => {}}
         onReset={() => {}}
         onNextTicket={() => {}}
-      />
+      />,
     );
     expect(screen.getByRole("button", { name: "Reveal Votes" })).toBeDisabled();
   });
@@ -25,7 +25,7 @@ describe("AdminControls", () => {
         onReveal={() => {}}
         onReset={() => {}}
         onNextTicket={() => {}}
-      />
+      />,
     );
     expect(screen.getByRole("button", { name: "Reveal Votes" })).toBeEnabled();
   });
@@ -38,7 +38,7 @@ describe("AdminControls", () => {
         onReveal={() => {}}
         onReset={() => {}}
         onNextTicket={() => {}}
-      />
+      />,
     );
     expect(screen.getByRole("button", { name: "Reset Votes" })).toBeDisabled();
   });
@@ -51,7 +51,7 @@ describe("AdminControls", () => {
         onReveal={() => {}}
         onReset={() => {}}
         onNextTicket={() => {}}
-      />
+      />,
     );
     expect(screen.getByRole("button", { name: "Next Ticket" })).toBeDisabled();
   });
@@ -65,7 +65,7 @@ describe("AdminControls", () => {
         onReveal={onReveal}
         onReset={() => {}}
         onNextTicket={() => {}}
-      />
+      />,
     );
     await userEvent.click(screen.getByRole("button", { name: "Reveal Votes" }));
     expect(onReveal).toHaveBeenCalledOnce();
@@ -80,7 +80,7 @@ describe("AdminControls", () => {
         onReveal={() => {}}
         onReset={onReset}
         onNextTicket={() => {}}
-      />
+      />,
     );
     await userEvent.click(screen.getByRole("button", { name: "Reset Votes" }));
     expect(onReset).toHaveBeenCalledOnce();
@@ -95,7 +95,7 @@ describe("AdminControls", () => {
         onReveal={() => {}}
         onReset={() => {}}
         onNextTicket={onNextTicket}
-      />
+      />,
     );
     await userEvent.click(screen.getByRole("button", { name: "Next Ticket" }));
     expect(onNextTicket).toHaveBeenCalledOnce();

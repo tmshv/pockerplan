@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
-import { TicketPanel } from "./TicketPanel";
+import { describe, expect, it } from "vitest";
 import type { TicketSnapshot } from "../types";
+import { TicketPanel } from "./TicketPanel";
 
 describe("TicketPanel", () => {
   it("shows empty state when no ticket", () => {

@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { renderHook, act } from "@testing-library/react";
-import { useUser, loadRoomInfo, saveRoomInfo } from "./useUser";
+import { act, renderHook } from "@testing-library/react";
+import { beforeEach, describe, expect, it } from "vitest";
+import { loadRoomInfo, saveRoomInfo, useUser } from "./useUser";
 
 beforeEach(() => {
   localStorage.clear();
@@ -15,7 +15,7 @@ describe("useUser", () => {
   it("loads user from localStorage on mount", () => {
     localStorage.setItem(
       "pockerplan_user",
-      JSON.stringify({ name: "Alice", avatarId: "cat" })
+      JSON.stringify({ name: "Alice", avatarId: "cat" }),
     );
     const { result } = renderHook(() => useUser());
     expect(result.current.user).toEqual({ name: "Alice", avatarId: "cat" });
@@ -36,7 +36,7 @@ describe("useUser", () => {
   it("clearUser removes from localStorage and clears state", () => {
     localStorage.setItem(
       "pockerplan_user",
-      JSON.stringify({ name: "Alice", avatarId: "cat" })
+      JSON.stringify({ name: "Alice", avatarId: "cat" }),
     );
     const { result } = renderHook(() => useUser());
     act(() => {
