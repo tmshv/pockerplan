@@ -210,11 +210,11 @@ Vite dev server proxies `/api/*` and `/connection/*` to `localhost:8080` for dev
 - [x] Write server tests
 
 ### Task 6: Frontend foundation
-- [ ] Install deps: `centrifuge`, `react-router-dom`, `react-markdown`
-- [ ] Create TypeScript types mirroring backend models
-- [ ] Implement `UserContext` + `useUser` hook with localStorage
-- [ ] Implement centrifuge client singleton
-- [ ] Write hook tests
+- [x] Install deps: `centrifuge`, `react-router-dom`, `react-markdown`
+- [x] Create TypeScript types mirroring backend models
+- [x] Implement `UserContext` + `useUser` hook with localStorage
+- [x] Implement centrifuge client singleton
+- [x] Write hook tests
 
 ### Task 7: Frontend join flow
 - [ ] Build NameInput, AvatarPicker, ScalePicker components
