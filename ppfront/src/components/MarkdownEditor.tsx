@@ -1,10 +1,13 @@
-import { useEffect, useRef } from "react";
-import { EditorView, keymap, placeholder as placeholderExt } from "@codemirror/view";
-import { EditorState } from "@codemirror/state";
-import { markdown } from "@codemirror/lang-markdown";
-import { languages } from "@codemirror/language-data";
-import { oneDark } from "@codemirror/theme-one-dark";
 import { defaultKeymap } from "@codemirror/commands";
+import { markdown } from "@codemirror/lang-markdown";
+import { EditorState } from "@codemirror/state";
+import { oneDark } from "@codemirror/theme-one-dark";
+import {
+  EditorView,
+  keymap,
+  placeholder as placeholderExt,
+} from "@codemirror/view";
+import { useEffect, useRef } from "react";
 
 interface MarkdownEditorProps {
   value: string;
@@ -12,7 +15,11 @@ interface MarkdownEditorProps {
   placeholder?: string;
 }
 
-export function MarkdownEditor({ value, onChange, placeholder }: MarkdownEditorProps) {
+export function MarkdownEditor({
+  value,
+  onChange,
+  placeholder,
+}: MarkdownEditorProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
   const onChangeRef = useRef(onChange);
@@ -22,7 +29,7 @@ export function MarkdownEditor({ value, onChange, placeholder }: MarkdownEditorP
     if (!containerRef.current) return;
 
     const extensions = [
-      markdown({ codeLanguages: languages }),
+      markdown(),
       oneDark,
       keymap.of(defaultKeymap),
       EditorView.updateListener.of((update) => {

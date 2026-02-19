@@ -264,6 +264,9 @@ func TestAddTicket(t *testing.T) {
 	if r.Tickets[0].Votes == nil {
 		t.Error("expected votes map to be initialized")
 	}
+	if r.Tickets[0].Content != "# Description" {
+		t.Errorf("expected content '# Description', got %q", r.Tickets[0].Content)
+	}
 }
 
 func TestSetCurrentTicket(t *testing.T) {

@@ -346,7 +346,7 @@ func (h *Hub) rpcAddTicket(data []byte) ([]byte, error) {
 	if err := json.Unmarshal(data, &req); err != nil {
 		return nil, centrifuge.ErrorBadRequest
 	}
-	if req.RoomID == "" || req.AdminSecret == "" || req.Content == "" {
+	if req.RoomID == "" || req.AdminSecret == "" || req.Content == "" || len(req.Content) > 10000 {
 		return nil, centrifuge.ErrorBadRequest
 	}
 
@@ -468,7 +468,7 @@ func (h *Hub) rpcUpdateRoomName(data []byte) ([]byte, error) {
 	if err := json.Unmarshal(data, &req); err != nil {
 		return nil, centrifuge.ErrorBadRequest
 	}
-	if req.RoomID == "" || req.AdminSecret == "" {
+	if req.RoomID == "" || req.AdminSecret == "" || len(req.Name) > 200 {
 		return nil, centrifuge.ErrorBadRequest
 	}
 

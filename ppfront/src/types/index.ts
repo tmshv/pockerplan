@@ -4,20 +4,6 @@ export type RoomState = "idle" | "voting" | "revealed";
 // Ticket statuses
 export type TicketStatus = "pending" | "voting" | "revealed" | "skipped";
 
-// Vote represents a single user's vote
-export interface Vote {
-  userId: string;
-  value: string;
-}
-
-// Ticket within a room
-export interface Ticket {
-  id: string;
-  content: string;
-  status: TicketStatus;
-  votes: Record<string, Vote>;
-}
-
 // User in a room
 export interface User {
   id: string;

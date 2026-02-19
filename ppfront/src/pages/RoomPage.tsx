@@ -160,7 +160,7 @@ function RoomPageContent({ roomId }: { roomId: string }) {
       {isAdmin && (
         <FloatingAdminPanel
           roomId={roomId}
-          roomState={roomState?.state ?? "voting"}
+          roomState={roomState?.state ?? "idle"}
           hasTickets={tickets.length > 0}
           onReveal={revealVotes}
           onReset={resetVotes}

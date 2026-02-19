@@ -25,6 +25,7 @@ export function RoomNameEditor({ name, isAdmin, onSave }: RoomNameEditorProps) {
   }, [editing]);
 
   const handleSave = () => {
+    if (!editing) return;
     const trimmed = value.trim();
     setEditing(false);
     if (trimmed !== name) {
