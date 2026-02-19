@@ -205,9 +205,9 @@ Vite dev server proxies `/api/*` and `/connection/*` to `localhost:8080` for dev
 - [x] Write integration tests
 
 ### Task 5: HTTP server and entry point
-- [ ] Implement `ppback/server/server.go` — routes, SPA fallback
-- [ ] Implement `main.go` with embed and graceful shutdown
-- [ ] Write server tests
+- [x] Implement `ppback/server/server.go` — routes, SPA fallback
+- [x] Implement `main.go` with embed and graceful shutdown
+- [x] Write server tests
 
 ### Task 6: Frontend foundation
 - [ ] Install deps: `centrifuge`, `react-router-dom`, `react-markdown`
