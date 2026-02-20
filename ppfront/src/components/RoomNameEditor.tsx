@@ -55,7 +55,7 @@ export function RoomNameEditor({ name, isAdmin, onSave }: RoomNameEditorProps) {
         onBlur={handleSave}
         onKeyDown={handleKeyDown}
         placeholder="Unnamed Room"
-        maxLength={100}
+        maxLength={200}
       />
     );
   }

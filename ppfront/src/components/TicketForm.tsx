@@ -5,12 +5,16 @@ interface TicketFormProps {
   onAdd: (content: string) => Promise<void>;
 }
 
+const MAX_CONTENT_LENGTH = 10000;
+
 export function TicketForm({ onAdd }: TicketFormProps) {
   const [content, setContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  const canSubmit = content.trim() !== "" && !submitting;
+  const trimmedLength = content.trim().length;
+  const overLimit = trimmedLength > MAX_CONTENT_LENGTH;
+  const canSubmit = trimmedLength > 0 && !overLimit && !submitting;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -36,6 +40,11 @@ export function TicketForm({ onAdd }: TicketFormProps) {
         placeholder="Ticket content (markdown)"
       />
       {error && <p className="error">{error}</p>}
+      {overLimit && (
+        <p className="error">
+          Content exceeds {MAX_CONTENT_LENGTH.toLocaleString()} character limit ({trimmedLength.toLocaleString()} / {MAX_CONTENT_LENGTH.toLocaleString()})
+        </p>
+      )}
       <button type="submit" disabled={!canSubmit}>
         {submitting ? "Adding..." : "Add Ticket"}
       </button>
