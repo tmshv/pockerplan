@@ -29,8 +29,8 @@ The room page currently uses `display: flex` with a fixed 320px sidebar. The use
 - [x] Set `min-height: 0` to allow grid children to scroll
 
 ### Task 5: Make `.room-main` scroll independently
-- [ ] Add `overflow-y: auto` to `.room-main`
-- [ ] Add `min-height: 0` for proper grid scroll behavior
+- [x] Add `overflow-y: auto` to `.room-main`
+- [x] Add `min-height: 0` for proper grid scroll behavior
 
 ### Task 6: Update `.room-sidebar`
 - [ ] Remove `width: 320px` and `flex-shrink: 0` (grid handles sizing now)
