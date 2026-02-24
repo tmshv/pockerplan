@@ -26,7 +26,7 @@ export function AdminControls({
         <button
           type="button"
           onClick={onReveal}
-          disabled={roomState !== "voting"}
+          disabled={roomState !== "voting" && roomState !== "counting_down"}
         >
           Reveal Votes
         </button>

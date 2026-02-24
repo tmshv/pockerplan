@@ -13,7 +13,7 @@ interface FloatingAdminPanelProps {
   onReset: () => void;
   onPrevTicket: () => void;
   onNextTicket: () => void;
-  onAddTicket: (content: string) => Promise<void>;
+  onAddTicket: (content: string) => Promise<unknown>;
 }
 
 export function FloatingAdminPanel({

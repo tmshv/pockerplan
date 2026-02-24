@@ -36,12 +36,13 @@ export function RoomPage() {
     }
   }, [id, searchParams, navigate]);
 
-  const info = id ? loadRoomInfo(id) : null;
+  if (!id) return null;
+  const info = loadRoomInfo(id);
   if (!info) return null;
 
   return (
     <RoomProvider roomId={id}>
-      <RoomPageContent roomId={id!} />
+      <RoomPageContent roomId={id} />
     </RoomProvider>
   );
 }
@@ -124,17 +125,19 @@ function RoomPageContent({ roomId }: { roomId: string }) {
   const currentTicket =
     tickets.find((t) => t.id === roomState?.currentTicketId) ?? null;
 
-  const currentTicketIndex = roomState?.currentTicketId
-    ? tickets.findIndex((t) => t.id === roomState.currentTicketId)
-    : -1;
-  const hasPrevTicket = currentTicketIndex > 0;
-  const hasNextTicket =
-    currentTicketIndex >= 0 && currentTicketIndex < tickets.length - 1;
-
   const myVote = currentTicket?.votes.find((v) => v.userId === userId);
   const isRevealed = roomState?.state === "revealed";
   const isVoting = roomState?.state === "voting";
   const isCountingDown = roomState?.state === "counting_down";
+
+  const currentTicketIndex = roomState?.currentTicketId
+    ? tickets.findIndex((t) => t.id === roomState.currentTicketId)
+    : -1;
+  const hasPrevTicket = currentTicketIndex > 0 && !isCountingDown;
+  const hasNextTicket =
+    (currentTicketIndex === -1
+      ? tickets.length > 0
+      : currentTicketIndex < tickets.length - 1) && !isCountingDown;
 
   return (
     <div className="page room-page">
@@ -178,7 +181,7 @@ function RoomPageContent({ roomId }: { roomId: string }) {
             tickets={tickets}
             currentTicketId={roomState?.currentTicketId ?? ""}
             isAdmin={isAdmin}
-            onSelectTicket={setTicket}
+            onSelectTicket={isCountingDown ? undefined : setTicket}
           />
         </div>
       </div>
@@ -196,7 +199,7 @@ function RoomPageContent({ roomId }: { roomId: string }) {
           roomState={roomState?.state ?? "idle"}
           hasPrevTicket={hasPrevTicket}
           hasNextTicket={hasNextTicket}
-          onReveal={startReveal}
+          onReveal={isCountingDown ? revealVotes : startReveal}
           onReset={resetVotes}
           onPrevTicket={prevTicket}
           onNextTicket={nextTicket}

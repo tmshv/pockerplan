@@ -62,9 +62,13 @@ describe("TicketList", () => {
         onSelectTicket={() => {}}
       />,
     );
-    const currentItems = container.querySelectorAll(".ticket-list-item.current");
+    const currentItems = container.querySelectorAll(
+      ".ticket-list-item.current",
+    );
     expect(currentItems).toHaveLength(1);
-    expect(currentItems[0].querySelector(".ticket-list-content")?.textContent).toBe("Second ticket");
+    expect(
+      currentItems[0].querySelector(".ticket-list-content")?.textContent,
+    ).toBe("Second ticket");
   });
 
   it("admin can click non-current tickets", () => {
@@ -113,7 +117,8 @@ describe("TicketList", () => {
     const longTickets: TicketSnapshot[] = [
       {
         id: "t1",
-        content: "This is a very long ticket description that should be truncated at fifty characters",
+        content:
+          "This is a very long ticket description that should be truncated at fifty characters",
         status: "pending",
         votes: [],
       },
@@ -126,7 +131,9 @@ describe("TicketList", () => {
         onSelectTicket={() => {}}
       />,
     );
-    expect(screen.getByText("This is a very long ticket description that should...")).toBeInTheDocument();
+    expect(
+      screen.getByText("This is a very long ticket description that should..."),
+    ).toBeInTheDocument();
   });
 
   it("uses first line only for multiline content", () => {
@@ -162,5 +169,13 @@ describe("TicketList", () => {
       />,
     );
     expect(screen.getByText("Untitled")).toBeInTheDocument();
+  });
+
+  it("disables clicks when onSelectTicket is undefined", () => {
+    const { container } = render(
+      <TicketList tickets={tickets} currentTicketId="t2" isAdmin={true} />,
+    );
+    const items = container.querySelectorAll(".ticket-list-item.clickable");
+    expect(items).toHaveLength(0);
   });
 });

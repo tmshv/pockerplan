@@ -2,7 +2,7 @@ import { useState } from "react";
 import { MarkdownEditor } from "./MarkdownEditor";
 
 interface TicketFormProps {
-  onAdd: (content: string) => Promise<void>;
+  onAdd: (content: string) => Promise<unknown>;
 }
 
 const MAX_CONTENT_LENGTH = 10000;
@@ -42,7 +42,9 @@ export function TicketForm({ onAdd }: TicketFormProps) {
       {error && <p className="error">{error}</p>}
       {overLimit && (
         <p className="error">
-          Content exceeds {MAX_CONTENT_LENGTH.toLocaleString()} character limit ({trimmedLength.toLocaleString()} / {MAX_CONTENT_LENGTH.toLocaleString()})
+          Content exceeds {MAX_CONTENT_LENGTH.toLocaleString()} character limit
+          ({trimmedLength.toLocaleString()}/{" "}
+          {MAX_CONTENT_LENGTH.toLocaleString()})
         </p>
       )}
       <button type="submit" disabled={!canSubmit}>
