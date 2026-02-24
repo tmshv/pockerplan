@@ -162,6 +162,7 @@
   align-items: stretch;
   justify-content: flex-start;
   flex: 1;
+  overflow: hidden;
 }
 
 .room-header {
