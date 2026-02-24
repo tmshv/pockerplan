@@ -200,9 +200,7 @@ function RoomPageContent({ roomId }: { roomId: string }) {
           onReset={resetVotes}
           onPrevTicket={prevTicket}
           onNextTicket={nextTicket}
-          onAddTicket={async (content) => {
-            await addTicket(content);
-          }}
+          onAddTicket={addTicket}
         />
       )}
     </div>

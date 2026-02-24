@@ -32,6 +32,10 @@ func main() {
 	logger := zerolog.New(zerolog.ConsoleWriter{Out: os.Stderr}).
 		With().Timestamp().Logger()
 
+	if cli.Countdown < 1 || cli.Countdown > 30 {
+		logger.Fatal().Int("countdown", cli.Countdown).Msg("countdown must be between 1 and 30")
+	}
+
 	addr := cli.Addr
 
 	// Frontend FS: strip the ppfront/dist prefix so files are served from root

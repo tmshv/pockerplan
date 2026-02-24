@@ -403,6 +403,11 @@
   padding: 0.5em 1em;
 }
 
+.ticket-nav-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
 /* Ticket form */
 
 .ticket-form {
@@ -419,8 +424,6 @@
   align-self: flex-start;
   padding: 0.5em 1.5em;
 }
-
-/* Markdown editor */
 
 /* Share button */
 
@@ -487,8 +490,6 @@
   flex-direction: column;
   gap: 1rem;
 }
-
-/* Markdown editor */
 
 /* Ticket list */
 
