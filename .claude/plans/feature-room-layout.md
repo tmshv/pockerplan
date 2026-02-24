@@ -12,7 +12,7 @@ The room page currently uses `display: flex` with a fixed 320px sidebar. The use
 ## Changes
 
 ### Task 1: Remove centering from body for room page
-- [ ] In `index.css` line 28, remove `place-items: center` from `body` (this centers the entire `#root` vertically, preventing full-height layout)
+- [x] In `index.css` line 28, remove `place-items: center` from `body` (this centers the entire `#root` vertically, preventing full-height layout)
 
 ### Task 2: Make `#root` fill the viewport
 - [ ] In `App.css`, update `#root` to use `min-height: 100vh` so the room page can stretch full height
