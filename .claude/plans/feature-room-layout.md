@@ -33,10 +33,10 @@ The room page currently uses `display: flex` with a fixed 320px sidebar. The use
 - [x] Add `min-height: 0` for proper grid scroll behavior
 
 ### Task 6: Update `.room-sidebar`
-- [ ] Remove `width: 320px` and `flex-shrink: 0` (grid handles sizing now)
-- [ ] Keep `overflow-y: auto` for sidebar scrolling
-- [ ] Remove `position: sticky` and `top: 2rem` (grid cells handle positioning)
-- [ ] Add `min-height: 0` for proper grid scroll behavior
+- [x] Remove `width: 320px` and `flex-shrink: 0` (grid handles sizing now)
+- [x] Keep `overflow-y: auto` for sidebar scrolling
+- [x] Remove `position: sticky` and `top: 2rem` (grid cells handle positioning)
+- [x] Add `min-height: 0` for proper grid scroll behavior
 
 ## Resulting CSS (approximate)
 

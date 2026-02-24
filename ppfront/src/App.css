@@ -190,15 +190,11 @@
 }
 
 .room-sidebar {
-  width: 320px;
-  flex-shrink: 0;
-  position: sticky;
-  top: 2rem;
-  max-height: calc(100vh - 4rem);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  min-height: 0;
 }
 
 /* Room name editor */
