@@ -10,7 +10,7 @@ import (
 func TestManagerCreate(t *testing.T) {
 	m := NewManager()
 
-	r, err := m.Create("fibonacci")
+	r, err := m.Create("fibonacci", 3)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -33,7 +33,7 @@ func TestManagerCreate(t *testing.T) {
 
 func TestManagerGet(t *testing.T) {
 	m := NewManager()
-	r, _ := m.Create("fibonacci")
+	r, _ := m.Create("fibonacci", 3)
 
 	got, err := m.Get(r.ID)
 	if err != nil {
@@ -54,7 +54,7 @@ func TestManagerGetNotFound(t *testing.T) {
 
 func TestManagerWithRoom(t *testing.T) {
 	m := NewManager()
-	r, _ := m.Create("fibonacci")
+	r, _ := m.Create("fibonacci", 3)
 
 	err := m.WithRoom(r.ID, func(r *model.Room) error {
 		AddUser(r, &model.User{ID: "u1", Name: "Alice", AvatarID: "cat"})
@@ -82,7 +82,7 @@ func TestManagerWithRoomNotFound(t *testing.T) {
 
 func TestManagerDelete(t *testing.T) {
 	m := NewManager()
-	r, _ := m.Create("fibonacci")
+	r, _ := m.Create("fibonacci", 3)
 	m.Delete(r.ID)
 
 	if m.Count() != 0 {
@@ -94,14 +94,14 @@ func TestManagerCleanup(t *testing.T) {
 	m := NewManager()
 	m.ttl = 50 * time.Millisecond
 
-	r1, _ := m.Create("fibonacci")
+	r1, _ := m.Create("fibonacci", 3)
 	_ = r1 // keep reference
 
 	// Wait for TTL to expire
 	time.Sleep(100 * time.Millisecond)
 
 	// Create a fresh room that should not be cleaned up
-	_, _ = m.Create("linear")
+	_, _ = m.Create("linear", 3)
 
 	removed := m.Cleanup()
 	if removed != 1 {
@@ -116,7 +116,7 @@ func TestManagerCleanupKeepsActive(t *testing.T) {
 	m := NewManager()
 	m.ttl = 50 * time.Millisecond
 
-	r, _ := m.Create("fibonacci")
+	r, _ := m.Create("fibonacci", 3)
 
 	// Touch the room to keep it alive
 	time.Sleep(30 * time.Millisecond)
@@ -136,7 +136,7 @@ func TestManagerStartCleanup(t *testing.T) {
 	m := NewManager()
 	m.ttl = 10 * time.Millisecond
 
-	_, _ = m.Create("fibonacci")
+	_, _ = m.Create("fibonacci", 3)
 
 	done := make(chan struct{})
 	m.StartCleanup(20*time.Millisecond, done)
@@ -160,7 +160,7 @@ func TestManagerConcurrentCreateGet(t *testing.T) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			r, err := m.Create("fibonacci")
+			r, err := m.Create("fibonacci", 3)
 			if err != nil {
 				t.Errorf("concurrent Create failed: %v", err)
 				return
@@ -193,7 +193,7 @@ func TestManagerConcurrentCreateGet(t *testing.T) {
 
 func TestManagerConcurrentWithRoom(t *testing.T) {
 	m := NewManager()
-	r, _ := m.Create("fibonacci")
+	r, _ := m.Create("fibonacci", 3)
 
 	var wg sync.WaitGroup
 
@@ -232,7 +232,7 @@ func TestManagerConcurrentCleanup(t *testing.T) {
 		wg.Add(2)
 		go func() {
 			defer wg.Done()
-			_, _ = m.Create("fibonacci")
+			_, _ = m.Create("fibonacci", 3)
 		}()
 		go func() {
 			defer wg.Done()
@@ -251,8 +251,8 @@ func TestManagerCount(t *testing.T) {
 		t.Errorf("expected 0, got %d", m.Count())
 	}
 
-	r1, _ := m.Create("fibonacci")
-	r2, _ := m.Create("linear")
+	r1, _ := m.Create("fibonacci", 3)
+	r2, _ := m.Create("linear", 3)
 
 	if m.Count() != 2 {
 		t.Errorf("expected 2, got %d", m.Count())
@@ -274,7 +274,7 @@ func TestManagerUniqueIDs(t *testing.T) {
 	ids := make(map[string]bool)
 
 	for i := 0; i < 100; i++ {
-		r, err := m.Create("fibonacci")
+		r, err := m.Create("fibonacci", 3)
 		if err != nil {
 			t.Fatal(err)
 		}

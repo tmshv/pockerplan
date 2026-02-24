@@ -29,11 +29,12 @@ type clientInfo struct {
 
 // Hub wraps the centrifuge node and the room manager.
 type Hub struct {
-	node    *centrifuge.Node
-	rooms   *room.Manager
-	logger  zerolog.Logger
-	mu      sync.RWMutex
-	clients map[string]clientInfo // centrifuge client ID -> clientInfo
+	node      *centrifuge.Node
+	rooms     *room.Manager
+	countdown int
+	logger    zerolog.Logger
+	mu        sync.RWMutex
+	clients   map[string]clientInfo // centrifuge client ID -> clientInfo
 }
 
 // centrifugeLogLevel maps centrifuge log levels to zerolog levels.
@@ -55,7 +56,7 @@ func centrifugeLogLevel(lvl centrifuge.LogLevel) zerolog.Level {
 }
 
 // New creates and configures a new Hub.
-func New(rm *room.Manager, logger zerolog.Logger) (*Hub, error) {
+func New(rm *room.Manager, countdown int, logger zerolog.Logger) (*Hub, error) {
 	node, err := centrifuge.New(centrifuge.Config{
 		LogLevel: centrifuge.LogLevelInfo,
 		LogHandler: func(e centrifuge.LogEntry) {
@@ -69,10 +70,11 @@ func New(rm *room.Manager, logger zerolog.Logger) (*Hub, error) {
 	}
 
 	h := &Hub{
-		node:    node,
-		rooms:   rm,
-		logger:  logger,
-		clients: make(map[string]clientInfo),
+		node:      node,
+		rooms:     rm,
+		countdown: countdown,
+		logger:    logger,
+		clients:   make(map[string]clientInfo),
 	}
 
 	node.OnConnecting(func(ctx context.Context, e centrifuge.ConnectEvent) (centrifuge.ConnectReply, error) {
@@ -209,7 +211,7 @@ func (h *Hub) rpcCreateRoom(client *centrifuge.Client, data []byte) ([]byte, err
 		return nil, centrifuge.ErrorBadRequest
 	}
 
-	r, err := h.rooms.Create(req.ScaleID)
+	r, err := h.rooms.Create(req.ScaleID, h.countdown)
 	if err != nil {
 		return nil, centrifuge.ErrorInternal
 	}

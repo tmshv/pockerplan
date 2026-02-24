@@ -10,14 +10,14 @@ This plan adds: a ticket list visible to all users, bidirectional prev/next navi
 
 ## Task 1: Add `--countdown` CLI arg and propagate to Room model
 
-- [ ] `main.go`: Add `Countdown int` to CLI struct with `default:"3"` and `env:"COUNTDOWN"`
-- [ ] `main.go`: Pass `cli.Countdown` to `hub.New()`
-- [ ] `ppback/model/types.go`: Add `Countdown int` field to `Room` struct (json tag: `"countdown"`)
-- [ ] `ppback/model/types.go`: Add `RoomStateCountingDown RoomState = "counting_down"` constant
-- [ ] `ppback/model/types.go`: Add `Countdown int` field to `RoomSnapshot`
-- [ ] `ppback/room/manager.go`: Add `countdown int` param to `Create()`, set `r.Countdown = countdown`
-- [ ] `ppback/hub/hub.go`: Add `countdown int` field to `Hub` struct, accept it in `New()`, pass to `rooms.Create()`
-- [ ] `ppback/room/room.go`: Include `Countdown: r.Countdown` in `Snapshot()` return
+- [x] `main.go`: Add `Countdown int` to CLI struct with `default:"3"` and `env:"COUNTDOWN"`
+- [x] `main.go`: Pass `cli.Countdown` to `hub.New()`
+- [x] `ppback/model/types.go`: Add `Countdown int` field to `Room` struct (json tag: `"countdown"`)
+- [x] `ppback/model/types.go`: Add `RoomStateCountingDown RoomState = "counting_down"` constant
+- [x] `ppback/model/types.go`: Add `Countdown int` field to `RoomSnapshot`
+- [x] `ppback/room/manager.go`: Add `countdown int` param to `Create()`, set `r.Countdown = countdown`
+- [x] `ppback/hub/hub.go`: Add `countdown int` field to `Hub` struct, accept it in `New()`, pass to `rooms.Create()`
+- [x] `ppback/room/room.go`: Include `Countdown: r.Countdown` in `Snapshot()` return
 
 ## Task 2: Rework ticket navigation (bidirectional by index)
 

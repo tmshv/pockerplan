@@ -20,7 +20,7 @@ func newTestServer(t *testing.T) (*Server, func()) {
 	t.Helper()
 	logger := zerolog.Nop()
 	rm := room.NewManager()
-	h, err := hub.New(rm, logger)
+	h, err := hub.New(rm, 3, logger)
 	if err != nil {
 		t.Fatalf("create hub: %v", err)
 	}

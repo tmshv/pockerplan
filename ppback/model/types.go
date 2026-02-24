@@ -5,9 +5,10 @@ import "time"
 type RoomState string
 
 const (
-	RoomStateIdle     RoomState = "idle"
-	RoomStateVoting   RoomState = "voting"
-	RoomStateRevealed RoomState = "revealed"
+	RoomStateIdle         RoomState = "idle"
+	RoomStateVoting       RoomState = "voting"
+	RoomStateRevealed     RoomState = "revealed"
+	RoomStateCountingDown RoomState = "counting_down"
 )
 
 type TicketStatus string
@@ -45,6 +46,7 @@ type Room struct {
 	AdminSecret     string           `json:"-"`
 	Scale           string           `json:"scale"`
 	State           RoomState        `json:"state"`
+	Countdown       int              `json:"countdown"`
 	Users           map[string]*User `json:"users"`
 	Tickets         []*Ticket        `json:"tickets"`
 	CurrentTicketID string           `json:"currentTicketId"`
@@ -113,6 +115,7 @@ type RoomSnapshot struct {
 	Name            string            `json:"name"`
 	Scale           string            `json:"scale"`
 	State           RoomState         `json:"state"`
+	Countdown       int               `json:"countdown"`
 	Users           []*User           `json:"users"`
 	Tickets         []*TicketSnapshot `json:"tickets"`
 	CurrentTicketID string            `json:"currentTicketId"`

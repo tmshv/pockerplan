@@ -171,6 +171,7 @@ func Snapshot(r *model.Room) *model.RoomSnapshot {
 		Name:            r.Name,
 		Scale:           r.Scale,
 		State:           r.State,
+		Countdown:       r.Countdown,
 		Users:           users,
 		Tickets:         tickets,
 		CurrentTicketID: r.CurrentTicketID,

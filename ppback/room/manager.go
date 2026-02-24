@@ -26,13 +26,14 @@ func NewManager() *Manager {
 }
 
 // Create creates a new room with the given scale and returns it along with the admin secret.
-func (m *Manager) Create(scaleID string) (*model.Room, error) {
+func (m *Manager) Create(scaleID string, countdown int) (*model.Room, error) {
 	now := time.Now()
 	r := &model.Room{
 		ID:             uuid.New().String(),
 		AdminSecret:    uuid.New().String(),
 		Scale:          scaleID,
 		State:          model.RoomStateIdle,
+		Countdown:      countdown,
 		Users:          make(map[string]*model.User),
 		Tickets:        make([]*model.Ticket, 0),
 		CreatedAt:      now,
