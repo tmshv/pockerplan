@@ -92,7 +92,7 @@ This plan adds: a ticket list visible to all users, bidirectional prev/next navi
 
 ## Task 6: Tests
 
-- [ ] `ppback/room/room_test.go`: Add tests for:
+- [x] `ppback/room/room_test.go`: Add tests for:
   - `NavigateToTicket` — pending/revealed/skipped/voting transitions
   - `NextTicketByIndex` — sequential navigation, error at end
   - `PrevTicket` — backward navigation, error at start

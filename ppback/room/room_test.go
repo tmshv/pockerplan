@@ -484,3 +484,457 @@ func TestFullVotingFlow(t *testing.T) {
 		t.Fatalf("expected idle, got %s", r.State)
 	}
 }
+
+// --- NavigateToTicket tests ---
+
+func TestNavigateToTicketPending(t *testing.T) {
+	r := newTestRoom()
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "Task 1"})
+
+	err := NavigateToTicket(r, "t1")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if r.CurrentTicketID != "t1" {
+		t.Errorf("expected current ticket t1, got %s", r.CurrentTicketID)
+	}
+	if r.State != model.RoomStateVoting {
+		t.Errorf("expected state voting, got %s", r.State)
+	}
+	ticket := findTicket(r, "t1")
+	if ticket.Status != model.TicketStatusVoting {
+		t.Errorf("expected ticket status voting, got %s", ticket.Status)
+	}
+}
+
+func TestNavigateToTicketRevealed(t *testing.T) {
+	r := newTestRoom()
+	AddUser(r, &model.User{ID: "u1", Name: "Alice", AvatarID: "cat"})
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "Task 1"})
+	_ = SetCurrentTicket(r, "t1")
+	_ = SubmitVote(r, "u1", "5")
+	_ = RevealVotes(r)
+
+	// Navigate to same ticket that is already revealed
+	err := NavigateToTicket(r, "t1")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if r.State != model.RoomStateRevealed {
+		t.Errorf("expected state revealed, got %s", r.State)
+	}
+	ticket := findTicket(r, "t1")
+	if ticket.Status != model.TicketStatusRevealed {
+		t.Errorf("expected ticket status revealed, got %s", ticket.Status)
+	}
+	// Votes should still be intact
+	if len(ticket.Votes) != 1 {
+		t.Errorf("expected 1 vote preserved, got %d", len(ticket.Votes))
+	}
+	if ticket.Votes["u1"].Value != "5" {
+		t.Errorf("expected vote value 5, got %s", ticket.Votes["u1"].Value)
+	}
+}
+
+func TestNavigateToTicketSkipped(t *testing.T) {
+	r := newTestRoom()
+	AddUser(r, &model.User{ID: "u1", Name: "Alice", AvatarID: "cat"})
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "Task 1"})
+	AddTicket(r, &model.Ticket{ID: "t2", Content: "Task 2"})
+	_ = SetCurrentTicket(r, "t1")
+	_ = SubmitVote(r, "u1", "5")
+	// Skip t1 by calling NextTicket (t1 is still voting, so it gets skipped)
+	_ = NextTicket(r)
+
+	// t1 should now be skipped
+	t1 := findTicket(r, "t1")
+	if t1.Status != model.TicketStatusSkipped {
+		t.Fatalf("expected ticket t1 to be skipped, got %s", t1.Status)
+	}
+
+	// Navigate back to skipped ticket
+	err := NavigateToTicket(r, "t1")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if r.CurrentTicketID != "t1" {
+		t.Errorf("expected current ticket t1, got %s", r.CurrentTicketID)
+	}
+	if r.State != model.RoomStateVoting {
+		t.Errorf("expected state voting, got %s", r.State)
+	}
+	if t1.Status != model.TicketStatusVoting {
+		t.Errorf("expected ticket status voting, got %s", t1.Status)
+	}
+	// Votes should be cleared for skipped ticket
+	if len(t1.Votes) != 0 {
+		t.Errorf("expected 0 votes after re-opening skipped ticket, got %d", len(t1.Votes))
+	}
+}
+
+func TestNavigateToTicketVoting(t *testing.T) {
+	r := newTestRoom()
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "Task 1"})
+	_ = SetCurrentTicket(r, "t1")
+
+	// Navigate to the same ticket already in voting
+	err := NavigateToTicket(r, "t1")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if r.State != model.RoomStateVoting {
+		t.Errorf("expected state voting, got %s", r.State)
+	}
+	ticket := findTicket(r, "t1")
+	if ticket.Status != model.TicketStatusVoting {
+		t.Errorf("expected ticket status voting, got %s", ticket.Status)
+	}
+}
+
+func TestNavigateToTicketNotFound(t *testing.T) {
+	r := newTestRoom()
+	err := NavigateToTicket(r, "nonexistent")
+	if err != ErrTicketNotFound {
+		t.Errorf("expected ErrTicketNotFound, got %v", err)
+	}
+}
+
+// --- NextTicketByIndex tests ---
+
+func TestNextTicketByIndex(t *testing.T) {
+	r := newTestRoom()
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "Task 1"})
+	AddTicket(r, &model.Ticket{ID: "t2", Content: "Task 2"})
+	AddTicket(r, &model.Ticket{ID: "t3", Content: "Task 3"})
+	_ = NavigateToTicket(r, "t1")
+
+	// Move to t2
+	err := NextTicketByIndex(r)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if r.CurrentTicketID != "t2" {
+		t.Errorf("expected current ticket t2, got %s", r.CurrentTicketID)
+	}
+
+	// Move to t3
+	err = NextTicketByIndex(r)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if r.CurrentTicketID != "t3" {
+		t.Errorf("expected current ticket t3, got %s", r.CurrentTicketID)
+	}
+}
+
+func TestNextTicketByIndexAtEnd(t *testing.T) {
+	r := newTestRoom()
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "Task 1"})
+	_ = NavigateToTicket(r, "t1")
+
+	err := NextTicketByIndex(r)
+	if err != ErrTicketNotFound {
+		t.Errorf("expected ErrTicketNotFound at end, got %v", err)
+	}
+	// Current ticket should remain unchanged
+	if r.CurrentTicketID != "t1" {
+		t.Errorf("expected current ticket to remain t1, got %s", r.CurrentTicketID)
+	}
+}
+
+func TestNextTicketByIndexEmpty(t *testing.T) {
+	r := newTestRoom()
+	err := NextTicketByIndex(r)
+	if err != ErrTicketNotFound {
+		t.Errorf("expected ErrTicketNotFound for empty tickets, got %v", err)
+	}
+}
+
+// --- PrevTicket tests ---
+
+func TestPrevTicket(t *testing.T) {
+	r := newTestRoom()
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "Task 1"})
+	AddTicket(r, &model.Ticket{ID: "t2", Content: "Task 2"})
+	AddTicket(r, &model.Ticket{ID: "t3", Content: "Task 3"})
+	_ = NavigateToTicket(r, "t3")
+
+	// Move back to t2
+	err := PrevTicket(r)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if r.CurrentTicketID != "t2" {
+		t.Errorf("expected current ticket t2, got %s", r.CurrentTicketID)
+	}
+
+	// Move back to t1
+	err = PrevTicket(r)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if r.CurrentTicketID != "t1" {
+		t.Errorf("expected current ticket t1, got %s", r.CurrentTicketID)
+	}
+}
+
+func TestPrevTicketAtStart(t *testing.T) {
+	r := newTestRoom()
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "Task 1"})
+	_ = NavigateToTicket(r, "t1")
+
+	err := PrevTicket(r)
+	if err != ErrTicketNotFound {
+		t.Errorf("expected ErrTicketNotFound at start, got %v", err)
+	}
+	// Current ticket should remain unchanged
+	if r.CurrentTicketID != "t1" {
+		t.Errorf("expected current ticket to remain t1, got %s", r.CurrentTicketID)
+	}
+}
+
+func TestPrevTicketEmpty(t *testing.T) {
+	r := newTestRoom()
+	err := PrevTicket(r)
+	if err != ErrTicketNotFound {
+		t.Errorf("expected ErrTicketNotFound for empty tickets, got %v", err)
+	}
+}
+
+// --- StartCountdown tests ---
+
+func TestStartCountdown(t *testing.T) {
+	r := newTestRoom()
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "Task 1"})
+	_ = SetCurrentTicket(r, "t1")
+
+	err := StartCountdown(r)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if r.State != model.RoomStateCountingDown {
+		t.Errorf("expected state counting_down, got %s", r.State)
+	}
+}
+
+func TestStartCountdownNotVoting(t *testing.T) {
+	r := newTestRoom()
+	// Room is idle
+	err := StartCountdown(r)
+	if err != ErrNotVoting {
+		t.Errorf("expected ErrNotVoting, got %v", err)
+	}
+}
+
+func TestStartCountdownFromRevealed(t *testing.T) {
+	r := newTestRoom()
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "Task 1"})
+	_ = SetCurrentTicket(r, "t1")
+	_ = RevealVotes(r)
+
+	err := StartCountdown(r)
+	if err != ErrNotVoting {
+		t.Errorf("expected ErrNotVoting from revealed state, got %v", err)
+	}
+}
+
+// --- RevealVotes from counting_down ---
+
+func TestRevealVotesFromCountingDown(t *testing.T) {
+	r := newTestRoom()
+	AddUser(r, &model.User{ID: "u1", Name: "Alice", AvatarID: "cat"})
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "Task 1"})
+	_ = SetCurrentTicket(r, "t1")
+	_ = SubmitVote(r, "u1", "5")
+	_ = StartCountdown(r)
+
+	err := RevealVotes(r)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if r.State != model.RoomStateRevealed {
+		t.Errorf("expected state revealed, got %s", r.State)
+	}
+	ticket := findTicket(r, "t1")
+	if ticket.Status != model.TicketStatusRevealed {
+		t.Errorf("expected ticket status revealed, got %s", ticket.Status)
+	}
+}
+
+// --- SubmitVote during counting_down ---
+
+func TestSubmitVoteDuringCountingDown(t *testing.T) {
+	r := newTestRoom()
+	AddUser(r, &model.User{ID: "u1", Name: "Alice", AvatarID: "cat"})
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "Task 1"})
+	_ = SetCurrentTicket(r, "t1")
+	_ = StartCountdown(r)
+
+	// Should be able to submit a last-second vote during countdown
+	err := SubmitVote(r, "u1", "8")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	ticket := findTicket(r, "t1")
+	if ticket.Votes["u1"].Value != "8" {
+		t.Errorf("expected vote value 8, got %s", ticket.Votes["u1"].Value)
+	}
+}
+
+func TestSubmitVoteChangeVoteDuringCountingDown(t *testing.T) {
+	r := newTestRoom()
+	AddUser(r, &model.User{ID: "u1", Name: "Alice", AvatarID: "cat"})
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "Task 1"})
+	_ = SetCurrentTicket(r, "t1")
+	_ = SubmitVote(r, "u1", "5")
+	_ = StartCountdown(r)
+
+	// Change vote during countdown
+	err := SubmitVote(r, "u1", "13")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	ticket := findTicket(r, "t1")
+	if ticket.Votes["u1"].Value != "13" {
+		t.Errorf("expected vote value 13, got %s", ticket.Votes["u1"].Value)
+	}
+}
+
+// --- ResetVotes from counting_down ---
+
+func TestResetVotesFromCountingDown(t *testing.T) {
+	r := newTestRoom()
+	AddUser(r, &model.User{ID: "u1", Name: "Alice", AvatarID: "cat"})
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "Task 1"})
+	_ = SetCurrentTicket(r, "t1")
+	_ = SubmitVote(r, "u1", "5")
+	_ = StartCountdown(r)
+
+	err := ResetVotes(r)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if r.State != model.RoomStateVoting {
+		t.Errorf("expected state voting after reset, got %s", r.State)
+	}
+	ticket := findTicket(r, "t1")
+	if len(ticket.Votes) != 0 {
+		t.Errorf("expected 0 votes after reset, got %d", len(ticket.Votes))
+	}
+}
+
+// --- Full navigation flow ---
+
+func TestFullNavigationFlow(t *testing.T) {
+	r := newTestRoom()
+	AddUser(r, &model.User{ID: "u1", Name: "Alice", AvatarID: "cat", IsAdmin: true})
+	AddUser(r, &model.User{ID: "u2", Name: "Bob", AvatarID: "dog"})
+
+	// Add 3 tickets
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "Task 1"})
+	AddTicket(r, &model.Ticket{ID: "t2", Content: "Task 2"})
+	AddTicket(r, &model.Ticket{ID: "t3", Content: "Task 3"})
+
+	// Navigate to t1 and vote
+	if err := NavigateToTicket(r, "t1"); err != nil {
+		t.Fatal(err)
+	}
+	if err := SubmitVote(r, "u1", "3"); err != nil {
+		t.Fatal(err)
+	}
+	if err := SubmitVote(r, "u2", "5"); err != nil {
+		t.Fatal(err)
+	}
+	if err := RevealVotes(r); err != nil {
+		t.Fatal(err)
+	}
+
+	// Go forward to t2
+	if err := NextTicketByIndex(r); err != nil {
+		t.Fatal(err)
+	}
+	if r.CurrentTicketID != "t2" {
+		t.Fatalf("expected t2, got %s", r.CurrentTicketID)
+	}
+	// t2 should be in voting
+	if r.State != model.RoomStateVoting {
+		t.Fatalf("expected voting, got %s", r.State)
+	}
+
+	// Vote on t2
+	if err := SubmitVote(r, "u1", "8"); err != nil {
+		t.Fatal(err)
+	}
+	if err := RevealVotes(r); err != nil {
+		t.Fatal(err)
+	}
+
+	// Go back to t1
+	if err := PrevTicket(r); err != nil {
+		t.Fatal(err)
+	}
+	if r.CurrentTicketID != "t1" {
+		t.Fatalf("expected t1, got %s", r.CurrentTicketID)
+	}
+	// t1 was revealed, so state should be revealed with votes preserved
+	if r.State != model.RoomStateRevealed {
+		t.Errorf("expected revealed when going back to revealed ticket, got %s", r.State)
+	}
+	t1 := findTicket(r, "t1")
+	if len(t1.Votes) != 2 {
+		t.Errorf("expected 2 votes preserved on t1, got %d", len(t1.Votes))
+	}
+	if t1.Votes["u1"].Value != "3" {
+		t.Errorf("expected u1 vote 3 on t1, got %s", t1.Votes["u1"].Value)
+	}
+
+	// Go forward to t2 again
+	if err := NextTicketByIndex(r); err != nil {
+		t.Fatal(err)
+	}
+	if r.CurrentTicketID != "t2" {
+		t.Fatalf("expected t2, got %s", r.CurrentTicketID)
+	}
+	// t2 was revealed, so state should be revealed
+	if r.State != model.RoomStateRevealed {
+		t.Errorf("expected revealed, got %s", r.State)
+	}
+
+	// Go forward to t3
+	if err := NextTicketByIndex(r); err != nil {
+		t.Fatal(err)
+	}
+	if r.CurrentTicketID != "t3" {
+		t.Fatalf("expected t3, got %s", r.CurrentTicketID)
+	}
+	// t3 was pending, so it should now be voting
+	if r.State != model.RoomStateVoting {
+		t.Errorf("expected voting for pending ticket, got %s", r.State)
+	}
+
+	// Cannot go forward past the end
+	err := NextTicketByIndex(r)
+	if err != ErrTicketNotFound {
+		t.Errorf("expected ErrTicketNotFound at end, got %v", err)
+	}
+
+	// Go all the way back to t1
+	if err := PrevTicket(r); err != nil {
+		t.Fatal(err)
+	}
+	if r.CurrentTicketID != "t2" {
+		t.Fatalf("expected t2, got %s", r.CurrentTicketID)
+	}
+	if err := PrevTicket(r); err != nil {
+		t.Fatal(err)
+	}
+	if r.CurrentTicketID != "t1" {
+		t.Fatalf("expected t1, got %s", r.CurrentTicketID)
+	}
+
+	// Cannot go back past the start
+	err = PrevTicket(r)
+	if err != ErrTicketNotFound {
+		t.Errorf("expected ErrTicketNotFound at start, got %v", err)
+	}
+}
