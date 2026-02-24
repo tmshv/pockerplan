@@ -165,6 +165,12 @@ func NavigateToTicket(r *model.Room, ticketID string) error {
 	if ticket == nil {
 		return ErrTicketNotFound
 	}
+	if r.CurrentTicketID != "" && r.CurrentTicketID != ticketID {
+		old := findTicket(r, r.CurrentTicketID)
+		if old != nil && old.Status == model.TicketStatusVoting {
+			old.Status = model.TicketStatusSkipped
+		}
+	}
 	r.CurrentTicketID = ticketID
 	switch ticket.Status {
 	case model.TicketStatusPending:
