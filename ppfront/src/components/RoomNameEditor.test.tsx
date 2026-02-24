@@ -14,9 +14,7 @@ describe("RoomNameEditor", () => {
   });
 
   it("shows placeholder when name is empty for guest", () => {
-    render(
-      <RoomNameEditor name="" isAdmin={false} onSave={() => {}} />,
-    );
+    render(<RoomNameEditor name="" isAdmin={false} onSave={() => {}} />);
     expect(screen.getByText("Unnamed Room")).toBeInTheDocument();
   });
 
@@ -24,14 +22,16 @@ describe("RoomNameEditor", () => {
     render(
       <RoomNameEditor name="Sprint 42" isAdmin={true} onSave={() => {}} />,
     );
-    expect(screen.getByRole("button", { name: "Sprint 42" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Sprint 42" }),
+    ).toBeInTheDocument();
   });
 
   it("shows placeholder as clickable button for admin when name is empty", () => {
-    render(
-      <RoomNameEditor name="" isAdmin={true} onSave={() => {}} />,
-    );
-    expect(screen.getByRole("button", { name: "Unnamed Room" })).toBeInTheDocument();
+    render(<RoomNameEditor name="" isAdmin={true} onSave={() => {}} />);
+    expect(
+      screen.getByRole("button", { name: "Unnamed Room" }),
+    ).toBeInTheDocument();
   });
 
   it("enters edit mode on click for admin", async () => {
@@ -45,9 +45,7 @@ describe("RoomNameEditor", () => {
 
   it("calls onSave with new name on Enter", async () => {
     const onSave = vi.fn();
-    render(
-      <RoomNameEditor name="Sprint 42" isAdmin={true} onSave={onSave} />,
-    );
+    render(<RoomNameEditor name="Sprint 42" isAdmin={true} onSave={onSave} />);
     await userEvent.click(screen.getByRole("button", { name: "Sprint 42" }));
     await userEvent.clear(screen.getByRole("textbox"));
     await userEvent.type(screen.getByRole("textbox"), "Sprint 43{Enter}");
@@ -56,9 +54,7 @@ describe("RoomNameEditor", () => {
 
   it("does not call onSave if name is unchanged", async () => {
     const onSave = vi.fn();
-    render(
-      <RoomNameEditor name="Sprint 42" isAdmin={true} onSave={onSave} />,
-    );
+    render(<RoomNameEditor name="Sprint 42" isAdmin={true} onSave={onSave} />);
     await userEvent.click(screen.getByRole("button", { name: "Sprint 42" }));
     await userEvent.keyboard("{Enter}");
     expect(onSave).not.toHaveBeenCalled();
@@ -66,22 +62,20 @@ describe("RoomNameEditor", () => {
 
   it("cancels edit on Escape", async () => {
     const onSave = vi.fn();
-    render(
-      <RoomNameEditor name="Sprint 42" isAdmin={true} onSave={onSave} />,
-    );
+    render(<RoomNameEditor name="Sprint 42" isAdmin={true} onSave={onSave} />);
     await userEvent.click(screen.getByRole("button", { name: "Sprint 42" }));
     await userEvent.clear(screen.getByRole("textbox"));
     await userEvent.type(screen.getByRole("textbox"), "Changed");
     await userEvent.keyboard("{Escape}");
     expect(onSave).not.toHaveBeenCalled();
-    expect(screen.getByRole("button", { name: "Sprint 42" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Sprint 42" }),
+    ).toBeInTheDocument();
   });
 
   it("saves on blur", async () => {
     const onSave = vi.fn();
-    render(
-      <RoomNameEditor name="Sprint 42" isAdmin={true} onSave={onSave} />,
-    );
+    render(<RoomNameEditor name="Sprint 42" isAdmin={true} onSave={onSave} />);
     await userEvent.click(screen.getByRole("button", { name: "Sprint 42" }));
     await userEvent.clear(screen.getByRole("textbox"));
     await userEvent.type(screen.getByRole("textbox"), "Sprint 43");

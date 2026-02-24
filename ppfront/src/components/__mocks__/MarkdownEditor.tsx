@@ -4,7 +4,11 @@ interface MarkdownEditorProps {
   placeholder?: string;
 }
 
-export function MarkdownEditor({ value, onChange, placeholder }: MarkdownEditorProps) {
+export function MarkdownEditor({
+  value,
+  onChange,
+  placeholder,
+}: MarkdownEditorProps) {
   return (
     <textarea
       aria-label="Ticket content"

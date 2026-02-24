@@ -21,14 +21,20 @@ describe("TicketForm", () => {
 
   it("enables submit when content is provided", async () => {
     render(<TicketForm onAdd={async () => {}} />);
-    await userEvent.type(screen.getByLabelText("Ticket content"), "Some content");
+    await userEvent.type(
+      screen.getByLabelText("Ticket content"),
+      "Some content",
+    );
     expect(screen.getByRole("button", { name: "Add Ticket" })).toBeEnabled();
   });
 
   it("calls onAdd with content", async () => {
     const onAdd = vi.fn().mockResolvedValue(undefined);
     render(<TicketForm onAdd={onAdd} />);
-    await userEvent.type(screen.getByLabelText("Ticket content"), "# My ticket");
+    await userEvent.type(
+      screen.getByLabelText("Ticket content"),
+      "# My ticket",
+    );
     await userEvent.click(screen.getByRole("button", { name: "Add Ticket" }));
     expect(onAdd).toHaveBeenCalledWith("# My ticket");
   });
@@ -45,7 +51,10 @@ describe("TicketForm", () => {
   it("shows error on failure", async () => {
     const onAdd = vi.fn().mockRejectedValue(new Error("Network error"));
     render(<TicketForm onAdd={onAdd} />);
-    await userEvent.type(screen.getByLabelText("Ticket content"), "Fail ticket");
+    await userEvent.type(
+      screen.getByLabelText("Ticket content"),
+      "Fail ticket",
+    );
     await userEvent.click(screen.getByRole("button", { name: "Add Ticket" }));
     expect(await screen.findByText("Network error")).toBeInTheDocument();
   });
