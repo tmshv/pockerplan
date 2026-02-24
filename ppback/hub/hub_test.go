@@ -426,6 +426,15 @@ func TestAdminAuthRequired(t *testing.T) {
 		{"next_ticket", "next_ticket", model.AdminActionRequest{
 			RoomID: created.RoomID, AdminSecret: wrongSecret,
 		}},
+		{"prev_ticket", "prev_ticket", model.AdminActionRequest{
+			RoomID: created.RoomID, AdminSecret: wrongSecret,
+		}},
+		{"set_ticket", "set_ticket", model.SetTicketRequest{
+			RoomID: created.RoomID, AdminSecret: wrongSecret, TicketID: "any",
+		}},
+		{"start_reveal", "start_reveal", model.AdminActionRequest{
+			RoomID: created.RoomID, AdminSecret: wrongSecret,
+		}},
 		{"update_room_name", "update_room_name", model.UpdateRoomNameRequest{
 			RoomID: created.RoomID, AdminSecret: wrongSecret, Name: "x",
 		}},

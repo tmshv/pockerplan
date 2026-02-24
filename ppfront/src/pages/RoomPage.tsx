@@ -66,6 +66,12 @@ function RoomPageContent({ roomId }: { roomId: string }) {
   const isAdmin = !!info?.adminSecret;
   const userId = info?.userId ?? "";
 
+  const onCountdownComplete = useCallback(() => {
+    if (isAdmin) {
+      revealVotes().catch(() => {});
+    }
+  }, [isAdmin, revealVotes]);
+
   if (error) {
     return (
       <div className="page room-page">
@@ -129,12 +135,6 @@ function RoomPageContent({ roomId }: { roomId: string }) {
   const isRevealed = roomState?.state === "revealed";
   const isVoting = roomState?.state === "voting";
   const isCountingDown = roomState?.state === "counting_down";
-
-  const onCountdownComplete = useCallback(() => {
-    if (isAdmin) {
-      revealVotes();
-    }
-  }, [isAdmin, revealVotes]);
 
   return (
     <div className="page room-page">
