@@ -39,6 +39,8 @@ export function TicketList({
             <li
               key={ticket.id}
               className={`ticket-list-item${isCurrent ? " current" : ""}${clickable ? " clickable" : ""}`}
+              role={clickable ? "button" : undefined}
+              tabIndex={clickable ? 0 : undefined}
               onClick={clickable ? () => onSelectTicket(ticket.id) : undefined}
               onKeyDown={
                 clickable

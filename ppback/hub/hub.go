@@ -8,6 +8,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"unicode/utf8"
 
 	"pockerplan/ppback/avatar"
 	"pockerplan/ppback/model"
@@ -354,7 +355,7 @@ func (h *Hub) rpcAddTicket(data []byte) ([]byte, error) {
 	if err := json.Unmarshal(data, &req); err != nil {
 		return nil, centrifuge.ErrorBadRequest
 	}
-	if req.RoomID == "" || req.AdminSecret == "" || req.Content == "" || len(req.Content) > 10000 {
+	if req.RoomID == "" || req.AdminSecret == "" || req.Content == "" || utf8.RuneCountInString(req.Content) > 10000 {
 		return nil, centrifuge.ErrorBadRequest
 	}
 
