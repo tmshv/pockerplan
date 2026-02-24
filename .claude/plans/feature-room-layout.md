@@ -18,8 +18,8 @@ The room page currently uses `display: flex` with a fixed 320px sidebar. The use
 - [x] In `App.css`, update `#root` to use `min-height: 100vh` so the room page can stretch full height
 
 ### Task 3: Update `.room-page` to use CSS grid
-- [ ] Change `.room-page` to be a full-height grid container that owns the header + main layout
-- [ ] Make `.room-page` fill available height with `flex: 1` (since `.page` is a flex column)
+- [x] Change `.room-page` to be a full-height grid container that owns the header + main layout
+- [x] Make `.room-page` fill available height with `flex: 1` (since `.page` is a flex column)
 
 ### Task 4: Convert `.room-layout` from flex to grid
 - [ ] Replace `display: flex` with `display: grid`
