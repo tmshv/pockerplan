@@ -23,29 +23,29 @@ This plan adds: a ticket list visible to all users, bidirectional prev/next navi
 
 ### Backend
 
-- [ ] `ppback/model/types.go`: Add `SetTicketRequest` struct (`RoomID`, `AdminSecret`, `TicketID`)
-- [ ] `ppback/room/room.go`: Add `NavigateToTicket(r, ticketID)` function
+- [x] `ppback/model/types.go`: Add `SetTicketRequest` struct (`RoomID`, `AdminSecret`, `TicketID`)
+- [x] `ppback/room/room.go`: Add `NavigateToTicket(r, ticketID)` function
   - If ticket is `pending` -> set status to `voting`, room state to `voting`
   - If ticket is `revealed` -> room state to `revealed` (keep votes intact)
   - If ticket is `skipped` -> re-open: set status to `voting`, clear votes, room state to `voting`
   - If ticket is `voting` -> room state to `voting` (no change)
-- [ ] `ppback/room/room.go`: Add `ticketIndex(r, id) int` helper
-- [ ] `ppback/room/room.go`: Add `NextTicketByIndex(r)` — navigate to `tickets[currentIndex+1]` via `NavigateToTicket`, return `ErrTicketNotFound` if at end or empty
-- [ ] `ppback/room/room.go`: Add `PrevTicket(r)` — navigate to `tickets[currentIndex-1]` via `NavigateToTicket`, return `ErrTicketNotFound` if at start or empty
-- [ ] `ppback/hub/hub.go`: Change `rpcNextTicket` to call `room.NextTicketByIndex` instead of `room.NextTicket`
-- [ ] `ppback/hub/hub.go`: Add `set_ticket` RPC handler calling `room.NavigateToTicket`
-- [ ] `ppback/hub/hub.go`: Add `prev_ticket` RPC handler calling `room.PrevTicket`
-- [ ] Keep existing `NextTicket()` and `SetCurrentTicket()` functions for backward compat (tests use them), but the RPCs now use the new functions
+- [x] `ppback/room/room.go`: Add `ticketIndex(r, id) int` helper
+- [x] `ppback/room/room.go`: Add `NextTicketByIndex(r)` — navigate to `tickets[currentIndex+1]` via `NavigateToTicket`, return `ErrTicketNotFound` if at end or empty
+- [x] `ppback/room/room.go`: Add `PrevTicket(r)` — navigate to `tickets[currentIndex-1]` via `NavigateToTicket`, return `ErrTicketNotFound` if at start or empty
+- [x] `ppback/hub/hub.go`: Change `rpcNextTicket` to call `room.NextTicketByIndex` instead of `room.NextTicket`
+- [x] `ppback/hub/hub.go`: Add `set_ticket` RPC handler calling `room.NavigateToTicket`
+- [x] `ppback/hub/hub.go`: Add `prev_ticket` RPC handler calling `room.PrevTicket`
+- [x] Keep existing `NextTicket()` and `SetCurrentTicket()` functions for backward compat (tests use them), but the RPCs now use the new functions
 
 ### Frontend
 
-- [ ] `ppfront/src/types/index.ts`: Update `RoomState` to include `"counting_down"`
-- [ ] `ppfront/src/types/index.ts`: Add `countdown: number` to `RoomSnapshot`
-- [ ] `ppfront/src/types/index.ts`: Add `SetTicketRequest` interface
-- [ ] `ppfront/src/hooks/useRoom.ts`: Add `prevTicket`, `setTicket` to `UseRoomResult` and implement them
-- [ ] `ppfront/src/components/AdminControls.tsx`: Add `hasPrevTicket`, `hasNextTicket`, `onPrevTicket` props; replace single "Next Ticket" button with Prev/Next pair
-- [ ] `ppfront/src/components/FloatingAdminPanel.tsx`: Thread new navigation props through
-- [ ] `ppfront/src/pages/RoomPage.tsx`: Compute `currentTicketIndex`, `hasPrevTicket`, `hasNextTicket`; destructure `prevTicket`, `setTicket` from context; pass to admin panel
+- [x] `ppfront/src/types/index.ts`: Update `RoomState` to include `"counting_down"`
+- [x] `ppfront/src/types/index.ts`: Add `countdown: number` to `RoomSnapshot`
+- [x] `ppfront/src/types/index.ts`: Add `SetTicketRequest` interface
+- [x] `ppfront/src/hooks/useRoom.ts`: Add `prevTicket`, `setTicket` to `UseRoomResult` and implement them
+- [x] `ppfront/src/components/AdminControls.tsx`: Add `hasPrevTicket`, `hasNextTicket`, `onPrevTicket` props; replace single "Next Ticket" button with Prev/Next pair
+- [x] `ppfront/src/components/FloatingAdminPanel.tsx`: Thread new navigation props through
+- [x] `ppfront/src/pages/RoomPage.tsx`: Compute `currentTicketIndex`, `hasPrevTicket`, `hasNextTicket`; destructure `prevTicket`, `setTicket` from context; pass to admin panel
 
 ## Task 3: Ticket list component
 

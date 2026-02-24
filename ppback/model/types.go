@@ -108,6 +108,12 @@ type UpdateRoomNameRequest struct {
 	Name        string `json:"name"`
 }
 
+type SetTicketRequest struct {
+	RoomID      string `json:"roomId"`
+	AdminSecret string `json:"adminSecret"`
+	TicketID    string `json:"ticketId"`
+}
+
 // RoomSnapshot is the sanitized room state sent to clients.
 // When state is "voting", vote values are hidden.
 type RoomSnapshot struct {

@@ -7,6 +7,7 @@ import type {
   AdminActionRequest,
   JoinRoomResponse,
   RoomSnapshot,
+  SetTicketRequest,
   SubmitVoteRequest,
   UpdateRoomNameRequest,
 } from "../types";
@@ -34,6 +35,8 @@ export interface UseRoomResult {
   revealVotes: () => Promise<void>;
   resetVotes: () => Promise<void>;
   nextTicket: () => Promise<void>;
+  prevTicket: () => Promise<void>;
+  setTicket: (ticketId: string) => Promise<void>;
 }
 
 function classifyError(
@@ -247,6 +250,25 @@ export function useRoom(roomId: string | undefined): UseRoomResult {
     () => adminAction("next_ticket"),
     [adminAction],
   );
+  const prevTicket = useCallback(
+    () => adminAction("prev_ticket"),
+    [adminAction],
+  );
+  const setTicket = useCallback(
+    async (ticketId: string) => {
+      if (!roomId) return;
+      const info = loadRoomInfo(roomId);
+      if (!info?.adminSecret) throw new Error("Not admin");
+      const client = getCentrifuge();
+      const req: SetTicketRequest = {
+        roomId,
+        adminSecret: info.adminSecret,
+        ticketId,
+      };
+      await client.rpc("set_ticket", req);
+    },
+    [roomId],
+  );
 
   return {
     roomState,
@@ -259,5 +281,7 @@ export function useRoom(roomId: string | undefined): UseRoomResult {
     revealVotes,
     resetVotes,
     nextTicket,
+    prevTicket,
+    setTicket,
   };
 }

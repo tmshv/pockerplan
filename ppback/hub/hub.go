@@ -189,6 +189,10 @@ func (h *Hub) handleRPC(client *centrifuge.Client, method string, data []byte) (
 		return h.rpcResetVotes(data)
 	case "next_ticket":
 		return h.rpcNextTicket(data)
+	case "prev_ticket":
+		return h.rpcPrevTicket(data)
+	case "set_ticket":
+		return h.rpcSetTicket(data)
 	case "update_room_name":
 		return h.rpcUpdateRoomName(data)
 	default:
@@ -449,7 +453,65 @@ func (h *Hub) rpcNextTicket(data []byte) ([]byte, error) {
 		if r.AdminSecret != req.AdminSecret {
 			return room.ErrInvalidAdmin
 		}
-		return room.NextTicket(r)
+		return room.NextTicketByIndex(r)
+	})
+	if err != nil {
+		if errors.Is(err, room.ErrRoomNotFound) {
+			return nil, errorNotFound
+		}
+		if errors.Is(err, room.ErrInvalidAdmin) {
+			return nil, centrifuge.ErrorPermissionDenied
+		}
+		return nil, &centrifuge.Error{Code: 400, Message: err.Error()}
+	}
+
+	h.broadcastRoomState(req.RoomID)
+	return []byte(`{}`), nil
+}
+
+func (h *Hub) rpcPrevTicket(data []byte) ([]byte, error) {
+	var req model.AdminActionRequest
+	if err := json.Unmarshal(data, &req); err != nil {
+		return nil, centrifuge.ErrorBadRequest
+	}
+	if req.RoomID == "" || req.AdminSecret == "" {
+		return nil, centrifuge.ErrorBadRequest
+	}
+
+	err := h.rooms.WithRoom(req.RoomID, func(r *model.Room) error {
+		if r.AdminSecret != req.AdminSecret {
+			return room.ErrInvalidAdmin
+		}
+		return room.PrevTicket(r)
+	})
+	if err != nil {
+		if errors.Is(err, room.ErrRoomNotFound) {
+			return nil, errorNotFound
+		}
+		if errors.Is(err, room.ErrInvalidAdmin) {
+			return nil, centrifuge.ErrorPermissionDenied
+		}
+		return nil, &centrifuge.Error{Code: 400, Message: err.Error()}
+	}
+
+	h.broadcastRoomState(req.RoomID)
+	return []byte(`{}`), nil
+}
+
+func (h *Hub) rpcSetTicket(data []byte) ([]byte, error) {
+	var req model.SetTicketRequest
+	if err := json.Unmarshal(data, &req); err != nil {
+		return nil, centrifuge.ErrorBadRequest
+	}
+	if req.RoomID == "" || req.AdminSecret == "" || req.TicketID == "" {
+		return nil, centrifuge.ErrorBadRequest
+	}
+
+	err := h.rooms.WithRoom(req.RoomID, func(r *model.Room) error {
+		if r.AdminSecret != req.AdminSecret {
+			return room.ErrInvalidAdmin
+		}
+		return room.NavigateToTicket(r, req.TicketID)
 	})
 	if err != nil {
 		if errors.Is(err, room.ErrRoomNotFound) {

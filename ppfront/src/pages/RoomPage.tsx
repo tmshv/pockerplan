@@ -55,6 +55,7 @@ function RoomPageContent({ roomId }: { roomId: string }) {
     revealVotes,
     resetVotes,
     nextTicket,
+    prevTicket,
   } = useRoomContext();
 
   const info = loadRoomInfo(roomId);
@@ -113,6 +114,13 @@ function RoomPageContent({ roomId }: { roomId: string }) {
   const currentTicket =
     tickets.find((t) => t.id === roomState?.currentTicketId) ?? null;
 
+  const currentTicketIndex = roomState?.currentTicketId
+    ? tickets.findIndex((t) => t.id === roomState.currentTicketId)
+    : -1;
+  const hasPrevTicket = currentTicketIndex > 0;
+  const hasNextTicket =
+    currentTicketIndex >= 0 && currentTicketIndex < tickets.length - 1;
+
   const myVote = currentTicket?.votes.find((v) => v.userId === userId);
   const isRevealed = roomState?.state === "revealed";
   const isVoting = roomState?.state === "voting";
@@ -161,9 +169,11 @@ function RoomPageContent({ roomId }: { roomId: string }) {
         <FloatingAdminPanel
           roomId={roomId}
           roomState={roomState?.state ?? "idle"}
-          hasTickets={tickets.length > 0}
+          hasPrevTicket={hasPrevTicket}
+          hasNextTicket={hasNextTicket}
           onReveal={revealVotes}
           onReset={resetVotes}
+          onPrevTicket={prevTicket}
           onNextTicket={nextTicket}
           onAddTicket={async (content) => {
             await addTicket(content);

@@ -7,9 +7,11 @@ import { TicketForm } from "./TicketForm";
 interface FloatingAdminPanelProps {
   roomId: string;
   roomState: RoomState;
-  hasTickets: boolean;
+  hasPrevTicket: boolean;
+  hasNextTicket: boolean;
   onReveal: () => void;
   onReset: () => void;
+  onPrevTicket: () => void;
   onNextTicket: () => void;
   onAddTicket: (content: string) => Promise<void>;
 }
@@ -17,9 +19,11 @@ interface FloatingAdminPanelProps {
 export function FloatingAdminPanel({
   roomId,
   roomState,
-  hasTickets,
+  hasPrevTicket,
+  hasNextTicket,
   onReveal,
   onReset,
+  onPrevTicket,
   onNextTicket,
   onAddTicket,
 }: FloatingAdminPanelProps) {
@@ -40,9 +44,11 @@ export function FloatingAdminPanel({
           <ShareButton roomId={roomId} />
           <AdminControls
             roomState={roomState}
-            hasTickets={hasTickets}
+            hasPrevTicket={hasPrevTicket}
+            hasNextTicket={hasNextTicket}
             onReveal={onReveal}
             onReset={onReset}
+            onPrevTicket={onPrevTicket}
             onNextTicket={onNextTicket}
           />
           <TicketForm onAdd={onAddTicket} />

@@ -134,6 +134,71 @@ func NextTicket(r *model.Room) error {
 	return nil
 }
 
+// ticketIndex returns the index of the ticket with the given ID, or -1 if not found.
+func ticketIndex(r *model.Room, id string) int {
+	for i, t := range r.Tickets {
+		if t.ID == id {
+			return i
+		}
+	}
+	return -1
+}
+
+// NavigateToTicket navigates to the specified ticket, adjusting room and ticket state:
+//   - pending: set status to voting, room state to voting
+//   - revealed: room state to revealed (keep votes intact)
+//   - skipped: re-open: set status to voting, clear votes, room state to voting
+//   - voting: room state to voting (no change needed)
+func NavigateToTicket(r *model.Room, ticketID string) error {
+	ticket := findTicket(r, ticketID)
+	if ticket == nil {
+		return ErrTicketNotFound
+	}
+	r.CurrentTicketID = ticketID
+	switch ticket.Status {
+	case model.TicketStatusPending:
+		ticket.Status = model.TicketStatusVoting
+		r.State = model.RoomStateVoting
+	case model.TicketStatusRevealed:
+		r.State = model.RoomStateRevealed
+	case model.TicketStatusSkipped:
+		ticket.Status = model.TicketStatusVoting
+		ticket.Votes = make(map[string]model.Vote)
+		r.State = model.RoomStateVoting
+	case model.TicketStatusVoting:
+		r.State = model.RoomStateVoting
+	}
+	touch(r)
+	return nil
+}
+
+// NextTicketByIndex navigates to the ticket after the current one by index.
+// Returns ErrTicketNotFound if at the end or if there are no tickets.
+func NextTicketByIndex(r *model.Room) error {
+	if len(r.Tickets) == 0 {
+		return ErrTicketNotFound
+	}
+	idx := ticketIndex(r, r.CurrentTicketID)
+	nextIdx := idx + 1
+	if nextIdx >= len(r.Tickets) {
+		return ErrTicketNotFound
+	}
+	return NavigateToTicket(r, r.Tickets[nextIdx].ID)
+}
+
+// PrevTicket navigates to the ticket before the current one by index.
+// Returns ErrTicketNotFound if at the start or if there are no tickets.
+func PrevTicket(r *model.Room) error {
+	if len(r.Tickets) == 0 {
+		return ErrTicketNotFound
+	}
+	idx := ticketIndex(r, r.CurrentTicketID)
+	if idx <= 0 {
+		return ErrTicketNotFound
+	}
+	return NavigateToTicket(r, r.Tickets[idx-1].ID)
+}
+
 // Snapshot returns a sanitized snapshot of the room.
 // When a ticket is in voting state, vote values are hidden.
 func Snapshot(r *model.Room) *model.RoomSnapshot {

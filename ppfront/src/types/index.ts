@@ -1,5 +1,5 @@
 // Room states
-export type RoomState = "idle" | "voting" | "revealed";
+export type RoomState = "idle" | "voting" | "revealed" | "counting_down";
 
 // Ticket statuses
 export type TicketStatus = "pending" | "voting" | "revealed" | "skipped";
@@ -33,6 +33,7 @@ export interface RoomSnapshot {
   name: string;
   scale: string;
   state: RoomState;
+  countdown: number;
   users: User[];
   tickets: TicketSnapshot[];
   currentTicketId: string;
@@ -104,6 +105,12 @@ export interface UpdateRoomNameRequest {
   roomId: string;
   adminSecret: string;
   name: string;
+}
+
+export interface SetTicketRequest {
+  roomId: string;
+  adminSecret: string;
+  ticketId: string;
 }
 
 // Local storage types
