@@ -22,11 +22,11 @@ The room page currently uses `display: flex` with a fixed 320px sidebar. The use
 - [x] Make `.room-page` fill available height with `flex: 1` (since `.page` is a flex column)
 
 ### Task 4: Convert `.room-layout` from flex to grid
-- [ ] Replace `display: flex` with `display: grid`
-- [ ] Set `grid-template-columns: 3fr 1fr`
-- [ ] Keep `gap: 2rem`
-- [ ] Add `overflow: hidden` to prevent double scrollbars
-- [ ] Set `min-height: 0` to allow grid children to scroll
+- [x] Replace `display: flex` with `display: grid`
+- [x] Set `grid-template-columns: 3fr 1fr`
+- [x] Keep `gap: 2rem`
+- [x] Add `overflow: hidden` to prevent double scrollbars
+- [x] Set `min-height: 0` to allow grid children to scroll
 
 ### Task 5: Make `.room-main` scroll independently
 - [ ] Add `overflow-y: auto` to `.room-main`

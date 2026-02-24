@@ -173,9 +173,12 @@
 }
 
 .room-layout {
-  display: flex;
+  display: grid;
+  grid-template-columns: 3fr 1fr;
   gap: 2rem;
-  align-items: flex-start;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
 }
 
 .room-main {
