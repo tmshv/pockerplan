@@ -1,10 +1,11 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import {
   Link,
   useNavigate,
   useParams,
   useSearchParams,
 } from "react-router-dom";
+import { CountdownOverlay } from "../components/CountdownOverlay";
 import { FloatingAdminPanel } from "../components/FloatingAdminPanel";
 import { RoomNameEditor } from "../components/RoomNameEditor";
 import { TicketPanel } from "../components/TicketPanel";
@@ -54,6 +55,7 @@ function RoomPageContent({ roomId }: { roomId: string }) {
     updateRoomName,
     revealVotes,
     resetVotes,
+    startReveal,
     nextTicket,
     prevTicket,
   } = useRoomContext();
@@ -124,6 +126,13 @@ function RoomPageContent({ roomId }: { roomId: string }) {
   const myVote = currentTicket?.votes.find((v) => v.userId === userId);
   const isRevealed = roomState?.state === "revealed";
   const isVoting = roomState?.state === "voting";
+  const isCountingDown = roomState?.state === "counting_down";
+
+  const onCountdownComplete = useCallback(() => {
+    if (isAdmin) {
+      revealVotes();
+    }
+  }, [isAdmin, revealVotes]);
 
   return (
     <div className="page room-page">
@@ -142,7 +151,7 @@ function RoomPageContent({ roomId }: { roomId: string }) {
         <div className="room-main">
           <TicketPanel ticket={currentTicket} />
 
-          {isVoting && (
+          {(isVoting || isCountingDown) && (
             <VotingPanel
               scaleId={roomState?.scale ?? ""}
               selectedValue={myVote?.value ?? null}
@@ -153,6 +162,13 @@ function RoomPageContent({ roomId }: { roomId: string }) {
 
           {isRevealed && currentTicket && (
             <VoteResults votes={currentTicket.votes} users={users} />
+          )}
+
+          {isCountingDown && (
+            <CountdownOverlay
+              from={roomState?.countdown ?? 3}
+              onComplete={onCountdownComplete}
+            />
           )}
         </div>
 
@@ -171,7 +187,7 @@ function RoomPageContent({ roomId }: { roomId: string }) {
           roomState={roomState?.state ?? "idle"}
           hasPrevTicket={hasPrevTicket}
           hasNextTicket={hasNextTicket}
-          onReveal={revealVotes}
+          onReveal={startReveal}
           onReset={resetVotes}
           onPrevTicket={prevTicket}
           onNextTicket={nextTicket}

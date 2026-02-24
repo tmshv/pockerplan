@@ -183,6 +183,8 @@ func (h *Hub) handleRPC(client *centrifuge.Client, method string, data []byte) (
 		return h.rpcSubmitVote(client, data)
 	case "add_ticket":
 		return h.rpcAddTicket(data)
+	case "start_reveal":
+		return h.rpcStartReveal(data)
 	case "reveal_votes":
 		return h.rpcRevealVotes(data)
 	case "reset_votes":
@@ -380,6 +382,35 @@ func (h *Hub) rpcAddTicket(data []byte) ([]byte, error) {
 	h.broadcastRoomState(req.RoomID)
 	resp := model.AddTicketResponse{TicketID: ticketID}
 	return json.Marshal(resp)
+}
+
+func (h *Hub) rpcStartReveal(data []byte) ([]byte, error) {
+	var req model.AdminActionRequest
+	if err := json.Unmarshal(data, &req); err != nil {
+		return nil, centrifuge.ErrorBadRequest
+	}
+	if req.RoomID == "" || req.AdminSecret == "" {
+		return nil, centrifuge.ErrorBadRequest
+	}
+
+	err := h.rooms.WithRoom(req.RoomID, func(r *model.Room) error {
+		if r.AdminSecret != req.AdminSecret {
+			return room.ErrInvalidAdmin
+		}
+		return room.StartCountdown(r)
+	})
+	if err != nil {
+		if errors.Is(err, room.ErrRoomNotFound) {
+			return nil, errorNotFound
+		}
+		if errors.Is(err, room.ErrInvalidAdmin) {
+			return nil, centrifuge.ErrorPermissionDenied
+		}
+		return nil, &centrifuge.Error{Code: 400, Message: err.Error()}
+	}
+
+	h.broadcastRoomState(req.RoomID)
+	return []byte(`{}`), nil
 }
 
 func (h *Hub) rpcRevealVotes(data []byte) ([]byte, error) {

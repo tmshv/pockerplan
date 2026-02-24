@@ -34,6 +34,7 @@ export interface UseRoomResult {
   updateRoomName: (name: string) => Promise<void>;
   revealVotes: () => Promise<void>;
   resetVotes: () => Promise<void>;
+  startReveal: () => Promise<void>;
   nextTicket: () => Promise<void>;
   prevTicket: () => Promise<void>;
   setTicket: (ticketId: string) => Promise<void>;
@@ -246,6 +247,10 @@ export function useRoom(roomId: string | undefined): UseRoomResult {
     () => adminAction("reset_votes"),
     [adminAction],
   );
+  const startReveal = useCallback(
+    () => adminAction("start_reveal"),
+    [adminAction],
+  );
   const nextTicket = useCallback(
     () => adminAction("next_ticket"),
     [adminAction],
@@ -280,6 +285,7 @@ export function useRoom(roomId: string | undefined): UseRoomResult {
     updateRoomName,
     revealVotes,
     resetVotes,
+    startReveal,
     nextTicket,
     prevTicket,
     setTicket,

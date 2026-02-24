@@ -60,21 +60,21 @@ This plan adds: a ticket list visible to all users, bidirectional prev/next navi
 
 ### Backend
 
-- [ ] `ppback/room/room.go`: Add `StartCountdown(r)` — transitions from `voting` to `counting_down`
-- [ ] `ppback/room/room.go`: Update `RevealVotes` to accept both `voting` and `counting_down` states
-- [ ] `ppback/room/room.go`: Update `SubmitVote` to accept both `voting` and `counting_down` states (last-second votes)
-- [ ] `ppback/room/room.go`: Update `ResetVotes` to work from `counting_down` state too (admin cancels)
-- [ ] `ppback/hub/hub.go`: Add `start_reveal` RPC handler calling `room.StartCountdown`
+- [x] `ppback/room/room.go`: Add `StartCountdown(r)` — transitions from `voting` to `counting_down`
+- [x] `ppback/room/room.go`: Update `RevealVotes` to accept both `voting` and `counting_down` states
+- [x] `ppback/room/room.go`: Update `SubmitVote` to accept both `voting` and `counting_down` states (last-second votes)
+- [x] `ppback/room/room.go`: Update `ResetVotes` to work from `counting_down` state too (admin cancels)
+- [x] `ppback/hub/hub.go`: Add `start_reveal` RPC handler calling `room.StartCountdown`
 
 ### Frontend
 
-- [ ] `ppfront/src/hooks/useRoom.ts`: Add `startReveal` to `UseRoomResult` (calls `adminAction("start_reveal")`)
-- [ ] Create `ppfront/src/components/CountdownOverlay.tsx`:
+- [x] `ppfront/src/hooks/useRoom.ts`: Add `startReveal` to `UseRoomResult` (calls `adminAction("start_reveal")`)
+- [x] Create `ppfront/src/components/CountdownOverlay.tsx`:
   - Accepts `from` (number) and `onComplete` callback
   - Counts down 1/sec with pulsing animation
   - Calls `onComplete` when reaching 0
-- [ ] `ppfront/src/App.css`: Add `.countdown-overlay` and `.countdown-number` styles (centered overlay, large pulsing number)
-- [ ] `ppfront/src/pages/RoomPage.tsx`:
+- [x] `ppfront/src/App.css`: Add `.countdown-overlay` and `.countdown-number` styles (centered overlay, large pulsing number)
+- [x] `ppfront/src/pages/RoomPage.tsx`:
   - When `roomState.state === "counting_down"`: render `CountdownOverlay`
   - `onComplete`: if admin, call `revealVotes()`; if non-admin, do nothing (wait for broadcast)
   - Wire `startReveal` to admin panel's `onReveal` instead of `revealVotes`
