@@ -3,7 +3,7 @@
   margin: 0 auto;
   padding: 2rem;
   flex: 1;
-  min-height: 100vh;
+  height: 100vh;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
