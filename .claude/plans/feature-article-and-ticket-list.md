@@ -81,12 +81,12 @@ This plan adds: a ticket list visible to all users, bidirectional prev/next navi
 
 ## Task 5: Two-column layout rework
 
-- [ ] `ppfront/src/App.css`:
+- [x] `ppfront/src/App.css`:
   - Increase `#root` max-width to `1200px`
   - `.room-layout`: add `align-items: flex-start` for sticky positioning
   - `.room-sidebar`: increase width to `320px`, add `position: sticky; top: 2rem; max-height: calc(100vh - 4rem); overflow-y: auto`
   - `.ticket-description`: increase padding, add `line-height: 1.6` for article-style reading
-- [ ] `ppfront/src/pages/RoomPage.tsx`: Restructure layout:
+- [x] `ppfront/src/pages/RoomPage.tsx`: Restructure layout:
   - **Left column** (`.room-main`): `TicketPanel` only (article-style, scrolls with page)
   - **Right column** (`.room-sidebar`, sticky): `VotingPanel`, `VoteResults`, `UserList`, `TicketList`
 

@@ -8,6 +8,7 @@ import {
 import { CountdownOverlay } from "../components/CountdownOverlay";
 import { FloatingAdminPanel } from "../components/FloatingAdminPanel";
 import { RoomNameEditor } from "../components/RoomNameEditor";
+import { TicketList } from "../components/TicketList";
 import { TicketPanel } from "../components/TicketPanel";
 import { UserList } from "../components/UserList";
 import { VoteResults } from "../components/VoteResults";
@@ -58,6 +59,7 @@ function RoomPageContent({ roomId }: { roomId: string }) {
     startReveal,
     nextTicket,
     prevTicket,
+    setTicket,
   } = useRoomContext();
 
   const info = loadRoomInfo(roomId);
@@ -150,7 +152,9 @@ function RoomPageContent({ roomId }: { roomId: string }) {
       <div className="room-layout">
         <div className="room-main">
           <TicketPanel ticket={currentTicket} />
+        </div>
 
+        <div className="room-sidebar">
           {(isVoting || isCountingDown) && (
             <VotingPanel
               scaleId={roomState?.scale ?? ""}
@@ -164,22 +168,27 @@ function RoomPageContent({ roomId }: { roomId: string }) {
             <VoteResults votes={currentTicket.votes} users={users} />
           )}
 
-          {isCountingDown && (
-            <CountdownOverlay
-              from={roomState?.countdown ?? 3}
-              onComplete={onCountdownComplete}
-            />
-          )}
-        </div>
-
-        <div className="room-sidebar">
           <UserList
             users={users}
             votes={currentTicket?.votes ?? []}
             revealed={isRevealed}
           />
+
+          <TicketList
+            tickets={tickets}
+            currentTicketId={roomState?.currentTicketId ?? ""}
+            isAdmin={isAdmin}
+            onSelectTicket={setTicket}
+          />
         </div>
       </div>
+
+      {isCountingDown && (
+        <CountdownOverlay
+          from={roomState?.countdown ?? 3}
+          onComplete={onCountdownComplete}
+        />
+      )}
 
       {isAdmin && (
         <FloatingAdminPanel
