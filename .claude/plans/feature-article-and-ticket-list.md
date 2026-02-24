@@ -49,12 +49,12 @@ This plan adds: a ticket list visible to all users, bidirectional prev/next navi
 
 ## Task 3: Ticket list component
 
-- [ ] Create `ppfront/src/components/TicketList.tsx`:
+- [x] Create `ppfront/src/components/TicketList.tsx`:
   - Show ordered list of all tickets with index number, truncated content preview, status badge
   - Highlight current ticket
   - Admin can click any ticket to navigate to it (calls `setTicket`)
   - Empty state: "No tickets yet"
-- [ ] `ppfront/src/App.css`: Add `.ticket-list` styles (list items, current highlight, clickable hover, status badges)
+- [x] `ppfront/src/App.css`: Add `.ticket-list` styles (list items, current highlight, clickable hover, status badges)
 
 ## Task 4: Countdown animation on reveal
 
