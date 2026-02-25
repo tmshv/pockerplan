@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 interface UseKeyboardShortcutsOptions {
   scaleValues: string[];
   roomState: "idle" | "voting" | "counting_down" | "revealed" | undefined;
-  currentTicketId: string | undefined;
+  currentTicketId?: string;
   isAdmin: boolean;
   onVote: (value: string) => void;
   onReveal: () => void;
