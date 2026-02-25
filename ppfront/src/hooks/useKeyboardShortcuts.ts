@@ -44,6 +44,28 @@ export function useKeyboardShortcuts({
   const bufferRef = useRef("");
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Use refs for values that change frequently to avoid re-creating the
+  // event listener (which clears the vote buffer mid-typing).
+  const onVoteRef = useRef(onVote);
+  const onRevealRef = useRef(onReveal);
+  const onResetRef = useRef(onReset);
+  const onNextTicketRef = useRef(onNextTicket);
+  const onPrevTicketRef = useRef(onPrevTicket);
+  const hasPrevTicketRef = useRef(hasPrevTicket);
+  const hasNextTicketRef = useRef(hasNextTicket);
+  const roomStateRef = useRef(roomState);
+  const isAdminRef = useRef(isAdmin);
+
+  onVoteRef.current = onVote;
+  onRevealRef.current = onReveal;
+  onResetRef.current = onReset;
+  onNextTicketRef.current = onNextTicket;
+  onPrevTicketRef.current = onPrevTicket;
+  hasPrevTicketRef.current = hasPrevTicket;
+  hasNextTicketRef.current = hasNextTicket;
+  roomStateRef.current = roomState;
+  isAdminRef.current = isAdmin;
+
   useEffect(() => {
     function clearBuffer() {
       bufferRef.current = "";
@@ -70,7 +92,7 @@ export function useKeyboardShortcuts({
     function flushBuffer() {
       const match = tryMatch(bufferRef.current);
       if (match) {
-        onVote(match);
+        onVoteRef.current(match);
       }
       clearBuffer();
     }
@@ -80,39 +102,39 @@ export function useKeyboardShortcuts({
       if (e.ctrlKey || e.altKey || e.metaKey) return;
 
       // Admin-only shortcuts
-      if (isAdmin) {
+      if (isAdminRef.current) {
         if (e.key === "Enter") {
-          if (roomState === "voting" || roomState === "counting_down") {
+          if (roomStateRef.current === "voting" || roomStateRef.current === "counting_down") {
             e.preventDefault();
-            onReveal();
+            onRevealRef.current();
           }
           return;
         }
         if (e.key === " ") {
-          if (roomState === "revealed") {
+          if (roomStateRef.current === "revealed") {
             e.preventDefault();
-            onReset();
+            onResetRef.current();
           }
           return;
         }
         if (e.key === "ArrowLeft") {
-          if (hasPrevTicket) {
+          if (hasPrevTicketRef.current) {
             e.preventDefault();
-            onPrevTicket();
+            onPrevTicketRef.current();
           }
           return;
         }
         if (e.key === "ArrowRight") {
-          if (hasNextTicket) {
+          if (hasNextTicketRef.current) {
             e.preventDefault();
-            onNextTicket();
+            onNextTicketRef.current();
           }
           return;
         }
       }
 
       // Voting shortcuts - only during voting or counting_down state
-      if (roomState !== "voting" && roomState !== "counting_down") return;
+      if (roomStateRef.current !== "voting" && roomStateRef.current !== "counting_down") return;
 
       // Only accept printable single characters for vote buffer
       if (e.key.length !== 1) return;
@@ -123,7 +145,7 @@ export function useKeyboardShortcuts({
       const exactMatch = tryMatch(newBuffer);
       if (exactMatch && !canMatchMore(newBuffer)) {
         // Unique match - fire immediately
-        onVote(exactMatch);
+        onVoteRef.current(exactMatch);
         clearBuffer();
         return;
       }
@@ -141,16 +163,5 @@ export function useKeyboardShortcuts({
       window.removeEventListener("keydown", handleKeyDown);
       clearBuffer();
     };
-  }, [
-    scaleValues,
-    roomState,
-    isAdmin,
-    onVote,
-    onReveal,
-    onReset,
-    onNextTicket,
-    onPrevTicket,
-    hasPrevTicket,
-    hasNextTicket,
-  ]);
+  }, [scaleValues]);
 }

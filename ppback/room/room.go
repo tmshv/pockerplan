@@ -123,9 +123,10 @@ func StartFreeVote(r *model.Room, ticketID string) {
 		}
 	}
 
-	// Reuse an existing empty-content ticket instead of accumulating new ones.
+	// Reuse an existing empty-content ticket that was skipped or pending,
+	// but not revealed (to preserve completed free-vote results).
 	for _, t := range r.Tickets {
-		if t.Content == "" && t.Status != model.TicketStatusVoting {
+		if t.Content == "" && (t.Status == model.TicketStatusSkipped || t.Status == model.TicketStatusPending) {
 			t.Status = model.TicketStatusVoting
 			t.Votes = make(map[string]model.Vote)
 			r.CurrentTicketID = t.ID
