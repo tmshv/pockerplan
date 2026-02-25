@@ -11,16 +11,16 @@ The theme system (Task 4) must come first because it introduces CSS variables th
 ---
 
 ## Task 1: Theme System with System/Dark/Light Toggle
-- [ ] Extract ~25 hardcoded colors from `index.css` and `App.css` into CSS custom properties on `:root` (dark default)
-- [ ] Add `[data-theme="light"]` block with light-theme values
-- [ ] Add inline script in `index.html` to set `data-theme` from localStorage before React loads (prevents flash)
-- [ ] Create `ppfront/src/hooks/useTheme.ts` — reads/writes localStorage (`pockerplan_theme`), listens to `matchMedia` for system preference, sets `data-theme` attribute on `<html>`
-- [ ] Create `ppfront/src/context/ThemeContext.tsx` — provides `{theme, setTheme, resolvedTheme}`
-- [ ] Create `ppfront/src/components/ThemeToggle.tsx` — three-button segmented control (System/Dark/Light)
-- [ ] Wrap app with `ThemeProvider` in `App.tsx`
-- [ ] Place `ThemeToggle` in room header, home page, and join page
-- [ ] Replace every hardcoded color in `App.css` with `var(--color-*)` references
-- [ ] Remove the existing `@media (prefers-color-scheme: light)` block from `index.css` (JS handles it now)
+- [x] Extract ~25 hardcoded colors from `index.css` and `App.css` into CSS custom properties on `:root` (dark default)
+- [x] Add `[data-theme="light"]` block with light-theme values
+- [x] Add inline script in `index.html` to set `data-theme` from localStorage before React loads (prevents flash)
+- [x] Create `ppfront/src/hooks/useTheme.ts` — reads/writes localStorage (`pockerplan_theme`), listens to `matchMedia` for system preference, sets `data-theme` attribute on `<html>`
+- [x] Create `ppfront/src/context/ThemeContext.tsx` — provides `{theme, setTheme, resolvedTheme}`
+- [x] Create `ppfront/src/components/ThemeToggle.tsx` — three-button segmented control (System/Dark/Light)
+- [x] Wrap app with `ThemeProvider` in `App.tsx`
+- [x] Place `ThemeToggle` in room header, home page, and join page
+- [x] Replace every hardcoded color in `App.css` with `var(--color-*)` references
+- [x] Remove the existing `@media (prefers-color-scheme: light)` block from `index.css` (JS handles it now)
 
 **Key files:** `ppfront/src/index.css`, `ppfront/src/App.css`, `ppfront/src/App.tsx`, `ppfront/index.html`
 **New files:** `ppfront/src/hooks/useTheme.ts`, `ppfront/src/context/ThemeContext.tsx`, `ppfront/src/components/ThemeToggle.tsx`

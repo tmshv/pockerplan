@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { ThemeProvider } from "../context/ThemeContext";
 import { UserProvider } from "../context/UserContext";
 import { JoinPage } from "./JoinPage";
 
@@ -19,11 +20,13 @@ vi.mock("../api/centrifuge", () => ({
 function renderJoinPage(roomId = "room-123") {
   return render(
     <MemoryRouter initialEntries={[`/room/${roomId}/join`]}>
-      <UserProvider>
-        <Routes>
-          <Route path="/room/:id/join" element={<JoinPage />} />
-        </Routes>
-      </UserProvider>
+      <ThemeProvider>
+        <UserProvider>
+          <Routes>
+            <Route path="/room/:id/join" element={<JoinPage />} />
+          </Routes>
+        </UserProvider>
+      </ThemeProvider>
     </MemoryRouter>,
   );
 }

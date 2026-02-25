@@ -8,6 +8,7 @@ import {
 import { CountdownOverlay } from "../components/CountdownOverlay";
 import { FloatingAdminPanel } from "../components/FloatingAdminPanel";
 import { RoomNameEditor } from "../components/RoomNameEditor";
+import { ThemeToggle } from "../components/ThemeToggle";
 import { TicketList } from "../components/TicketList";
 import { TicketPanel } from "../components/TicketPanel";
 import { UserList } from "../components/UserList";
@@ -150,6 +151,7 @@ function RoomPageContent({ roomId }: { roomId: string }) {
         {!connected && (
           <span className="connection-status">Reconnecting...</span>
         )}
+        <ThemeToggle />
       </div>
 
       <div className="room-layout">

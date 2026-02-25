@@ -1,4 +1,5 @@
 import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
+import { ThemeProvider } from "./context/ThemeContext";
 import { UserProvider } from "./context/UserContext";
 import { HomePage } from "./pages/HomePage";
 import { JoinPage } from "./pages/JoinPage";
@@ -21,16 +22,18 @@ function NotFound() {
 
 function App() {
   return (
-    <UserProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/room/:id/join" element={<JoinPage />} />
-          <Route path="/room/:id" element={<RoomPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </UserProvider>
+    <ThemeProvider>
+      <UserProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/room/:id/join" element={<JoinPage />} />
+            <Route path="/room/:id" element={<RoomPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </UserProvider>
+    </ThemeProvider>
   );
 }
 

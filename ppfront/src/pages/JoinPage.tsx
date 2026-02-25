@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { getCentrifuge } from "../api/centrifuge";
 import { AvatarPicker } from "../components/AvatarPicker";
 import { NameInput } from "../components/NameInput";
+import { ThemeToggle } from "../components/ThemeToggle";
 import { useUserContext } from "../context/UserContext";
 import { loadRoomInfo, saveRoomInfo } from "../hooks/useUser";
 import type { JoinRoomResponse } from "../types";
@@ -66,6 +67,7 @@ export function JoinPage() {
 
   return (
     <div className="page join-page">
+      <ThemeToggle />
       <h1>Join Room</h1>
       <form
         onSubmit={(e) => {

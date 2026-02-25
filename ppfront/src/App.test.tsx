@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { Link, Route, Routes } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { ThemeProvider } from "./context/ThemeContext";
 import { UserProvider } from "./context/UserContext";
 import { HomePage } from "./pages/HomePage";
 import { JoinPage } from "./pages/JoinPage";
@@ -40,14 +41,16 @@ function NotFound() {
 function renderWithRoute(path: string) {
   return render(
     <MemoryRouter initialEntries={[path]}>
-      <UserProvider>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/room/:id/join" element={<JoinPage />} />
-          <Route path="/room/:id" element={<RoomPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </UserProvider>
+      <ThemeProvider>
+        <UserProvider>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/room/:id/join" element={<JoinPage />} />
+            <Route path="/room/:id" element={<RoomPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </UserProvider>
+      </ThemeProvider>
     </MemoryRouter>,
   );
 }

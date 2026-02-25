@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { ThemeProvider } from "../context/ThemeContext";
 import { UserProvider } from "../context/UserContext";
 import { HomePage } from "./HomePage";
 
@@ -19,9 +20,11 @@ vi.mock("../api/centrifuge", () => ({
 function renderHomePage() {
   return render(
     <MemoryRouter>
-      <UserProvider>
-        <HomePage />
-      </UserProvider>
+      <ThemeProvider>
+        <UserProvider>
+          <HomePage />
+        </UserProvider>
+      </ThemeProvider>
     </MemoryRouter>,
   );
 }

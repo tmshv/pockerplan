@@ -4,6 +4,7 @@ import { getCentrifuge } from "../api/centrifuge";
 import { AvatarPicker } from "../components/AvatarPicker";
 import { NameInput } from "../components/NameInput";
 import { ScalePicker } from "../components/ScalePicker";
+import { ThemeToggle } from "../components/ThemeToggle";
 import { useUserContext } from "../context/UserContext";
 import { saveRoomInfo } from "../hooks/useUser";
 import type { CreateRoomResponse } from "../types";
@@ -50,6 +51,7 @@ export function HomePage() {
 
   return (
     <div className="page home-page">
+      <ThemeToggle />
       <h1>Planning Poker</h1>
       <form
         onSubmit={(e) => {
