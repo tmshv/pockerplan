@@ -614,7 +614,7 @@ func (h *Hub) rpcStartFreeVote(data []byte) ([]byte, error) {
 		if errors.Is(err, room.ErrInvalidAdmin) {
 			return nil, centrifuge.ErrorPermissionDenied
 		}
-		return nil, centrifuge.ErrorInternal
+		return nil, &centrifuge.Error{Code: 400, Message: err.Error()}
 	}
 
 	h.broadcastRoomState(req.RoomID)

@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react";
 interface UseKeyboardShortcutsOptions {
   scaleValues: string[];
   roomState: "idle" | "voting" | "counting_down" | "revealed" | undefined;
+  currentTicketId: string | undefined;
   isAdmin: boolean;
   onVote: (value: string) => void;
   onReveal: () => void;
@@ -15,23 +16,28 @@ interface UseKeyboardShortcutsOptions {
 
 const DEBOUNCE_MS = 500;
 
-function isInputFocused(): boolean {
+function isInteractiveElementFocused(): boolean {
   const el = document.activeElement;
   if (!el) return false;
   const tag = el.tagName;
-  if (tag === "INPUT" || tag === "TEXTAREA") return true;
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return true;
+  if (tag === "BUTTON" || tag === "A") return true;
   if (
     (el as HTMLElement).isContentEditable ||
     el.getAttribute("contenteditable") === "true"
   ) {
     return true;
   }
+  // Elements with role="button" (e.g. ticket list rows) handle their own
+  // Enter/Space, so global shortcuts must not interfere.
+  if (el.getAttribute("role") === "button") return true;
   return false;
 }
 
 export function useKeyboardShortcuts({
   scaleValues,
   roomState,
+  currentTicketId,
   isAdmin,
   onVote,
   onReveal,
@@ -43,6 +49,7 @@ export function useKeyboardShortcuts({
 }: UseKeyboardShortcutsOptions) {
   const bufferRef = useRef("");
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const bufferTicketIdRef = useRef<string | undefined>(undefined);
 
   // Use refs for values that change frequently to avoid re-creating the
   // event listener (which clears the vote buffer mid-typing).
@@ -54,6 +61,7 @@ export function useKeyboardShortcuts({
   const hasPrevTicketRef = useRef(hasPrevTicket);
   const hasNextTicketRef = useRef(hasNextTicket);
   const roomStateRef = useRef(roomState);
+  const currentTicketIdRef = useRef(currentTicketId);
   const isAdminRef = useRef(isAdmin);
 
   onVoteRef.current = onVote;
@@ -64,6 +72,7 @@ export function useKeyboardShortcuts({
   hasPrevTicketRef.current = hasPrevTicket;
   hasNextTicketRef.current = hasNextTicket;
   roomStateRef.current = roomState;
+  currentTicketIdRef.current = currentTicketId;
   isAdminRef.current = isAdmin;
 
   useEffect(() => {
@@ -90,6 +99,21 @@ export function useKeyboardShortcuts({
     }
 
     function flushBuffer() {
+      // Re-check room state and ticket context before submitting - either may
+      // have changed (e.g. admin navigated to another ticket) during the
+      // debounce window. Submitting after a ticket change would apply the vote
+      // to the wrong ticket because the backend uses the current ticket.
+      if (
+        roomStateRef.current !== "voting" &&
+        roomStateRef.current !== "counting_down"
+      ) {
+        clearBuffer();
+        return;
+      }
+      if (currentTicketIdRef.current !== bufferTicketIdRef.current) {
+        clearBuffer();
+        return;
+      }
       const match = tryMatch(bufferRef.current);
       if (match) {
         onVoteRef.current(match);
@@ -98,7 +122,7 @@ export function useKeyboardShortcuts({
     }
 
     function handleKeyDown(e: KeyboardEvent) {
-      if (isInputFocused()) return;
+      if (isInteractiveElementFocused()) return;
       if (e.ctrlKey || e.altKey || e.metaKey) return;
 
       // Admin-only shortcuts
@@ -150,10 +174,14 @@ export function useKeyboardShortcuts({
         return;
       }
 
-      // Buffer the keystroke and wait for more
+      // Buffer the keystroke and wait for more.
+      // Capture the ticket ID when the buffer starts so flushBuffer can detect
+      // cross-ticket races.
       bufferRef.current = newBuffer;
       if (timerRef.current !== null) {
         clearTimeout(timerRef.current);
+      } else {
+        bufferTicketIdRef.current = currentTicketIdRef.current;
       }
       timerRef.current = setTimeout(flushBuffer, DEBOUNCE_MS);
     }

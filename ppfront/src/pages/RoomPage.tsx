@@ -131,6 +131,7 @@ function RoomPageContent({ roomId }: { roomId: string }) {
   useKeyboardShortcuts({
     scaleValues,
     roomState: roomState?.state,
+    currentTicketId: roomState?.currentTicketId,
     isAdmin,
     onVote: handleVoteShortcut,
     onReveal: handleRevealShortcut,
