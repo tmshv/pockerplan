@@ -27,7 +27,7 @@ export function AdminControls({
     <div className="admin-controls">
       <h3>Admin Controls</h3>
       <div className="admin-buttons">
-        {roomState === "idle" && !hasTickets && (
+        {((roomState === "idle" || roomState === "revealed") && !hasTickets) && (
           <button type="button" onClick={onStartFreeVote}>
             Start Voting
           </button>

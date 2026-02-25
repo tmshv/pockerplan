@@ -8,6 +8,7 @@ import {
   placeholder as placeholderExt,
 } from "@codemirror/view";
 import { useEffect, useRef } from "react";
+import { useThemeContext } from "../context/ThemeContext";
 
 interface MarkdownEditorProps {
   value: string;
@@ -24,13 +25,13 @@ export function MarkdownEditor({
   const viewRef = useRef<EditorView | null>(null);
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
+  const { resolvedTheme } = useThemeContext();
 
   useEffect(() => {
     if (!containerRef.current) return;
 
     const extensions = [
       markdown(),
-      oneDark,
       keymap.of(defaultKeymap),
       EditorView.updateListener.of((update) => {
         if (update.docChanged) {
@@ -39,6 +40,10 @@ export function MarkdownEditor({
       }),
       EditorView.lineWrapping,
     ];
+
+    if (resolvedTheme === "dark") {
+      extensions.push(oneDark);
+    }
 
     if (placeholder) {
       extensions.push(placeholderExt(placeholder));
@@ -60,9 +65,9 @@ export function MarkdownEditor({
       view.destroy();
       viewRef.current = null;
     };
-    // Only create editor on mount
+    // Recreate editor when theme changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [resolvedTheme]);
 
   // Sync external value changes into editor
   useEffect(() => {

@@ -205,13 +205,51 @@ describe("AdminControls", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("hides Start Voting when not idle", () => {
+  it("hides Start Voting when not idle and not revealed", () => {
     render(
       <AdminControls
         roomState="voting"
         hasPrevTicket={false}
         hasNextTicket={false}
         hasTickets={false}
+        onReveal={noop}
+        onReset={noop}
+        onPrevTicket={noop}
+        onNextTicket={noop}
+        onStartFreeVote={noop}
+      />,
+    );
+    expect(
+      screen.queryByRole("button", { name: "Start Voting" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows Start Voting when revealed and no tickets (free vote cycle)", () => {
+    render(
+      <AdminControls
+        roomState="revealed"
+        hasPrevTicket={false}
+        hasNextTicket={false}
+        hasTickets={false}
+        onReveal={noop}
+        onReset={noop}
+        onPrevTicket={noop}
+        onNextTicket={noop}
+        onStartFreeVote={noop}
+      />,
+    );
+    expect(
+      screen.getByRole("button", { name: "Start Voting" }),
+    ).toBeInTheDocument();
+  });
+
+  it("hides Start Voting when revealed but has tickets", () => {
+    render(
+      <AdminControls
+        roomState="revealed"
+        hasPrevTicket={false}
+        hasNextTicket={false}
+        hasTickets={true}
         onReveal={noop}
         onReset={noop}
         onPrevTicket={noop}
