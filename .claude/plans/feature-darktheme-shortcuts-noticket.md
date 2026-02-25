@@ -77,8 +77,8 @@ The theme system (Task 4) must come first because it introduces CSS variables th
 ---
 
 ## Task 4: Sticky Sidebar
-- [ ] Add `min-height: 0` and `overflow: hidden` to `.room-page` — currently missing, which lets `.room-layout` grow beyond viewport
-- [ ] Verify the chain: `#root` (100vh, flex column) -> `.page` (flex: 1) -> `.room-page` (flex: 1, **add min-height: 0**) -> `.room-layout` (grid, flex: 1, overflow: hidden) -> `.room-sidebar` (overflow-y: auto)
+- [x] Add `min-height: 0` and `overflow: hidden` to `.room-page` — currently missing, which lets `.room-layout` grow beyond viewport
+- [x] Verify the chain: `#root` (100vh, flex column) -> `.page` (flex: 1) -> `.room-page` (flex: 1, **add min-height: 0**) -> `.room-layout` (grid, flex: 1, overflow: hidden) -> `.room-sidebar` (overflow-y: auto)
 
 **Key file:** `ppfront/src/App.css`
 
