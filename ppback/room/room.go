@@ -115,6 +115,26 @@ func StartFreeVote(r *model.Room, ticketID string) {
 		}
 	}
 
+	// Mark old ticket as skipped if it was in voting state.
+	if r.CurrentTicketID != "" {
+		old := findTicket(r, r.CurrentTicketID)
+		if old != nil && old.Status == model.TicketStatusVoting {
+			old.Status = model.TicketStatusSkipped
+		}
+	}
+
+	// Reuse an existing empty-content ticket instead of accumulating new ones.
+	for _, t := range r.Tickets {
+		if t.Content == "" && t.Status != model.TicketStatusVoting {
+			t.Status = model.TicketStatusVoting
+			t.Votes = make(map[string]model.Vote)
+			r.CurrentTicketID = t.ID
+			r.State = model.RoomStateVoting
+			touch(r)
+			return
+		}
+	}
+
 	t := &model.Ticket{
 		ID:      ticketID,
 		Content: "",

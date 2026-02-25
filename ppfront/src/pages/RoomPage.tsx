@@ -249,7 +249,7 @@ function RoomPageContent({ roomId }: { roomId: string }) {
           roomState={roomState?.state ?? "idle"}
           hasPrevTicket={hasPrevTicket}
           hasNextTicket={hasNextTicket}
-          hasTickets={tickets.length > 0}
+          hasTickets={tickets.some(t => t.content)}
           onReveal={isCountingDown ? revealVotes : startReveal}
           onReset={resetVotes}
           onPrevTicket={prevTicket}
