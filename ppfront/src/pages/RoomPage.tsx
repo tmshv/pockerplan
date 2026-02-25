@@ -120,6 +120,14 @@ function RoomPageContent({ roomId }: { roomId: string }) {
     [submitVote],
   );
 
+  const handleNextTicketShortcut = useCallback(() => {
+    nextTicket().catch(() => {});
+  }, [nextTicket]);
+
+  const handlePrevTicketShortcut = useCallback(() => {
+    prevTicket().catch(() => {});
+  }, [prevTicket]);
+
   useKeyboardShortcuts({
     scaleValues,
     roomState: roomState?.state,
@@ -127,8 +135,8 @@ function RoomPageContent({ roomId }: { roomId: string }) {
     onVote: handleVoteShortcut,
     onReveal: handleRevealShortcut,
     onReset: handleResetShortcut,
-    onNextTicket: nextTicket,
-    onPrevTicket: prevTicket,
+    onNextTicket: handleNextTicketShortcut,
+    onPrevTicket: handlePrevTicketShortcut,
     hasPrevTicket,
     hasNextTicket,
   });

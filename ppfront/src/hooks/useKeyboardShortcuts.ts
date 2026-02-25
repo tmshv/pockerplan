@@ -82,29 +82,29 @@ export function useKeyboardShortcuts({
       // Admin-only shortcuts
       if (isAdmin) {
         if (e.key === "Enter") {
-          e.preventDefault();
           if (roomState === "voting" || roomState === "counting_down") {
+            e.preventDefault();
             onReveal();
           }
           return;
         }
         if (e.key === " ") {
-          e.preventDefault();
           if (roomState === "revealed") {
+            e.preventDefault();
             onReset();
           }
           return;
         }
         if (e.key === "ArrowLeft") {
-          e.preventDefault();
           if (hasPrevTicket) {
+            e.preventDefault();
             onPrevTicket();
           }
           return;
         }
         if (e.key === "ArrowRight") {
-          e.preventDefault();
           if (hasNextTicket) {
+            e.preventDefault();
             onNextTicket();
           }
           return;
