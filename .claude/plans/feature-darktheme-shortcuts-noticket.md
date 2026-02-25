@@ -69,8 +69,8 @@ The theme system (Task 4) must come first because it introduces CSS variables th
 ---
 
 ## Task 3: Fix Badge/Tag Contrast (Skipped badge)
-- [ ] Set `--color-status-skipped` to `#6b5b5b` in dark theme (was `#444`, now clearly distinct from pending `#333`)
-- [ ] Light theme uses `#fecaca` (red-tinted pastel) for skipped badge
+- [x] Set `--color-status-skipped` to `#6b5b5b` in dark theme (was `#444`, now clearly distinct from pending `#333`)
+- [x] Light theme uses `#fecaca` (red-tinted pastel) for skipped badge
 
 **Key files:** `ppfront/src/App.css` (already being modified in Task 1)
 
