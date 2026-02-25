@@ -60,9 +60,9 @@ The theme system (Task 4) must come first because it introduces CSS variables th
 ---
 
 ## Task 2: Fix Admin Panel Contrast
-- [ ] Set `--color-panel-bg` to `#1e1e3a` (was `#1a1a2e`, more distinct from page bg)
-- [ ] Set `--color-panel-border` to `#5a5a7a` (was `#444`, much more visible)
-- [ ] Add explicit button styles inside `.floating-admin-content` — visible background (`var(--color-panel-toggle-bg)`), visible border, proper disabled state
+- [x] Set `--color-panel-bg` to `#1e1e3a` (was `#1a1a2e`, more distinct from page bg)
+- [x] Set `--color-panel-border` to `#5a5a7a` (was `#444`, much more visible)
+- [x] Add explicit button styles inside `.floating-admin-content` — visible background (`var(--color-panel-toggle-bg)`), visible border, proper disabled state
 
 **Key files:** `ppfront/src/App.css` (already being modified in Task 1)
 

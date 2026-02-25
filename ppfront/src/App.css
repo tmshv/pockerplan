@@ -502,6 +502,23 @@
   gap: 1rem;
 }
 
+.floating-admin-content button {
+  background: var(--color-panel-toggle-bg);
+  border: 1px solid var(--color-panel-border);
+  color: inherit;
+}
+
+.floating-admin-content button:hover:not(:disabled) {
+  background: var(--color-panel-toggle-hover);
+  border-color: var(--color-primary);
+}
+
+.floating-admin-content button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  border-color: transparent;
+}
+
 /* Ticket list */
 
 .ticket-list h3 {
