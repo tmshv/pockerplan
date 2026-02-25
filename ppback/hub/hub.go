@@ -198,6 +198,8 @@ func (h *Hub) handleRPC(client *centrifuge.Client, method string, data []byte) (
 		return h.rpcSetTicket(data)
 	case "update_room_name":
 		return h.rpcUpdateRoomName(data)
+	case "start_free_vote":
+		return h.rpcStartFreeVote(data)
 	default:
 		return nil, centrifuge.ErrorMethodNotFound
 	}
@@ -573,6 +575,37 @@ func (h *Hub) rpcUpdateRoomName(data []byte) ([]byte, error) {
 			return room.ErrInvalidAdmin
 		}
 		room.SetName(r, req.Name)
+		return nil
+	})
+	if err != nil {
+		if errors.Is(err, room.ErrRoomNotFound) {
+			return nil, errorNotFound
+		}
+		if errors.Is(err, room.ErrInvalidAdmin) {
+			return nil, centrifuge.ErrorPermissionDenied
+		}
+		return nil, centrifuge.ErrorInternal
+	}
+
+	h.broadcastRoomState(req.RoomID)
+	return []byte(`{}`), nil
+}
+
+func (h *Hub) rpcStartFreeVote(data []byte) ([]byte, error) {
+	var req model.AdminActionRequest
+	if err := json.Unmarshal(data, &req); err != nil {
+		return nil, centrifuge.ErrorBadRequest
+	}
+	if req.RoomID == "" || req.AdminSecret == "" {
+		return nil, centrifuge.ErrorBadRequest
+	}
+
+	ticketID := uuid.New().String()
+	err := h.rooms.WithRoom(req.RoomID, func(r *model.Room) error {
+		if r.AdminSecret != req.AdminSecret {
+			return room.ErrInvalidAdmin
+		}
+		room.StartFreeVote(r, ticketID)
 		return nil
 	})
 	if err != nil {

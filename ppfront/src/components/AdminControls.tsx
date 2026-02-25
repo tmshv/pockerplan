@@ -4,25 +4,34 @@ interface AdminControlsProps {
   roomState: RoomState;
   hasPrevTicket: boolean;
   hasNextTicket: boolean;
+  hasTickets: boolean;
   onReveal: () => void;
   onReset: () => void;
   onPrevTicket: () => void;
   onNextTicket: () => void;
+  onStartFreeVote: () => void;
 }
 
 export function AdminControls({
   roomState,
   hasPrevTicket,
   hasNextTicket,
+  hasTickets,
   onReveal,
   onReset,
   onPrevTicket,
   onNextTicket,
+  onStartFreeVote,
 }: AdminControlsProps) {
   return (
     <div className="admin-controls">
       <h3>Admin Controls</h3>
       <div className="admin-buttons">
+        {roomState === "idle" && !hasTickets && (
+          <button type="button" onClick={onStartFreeVote}>
+            Start Voting
+          </button>
+        )}
         <button
           type="button"
           onClick={onReveal}

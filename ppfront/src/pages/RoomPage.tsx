@@ -62,6 +62,7 @@ function RoomPageContent({ roomId }: { roomId: string }) {
     nextTicket,
     prevTicket,
     setTicket,
+    startFreeVote,
   } = useRoomContext();
 
   const info = loadRoomInfo(roomId);
@@ -201,11 +202,13 @@ function RoomPageContent({ roomId }: { roomId: string }) {
           roomState={roomState?.state ?? "idle"}
           hasPrevTicket={hasPrevTicket}
           hasNextTicket={hasNextTicket}
+          hasTickets={tickets.length > 0}
           onReveal={isCountingDown ? revealVotes : startReveal}
           onReset={resetVotes}
           onPrevTicket={prevTicket}
           onNextTicket={nextTicket}
           onAddTicket={addTicket}
+          onStartFreeVote={startFreeVote}
         />
       )}
     </div>

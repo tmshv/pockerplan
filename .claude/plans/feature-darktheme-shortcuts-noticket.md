@@ -85,14 +85,14 @@ The theme system (Task 4) must come first because it introduces CSS variables th
 ---
 
 ## Task 5: "No Ticket" Mode (auto when zero tickets)
-- [ ] Add `start_free_vote` RPC in `ppback/hub/hub.go` — creates ephemeral ticket with empty content, sets as current, transitions to voting state
-- [ ] Add idempotency guard: if room already has a current empty-content ticket in voting state, no-op
-- [ ] Add `startFreeVote` action in `ppfront/src/hooks/useRoom.ts` (calls `start_free_vote` RPC)
-- [ ] Pass through in `ppfront/src/context/RoomContext.tsx`
-- [ ] Add "Start Voting" button in `AdminControls.tsx` — shown when `roomState === "idle"` and no tickets exist
-- [ ] Pass `startFreeVote` and `hasTickets` through `FloatingAdminPanel.tsx` -> `AdminControls.tsx`
-- [ ] Wire up in `RoomPage.tsx`
-- [ ] Update `TicketPanel.tsx` — when current ticket has empty content, show minimal UI (just status badge, no description area)
+- [x] Add `start_free_vote` RPC in `ppback/hub/hub.go` — creates ephemeral ticket with empty content, sets as current, transitions to voting state
+- [x] Add idempotency guard: if room already has a current empty-content ticket in voting state, no-op
+- [x] Add `startFreeVote` action in `ppfront/src/hooks/useRoom.ts` (calls `start_free_vote` RPC)
+- [x] Pass through in `ppfront/src/context/RoomContext.tsx`
+- [x] Add "Start Voting" button in `AdminControls.tsx` — shown when `roomState === "idle"` and no tickets exist
+- [x] Pass `startFreeVote` and `hasTickets` through `FloatingAdminPanel.tsx` -> `AdminControls.tsx`
+- [x] Wire up in `RoomPage.tsx`
+- [x] Update `TicketPanel.tsx` — when current ticket has empty content, show minimal UI (just status badge, no description area)
 
 **Backend files:** `ppback/hub/hub.go`
 **Frontend files:** `ppfront/src/hooks/useRoom.ts`, `ppfront/src/context/RoomContext.tsx`, `ppfront/src/components/AdminControls.tsx`, `ppfront/src/components/FloatingAdminPanel.tsx`, `ppfront/src/pages/RoomPage.tsx`, `ppfront/src/components/TicketPanel.tsx`

@@ -38,6 +38,7 @@ export interface UseRoomResult {
   nextTicket: () => Promise<void>;
   prevTicket: () => Promise<void>;
   setTicket: (ticketId: string) => Promise<void>;
+  startFreeVote: () => Promise<void>;
 }
 
 function classifyError(
@@ -259,6 +260,10 @@ export function useRoom(roomId: string | undefined): UseRoomResult {
     () => adminAction("prev_ticket"),
     [adminAction],
   );
+  const startFreeVote = useCallback(
+    () => adminAction("start_free_vote"),
+    [adminAction],
+  );
   const setTicket = useCallback(
     async (ticketId: string) => {
       if (!roomId) return;
@@ -289,5 +294,6 @@ export function useRoom(roomId: string | undefined): UseRoomResult {
     nextTicket,
     prevTicket,
     setTicket,
+    startFreeVote,
   };
 }

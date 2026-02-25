@@ -103,6 +103,30 @@ func ResetVotes(r *model.Room) error {
 	return nil
 }
 
+// StartFreeVote creates an ephemeral ticket with empty content, sets it as
+// current, and transitions the room to voting state. If the room already has a
+// current empty-content ticket in voting state, it is a no-op (idempotency).
+func StartFreeVote(r *model.Room, ticketID string) {
+	// Idempotency: if room already has a current empty-content ticket in voting state, no-op.
+	if r.CurrentTicketID != "" && r.State == model.RoomStateVoting {
+		current := findTicket(r, r.CurrentTicketID)
+		if current != nil && current.Content == "" && current.Status == model.TicketStatusVoting {
+			return
+		}
+	}
+
+	t := &model.Ticket{
+		ID:      ticketID,
+		Content: "",
+		Status:  model.TicketStatusVoting,
+		Votes:   make(map[string]model.Vote),
+	}
+	r.Tickets = append(r.Tickets, t)
+	r.CurrentTicketID = ticketID
+	r.State = model.RoomStateVoting
+	touch(r)
+}
+
 // AddTicket adds a new ticket to the room.
 func AddTicket(r *model.Room, t *model.Ticket) {
 	t.Status = model.TicketStatusPending

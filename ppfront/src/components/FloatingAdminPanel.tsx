@@ -9,11 +9,13 @@ interface FloatingAdminPanelProps {
   roomState: RoomState;
   hasPrevTicket: boolean;
   hasNextTicket: boolean;
+  hasTickets: boolean;
   onReveal: () => void;
   onReset: () => void;
   onPrevTicket: () => void;
   onNextTicket: () => void;
   onAddTicket: (content: string) => Promise<unknown>;
+  onStartFreeVote: () => void;
 }
 
 export function FloatingAdminPanel({
@@ -21,11 +23,13 @@ export function FloatingAdminPanel({
   roomState,
   hasPrevTicket,
   hasNextTicket,
+  hasTickets,
   onReveal,
   onReset,
   onPrevTicket,
   onNextTicket,
   onAddTicket,
+  onStartFreeVote,
 }: FloatingAdminPanelProps) {
   const [collapsed, setCollapsed] = useState(false);
 
@@ -46,10 +50,12 @@ export function FloatingAdminPanel({
             roomState={roomState}
             hasPrevTicket={hasPrevTicket}
             hasNextTicket={hasNextTicket}
+            hasTickets={hasTickets}
             onReveal={onReveal}
             onReset={onReset}
             onPrevTicket={onPrevTicket}
             onNextTicket={onNextTicket}
+            onStartFreeVote={onStartFreeVote}
           />
           <TicketForm onAdd={onAddTicket} />
         </div>
