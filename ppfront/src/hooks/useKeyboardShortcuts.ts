@@ -16,18 +16,25 @@ interface UseKeyboardShortcutsOptions {
 
 const DEBOUNCE_MS = 500;
 
-function isInteractiveElementFocused(): boolean {
+function isTextInputFocused(): boolean {
   const el = document.activeElement;
   if (!el) return false;
   const tag = el.tagName;
   if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return true;
-  if (tag === "BUTTON" || tag === "A") return true;
   if (
     (el as HTMLElement).isContentEditable ||
     el.getAttribute("contenteditable") === "true"
   ) {
     return true;
   }
+  return false;
+}
+
+function isInteractiveElementFocused(): boolean {
+  if (isTextInputFocused()) return true;
+  const el = document.activeElement;
+  if (!el) return false;
+  if (el.tagName === "BUTTON" || el.tagName === "A") return true;
   // Elements with role="button" (e.g. ticket list rows) handle their own
   // Enter/Space, so global shortcuts must not interfere.
   if (el.getAttribute("role") === "button") return true;
@@ -122,11 +129,12 @@ export function useKeyboardShortcuts({
     }
 
     function handleKeyDown(e: KeyboardEvent) {
-      if (isInteractiveElementFocused()) return;
       if (e.ctrlKey || e.altKey || e.metaKey) return;
 
-      // Admin-only shortcuts
-      if (isAdminRef.current) {
+      // Admin shortcuts only need to be suppressed in text inputs, not when
+      // a button has focus (buttons retain focus after clicks in the admin
+      // panel, and we still want Enter/Space/Arrow to work).
+      if (isAdminRef.current && !isTextInputFocused()) {
         if (e.key === "Enter") {
           if (roomStateRef.current === "voting" || roomStateRef.current === "counting_down") {
             e.preventDefault();
@@ -156,6 +164,10 @@ export function useKeyboardShortcuts({
           return;
         }
       }
+
+      // Voting shortcuts need the full interactive-element guard so typing
+      // vote characters doesn't interfere with focused buttons or links.
+      if (isInteractiveElementFocused()) return;
 
       // Voting shortcuts - only during voting or counting_down state
       if (roomStateRef.current !== "voting" && roomStateRef.current !== "counting_down") return;
