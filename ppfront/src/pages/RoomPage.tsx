@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import {
   Link,
   useNavigate,
@@ -15,6 +15,8 @@ import { UserList } from "../components/UserList";
 import { VoteResults } from "../components/VoteResults";
 import { VotingPanel } from "../components/VotingPanel";
 import { RoomProvider, useRoomContext } from "../context/RoomContext";
+import { scales } from "../data/scales";
+import { useKeyboardShortcuts } from "../hooks/useKeyboardShortcuts";
 import { loadRoomInfo, saveRoomInfo } from "../hooks/useUser";
 
 export function RoomPage() {
@@ -140,6 +142,36 @@ function RoomPageContent({ roomId }: { roomId: string }) {
     (currentTicketIndex === -1
       ? tickets.length > 0
       : currentTicketIndex < tickets.length - 1) && !isCountingDown;
+
+  const scaleValues = useMemo(() => {
+    const scale = scales.find((s) => s.id === roomState?.scale);
+    return scale?.values ?? [];
+  }, [roomState?.scale]);
+
+  const handleRevealShortcut = useCallback(() => {
+    if (isCountingDown) {
+      revealVotes().catch(() => {});
+    } else {
+      startReveal().catch(() => {});
+    }
+  }, [isCountingDown, revealVotes, startReveal]);
+
+  const handleResetShortcut = useCallback(() => {
+    resetVotes().catch(() => {});
+  }, [resetVotes]);
+
+  useKeyboardShortcuts({
+    scaleValues,
+    roomState: roomState?.state,
+    isAdmin,
+    onVote: submitVote,
+    onReveal: handleRevealShortcut,
+    onReset: handleResetShortcut,
+    onNextTicket: nextTicket,
+    onPrevTicket: prevTicket,
+    hasPrevTicket,
+    hasNextTicket,
+  });
 
   return (
     <div className="page room-page">

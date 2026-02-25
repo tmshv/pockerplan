@@ -100,15 +100,15 @@ The theme system (Task 4) must come first because it introduces CSS variables th
 ---
 
 ## Task 6: Keyboard Shortcuts for Players
-- [ ] Create `ppfront/src/hooks/useKeyboardShortcuts.ts`
-- [ ] Input buffer with 500ms debounce for multi-char values (e.g., "13", "XXL")
-- [ ] Immediate-match optimization: if buffer uniquely matches one value and no other value starts with same prefix, fire immediately
-- [ ] Case-insensitive matching against current scale values
-- [ ] Skip when focus is in `<input>`, `<textarea>`, or `[contenteditable]`
-- [ ] Skip when modifier keys (Ctrl/Alt/Meta) are held
-- [ ] Admin-only shortcuts: `Enter` -> reveal, `Space` -> reset, `ArrowLeft`/`ArrowRight` -> prev/next ticket
-- [ ] Integrate hook in `RoomPageContent` component
-- [ ] `preventDefault()` on Enter/Space to avoid scrolling
+- [x] Create `ppfront/src/hooks/useKeyboardShortcuts.ts`
+- [x] Input buffer with 500ms debounce for multi-char values (e.g., "13", "XXL")
+- [x] Immediate-match optimization: if buffer uniquely matches one value and no other value starts with same prefix, fire immediately
+- [x] Case-insensitive matching against current scale values
+- [x] Skip when focus is in `<input>`, `<textarea>`, or `[contenteditable]`
+- [x] Skip when modifier keys (Ctrl/Alt/Meta) are held
+- [x] Admin-only shortcuts: `Enter` -> reveal, `Space` -> reset, `ArrowLeft`/`ArrowRight` -> prev/next ticket
+- [x] Integrate hook in `RoomPageContent` component
+- [x] `preventDefault()` on Enter/Space to avoid scrolling
 
 **New file:** `ppfront/src/hooks/useKeyboardShortcuts.ts`
 **Modified:** `ppfront/src/pages/RoomPage.tsx`
