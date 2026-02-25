@@ -10,11 +10,13 @@ const defaultProps = {
   roomState: "voting" as const,
   hasPrevTicket: false,
   hasNextTicket: true,
+  hasTickets: true,
   onReveal: vi.fn(),
   onReset: vi.fn(),
   onPrevTicket: vi.fn(),
   onNextTicket: vi.fn(),
   onAddTicket: vi.fn().mockResolvedValue(undefined),
+  onStartFreeVote: vi.fn(),
 };
 
 describe("FloatingAdminPanel", () => {

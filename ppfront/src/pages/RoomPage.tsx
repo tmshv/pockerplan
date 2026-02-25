@@ -71,11 +71,67 @@ function RoomPageContent({ roomId }: { roomId: string }) {
   const isAdmin = !!info?.adminSecret;
   const userId = info?.userId ?? "";
 
+  const tickets = roomState?.tickets ?? [];
+  const users = roomState?.users ?? [];
+  const currentTicket =
+    tickets.find((t) => t.id === roomState?.currentTicketId) ?? null;
+
+  const myVote = currentTicket?.votes.find((v) => v.userId === userId);
+  const isRevealed = roomState?.state === "revealed";
+  const isVoting = roomState?.state === "voting";
+  const isCountingDown = roomState?.state === "counting_down";
+
+  const currentTicketIndex = roomState?.currentTicketId
+    ? tickets.findIndex((t) => t.id === roomState.currentTicketId)
+    : -1;
+  const hasPrevTicket = currentTicketIndex > 0 && !isCountingDown;
+  const hasNextTicket =
+    (currentTicketIndex === -1
+      ? tickets.length > 0
+      : currentTicketIndex < tickets.length - 1) && !isCountingDown;
+
+  const scaleValues = useMemo(() => {
+    const scale = scales.find((s) => s.id === roomState?.scale);
+    return scale?.values ?? [];
+  }, [roomState?.scale]);
+
   const onCountdownComplete = useCallback(() => {
     if (isAdmin) {
       revealVotes().catch(() => {});
     }
   }, [isAdmin, revealVotes]);
+
+  const handleRevealShortcut = useCallback(() => {
+    if (isCountingDown) {
+      revealVotes().catch(() => {});
+    } else {
+      startReveal().catch(() => {});
+    }
+  }, [isCountingDown, revealVotes, startReveal]);
+
+  const handleResetShortcut = useCallback(() => {
+    resetVotes().catch(() => {});
+  }, [resetVotes]);
+
+  const handleVoteShortcut = useCallback(
+    (value: string) => {
+      submitVote(value).catch(() => {});
+    },
+    [submitVote],
+  );
+
+  useKeyboardShortcuts({
+    scaleValues,
+    roomState: roomState?.state,
+    isAdmin,
+    onVote: handleVoteShortcut,
+    onReveal: handleRevealShortcut,
+    onReset: handleResetShortcut,
+    onNextTicket: nextTicket,
+    onPrevTicket: prevTicket,
+    hasPrevTicket,
+    hasNextTicket,
+  });
 
   if (error) {
     return (
@@ -123,55 +179,6 @@ function RoomPageContent({ roomId }: { roomId: string }) {
       </div>
     );
   }
-
-  const tickets = roomState?.tickets ?? [];
-  const users = roomState?.users ?? [];
-  const currentTicket =
-    tickets.find((t) => t.id === roomState?.currentTicketId) ?? null;
-
-  const myVote = currentTicket?.votes.find((v) => v.userId === userId);
-  const isRevealed = roomState?.state === "revealed";
-  const isVoting = roomState?.state === "voting";
-  const isCountingDown = roomState?.state === "counting_down";
-
-  const currentTicketIndex = roomState?.currentTicketId
-    ? tickets.findIndex((t) => t.id === roomState.currentTicketId)
-    : -1;
-  const hasPrevTicket = currentTicketIndex > 0 && !isCountingDown;
-  const hasNextTicket =
-    (currentTicketIndex === -1
-      ? tickets.length > 0
-      : currentTicketIndex < tickets.length - 1) && !isCountingDown;
-
-  const scaleValues = useMemo(() => {
-    const scale = scales.find((s) => s.id === roomState?.scale);
-    return scale?.values ?? [];
-  }, [roomState?.scale]);
-
-  const handleRevealShortcut = useCallback(() => {
-    if (isCountingDown) {
-      revealVotes().catch(() => {});
-    } else {
-      startReveal().catch(() => {});
-    }
-  }, [isCountingDown, revealVotes, startReveal]);
-
-  const handleResetShortcut = useCallback(() => {
-    resetVotes().catch(() => {});
-  }, [resetVotes]);
-
-  useKeyboardShortcuts({
-    scaleValues,
-    roomState: roomState?.state,
-    isAdmin,
-    onVote: submitVote,
-    onReveal: handleRevealShortcut,
-    onReset: handleResetShortcut,
-    onNextTicket: nextTicket,
-    onPrevTicket: prevTicket,
-    hasPrevTicket,
-    hasNextTicket,
-  });
 
   return (
     <div className="page room-page">

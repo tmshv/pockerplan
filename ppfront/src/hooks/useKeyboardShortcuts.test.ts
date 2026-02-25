@@ -6,7 +6,9 @@ function fireKey(key: string, opts?: Partial<KeyboardEventInit>) {
   window.dispatchEvent(new KeyboardEvent("keydown", { key, ...opts }));
 }
 
-function makeOptions(overrides: Partial<Parameters<typeof useKeyboardShortcuts>[0]> = {}) {
+function makeOptions(
+  overrides: Partial<Parameters<typeof useKeyboardShortcuts>[0]> = {},
+) {
   return {
     scaleValues: ["1", "2", "3", "5", "8", "13", "21", "?"],
     roomState: "voting" as const,

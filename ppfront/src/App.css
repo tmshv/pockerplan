@@ -275,6 +275,9 @@
 .ticket-status.status-revealed {
   background: var(--color-status-revealed);
 }
+.ticket-status.status-skipped {
+  background: var(--color-status-skipped);
+}
 
 /* Vote cards */
 

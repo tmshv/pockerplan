@@ -63,8 +63,7 @@ export function useKeyboardShortcuts({
     function canMatchMore(buffer: string): boolean {
       const lower = buffer.toLowerCase();
       return scaleValues.some(
-        (v) =>
-          v.toLowerCase().startsWith(lower) && v.toLowerCase() !== lower,
+        (v) => v.toLowerCase().startsWith(lower) && v.toLowerCase() !== lower,
       );
     }
 
@@ -112,8 +111,8 @@ export function useKeyboardShortcuts({
         }
       }
 
-      // Voting shortcuts - only during voting state
-      if (roomState !== "voting") return;
+      // Voting shortcuts - only during voting or counting_down state
+      if (roomState !== "voting" && roomState !== "counting_down") return;
 
       // Only accept printable single characters for vote buffer
       if (e.key.length !== 1) return;

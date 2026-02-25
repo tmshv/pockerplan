@@ -12,10 +12,12 @@ describe("AdminControls", () => {
         roomState="idle"
         hasPrevTicket={false}
         hasNextTicket={true}
+        hasTickets={true}
         onReveal={noop}
         onReset={noop}
         onPrevTicket={noop}
         onNextTicket={noop}
+        onStartFreeVote={noop}
       />,
     );
     expect(screen.getByRole("button", { name: "Reveal Votes" })).toBeDisabled();
@@ -27,10 +29,12 @@ describe("AdminControls", () => {
         roomState="voting"
         hasPrevTicket={false}
         hasNextTicket={true}
+        hasTickets={true}
         onReveal={noop}
         onReset={noop}
         onPrevTicket={noop}
         onNextTicket={noop}
+        onStartFreeVote={noop}
       />,
     );
     expect(screen.getByRole("button", { name: "Reveal Votes" })).toBeEnabled();
@@ -42,10 +46,12 @@ describe("AdminControls", () => {
         roomState="idle"
         hasPrevTicket={false}
         hasNextTicket={true}
+        hasTickets={true}
         onReveal={noop}
         onReset={noop}
         onPrevTicket={noop}
         onNextTicket={noop}
+        onStartFreeVote={noop}
       />,
     );
     expect(screen.getByRole("button", { name: "Reset Votes" })).toBeDisabled();
@@ -57,10 +63,12 @@ describe("AdminControls", () => {
         roomState="voting"
         hasPrevTicket={false}
         hasNextTicket={false}
+        hasTickets={true}
         onReveal={noop}
         onReset={noop}
         onPrevTicket={noop}
         onNextTicket={noop}
+        onStartFreeVote={noop}
       />,
     );
     expect(screen.getByRole("button", { name: "Next Ticket" })).toBeDisabled();
@@ -72,10 +80,12 @@ describe("AdminControls", () => {
         roomState="voting"
         hasPrevTicket={false}
         hasNextTicket={true}
+        hasTickets={true}
         onReveal={noop}
         onReset={noop}
         onPrevTicket={noop}
         onNextTicket={noop}
+        onStartFreeVote={noop}
       />,
     );
     expect(screen.getByRole("button", { name: "Prev Ticket" })).toBeDisabled();
@@ -88,10 +98,12 @@ describe("AdminControls", () => {
         roomState="voting"
         hasPrevTicket={false}
         hasNextTicket={true}
+        hasTickets={true}
         onReveal={onReveal}
         onReset={noop}
         onPrevTicket={noop}
         onNextTicket={noop}
+        onStartFreeVote={noop}
       />,
     );
     await userEvent.click(screen.getByRole("button", { name: "Reveal Votes" }));
@@ -105,10 +117,12 @@ describe("AdminControls", () => {
         roomState="voting"
         hasPrevTicket={false}
         hasNextTicket={true}
+        hasTickets={true}
         onReveal={noop}
         onReset={onReset}
         onPrevTicket={noop}
         onNextTicket={noop}
+        onStartFreeVote={noop}
       />,
     );
     await userEvent.click(screen.getByRole("button", { name: "Reset Votes" }));
@@ -122,10 +136,12 @@ describe("AdminControls", () => {
         roomState="voting"
         hasPrevTicket={false}
         hasNextTicket={true}
+        hasTickets={true}
         onReveal={noop}
         onReset={noop}
         onPrevTicket={noop}
         onNextTicket={onNextTicket}
+        onStartFreeVote={noop}
       />,
     );
     await userEvent.click(screen.getByRole("button", { name: "Next Ticket" }));
@@ -139,13 +155,91 @@ describe("AdminControls", () => {
         roomState="voting"
         hasPrevTicket={true}
         hasNextTicket={true}
+        hasTickets={true}
         onReveal={noop}
         onReset={noop}
         onPrevTicket={onPrevTicket}
         onNextTicket={noop}
+        onStartFreeVote={noop}
       />,
     );
     await userEvent.click(screen.getByRole("button", { name: "Prev Ticket" }));
     expect(onPrevTicket).toHaveBeenCalledOnce();
+  });
+
+  it("shows Start Voting when idle and no tickets", () => {
+    render(
+      <AdminControls
+        roomState="idle"
+        hasPrevTicket={false}
+        hasNextTicket={false}
+        hasTickets={false}
+        onReveal={noop}
+        onReset={noop}
+        onPrevTicket={noop}
+        onNextTicket={noop}
+        onStartFreeVote={noop}
+      />,
+    );
+    expect(
+      screen.getByRole("button", { name: "Start Voting" }),
+    ).toBeInTheDocument();
+  });
+
+  it("hides Start Voting when tickets exist", () => {
+    render(
+      <AdminControls
+        roomState="idle"
+        hasPrevTicket={false}
+        hasNextTicket={false}
+        hasTickets={true}
+        onReveal={noop}
+        onReset={noop}
+        onPrevTicket={noop}
+        onNextTicket={noop}
+        onStartFreeVote={noop}
+      />,
+    );
+    expect(
+      screen.queryByRole("button", { name: "Start Voting" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("hides Start Voting when not idle", () => {
+    render(
+      <AdminControls
+        roomState="voting"
+        hasPrevTicket={false}
+        hasNextTicket={false}
+        hasTickets={false}
+        onReveal={noop}
+        onReset={noop}
+        onPrevTicket={noop}
+        onNextTicket={noop}
+        onStartFreeVote={noop}
+      />,
+    );
+    expect(
+      screen.queryByRole("button", { name: "Start Voting" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("calls onStartFreeVote when clicked", async () => {
+    const onStartFreeVote = vi.fn();
+    render(
+      <AdminControls
+        roomState="idle"
+        hasPrevTicket={false}
+        hasNextTicket={false}
+        hasTickets={false}
+        onReveal={noop}
+        onReset={noop}
+        onPrevTicket={noop}
+        onNextTicket={noop}
+        onStartFreeVote={onStartFreeVote}
+      />,
+    );
+    await userEvent.click(screen.getByRole("button", { name: "Start Voting" }));
+    expect(onStartFreeVote).toHaveBeenCalledOnce();
   });
 });

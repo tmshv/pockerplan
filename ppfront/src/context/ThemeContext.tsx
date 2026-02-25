@@ -1,9 +1,5 @@
 import { createContext, useContext } from "react";
-import {
-  useTheme,
-  type ResolvedTheme,
-  type Theme,
-} from "../hooks/useTheme";
+import { type ResolvedTheme, type Theme, useTheme } from "../hooks/useTheme";
 
 interface ThemeContextValue {
   theme: Theme;
