@@ -605,8 +605,7 @@ func (h *Hub) rpcStartFreeVote(data []byte) ([]byte, error) {
 		if r.AdminSecret != req.AdminSecret {
 			return room.ErrInvalidAdmin
 		}
-		room.StartFreeVote(r, ticketID)
-		return nil
+		return room.StartFreeVote(r, ticketID)
 	})
 	if err != nil {
 		if errors.Is(err, room.ErrRoomNotFound) {

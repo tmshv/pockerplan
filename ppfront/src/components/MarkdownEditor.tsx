@@ -30,6 +30,10 @@ export function MarkdownEditor({
   useEffect(() => {
     if (!containerRef.current) return;
 
+    // Capture current editor content before recreating (preserves in-progress edits on theme change)
+    const initialDoc =
+      viewRef.current?.state.doc.toString() ?? value;
+
     const extensions = [
       markdown(),
       keymap.of(defaultKeymap),
@@ -50,7 +54,7 @@ export function MarkdownEditor({
     }
 
     const state = EditorState.create({
-      doc: value,
+      doc: initialDoc,
       extensions,
     });
 
