@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 import { avatars } from "../data/avatars";
+import { hashString, makeRng } from "../lib/random";
 import type { User, VoteInfo } from "../types";
 
 interface PokerTableProps {
@@ -14,24 +15,6 @@ interface PokerTableProps {
 
 function getAvatarEmoji(avatarId: string): string {
   return avatars.find((a) => a.id === avatarId)?.emoji ?? "🙂";
-}
-
-/** FNV-1a hash → unsigned 32-bit int */
-function hashString(str: string): number {
-  let h = 0x811c9dc5;
-  for (let i = 0; i < str.length; i++) {
-    h = Math.imul(h ^ str.charCodeAt(i), 0x01000193);
-  }
-  return h >>> 0;
-}
-
-/** LCG seeded RNG, returns values in [0, 1) */
-function makeRng(seed: number) {
-  let s = seed | 0;
-  return () => {
-    s = (Math.imul(s, 1664525) + 1013904223) | 0;
-    return (s >>> 0) / 2 ** 32;
-  };
 }
 
 const SIZE = 400;
