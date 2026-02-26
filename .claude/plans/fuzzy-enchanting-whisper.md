@@ -124,7 +124,7 @@ Note: `VotingPanel.tsx` needs no changes — it already calls `onVote(v)` on eve
   - `TestRemoveVoteDuringCountingDown` — succeeds in `counting_down` state (mirrors `TestSubmitVoteDuringCountingDown`)
 
 ### Task 8: Frontend tests for `VotingPanel` toggle
-- [ ] In `ppfront/src/components/VotingPanel.test.tsx`, add a test verifying that clicking the already-selected card still calls `onVote(v)` — this confirms `VotingPanel` doesn't suppress calls on re-click, and that the toggle decision is left to the parent
+- [x] In `ppfront/src/components/VotingPanel.test.tsx`, add a test verifying that clicking the already-selected card still calls `onVote(v)` — this confirms `VotingPanel` doesn't suppress calls on re-click, and that the toggle decision is left to the parent
 
 ## Critical Files
 

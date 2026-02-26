@@ -65,6 +65,20 @@ describe("VotingPanel", () => {
     expect(onVote).toHaveBeenCalledWith("8");
   });
 
+  it("calls onVote when the already-selected card is clicked again", async () => {
+    const onVote = vi.fn();
+    render(
+      <VotingPanel
+        scaleId="fibonacci"
+        selectedValue="5"
+        disabled={false}
+        onVote={onVote}
+      />,
+    );
+    await userEvent.click(screen.getByRole("button", { name: "5" }));
+    expect(onVote).toHaveBeenCalledWith("5");
+  });
+
   it("disables all cards when disabled", () => {
     render(
       <VotingPanel
