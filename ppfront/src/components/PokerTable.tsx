@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { avatars } from "../data/avatars";
 import { hashString, makeRng } from "../lib/random";
 import type { User, VoteInfo } from "../types";
@@ -52,6 +52,13 @@ export function PokerTable({
     });
   }, [roomId]);
 
+  const [burnedTrees, setBurnedTrees] = useState<Set<number>>(new Set());
+  const [flyingTrees, setFlyingTrees] = useState<
+    { id: string; fromX: number; fromY: number; dx: number; dy: number }[]
+  >([]);
+  const flyIdRef = useRef(0);
+  const [fireLevel, setFireLevel] = useState(0);
+
   const N = users.length;
   const positions = users.map((u, i) => {
     const angle = (i / Math.max(N, 1)) * 2 * Math.PI - Math.PI / 2;
@@ -92,19 +99,48 @@ export function PokerTable({
       style={{ width: SIZE, height: SIZE, position: "relative" }}
     >
       {/* Trees */}
-      {trees.map((t, i) => (
+      {trees.map((t, i) => {
+        if (burnedTrees.has(i)) return null;
+        return (
+          <span
+            key={i}
+            draggable
+            style={{
+              position: "absolute",
+              left: t.x,
+              top: t.y,
+              transform: "translate(-50%, -50%)",
+              fontSize: `${t.size}rem`,
+              lineHeight: 1,
+              cursor: "grab",
+              userSelect: "none",
+            }}
+            onDragStart={(e) => {
+              e.dataTransfer.setData("tree-index", String(i));
+            }}
+          >
+            🌲
+          </span>
+        );
+      })}
+
+      {/* Flying trees (parabola toward campfire) */}
+      {flyingTrees.map((ft) => (
         <span
-          key={i}
-          style={{
-            position: "absolute",
-            left: t.x,
-            top: t.y,
-            transform: "translate(-50%, -50%)",
-            fontSize: `${t.size}rem`,
-            lineHeight: 1,
-            pointerEvents: "none",
-            userSelect: "none",
-          }}
+          key={ft.id}
+          className="paper-throw"
+          style={
+            {
+              left: ft.fromX,
+              top: ft.fromY,
+              fontSize: "1.5rem",
+              "--dx": `${ft.dx}px`,
+              "--dy": `${ft.dy}px`,
+            } as React.CSSProperties
+          }
+          onAnimationEnd={() =>
+            setFlyingTrees((prev) => prev.filter((f) => f.id !== ft.id))
+          }
         >
           🌲
         </span>
@@ -118,8 +154,29 @@ export function PokerTable({
           top: cy - 50,
           width: 100,
           height: 100,
-          pointerEvents: "none",
           userSelect: "none",
+          transform: `scale(${1 + fireLevel * 0.15})`,
+          transformOrigin: "center",
+        }}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={(e) => {
+          e.preventDefault();
+          const idx = parseInt(e.dataTransfer.getData("tree-index"), 10);
+          if (!isNaN(idx) && !burnedTrees.has(idx)) {
+            const t = trees[idx];
+            setBurnedTrees((prev) => new Set(prev).add(idx));
+            setFlyingTrees((prev) => [
+              ...prev,
+              {
+                id: `fly-${flyIdRef.current++}`,
+                fromX: t.x,
+                fromY: t.y,
+                dx: cx - t.x,
+                dy: cy - t.y,
+              },
+            ]);
+            setFireLevel((lvl) => Math.min(lvl + 1, 5));
+          }
         }}
       >
         <span className="campfire-glow" />
