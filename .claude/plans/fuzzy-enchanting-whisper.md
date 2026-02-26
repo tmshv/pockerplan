@@ -40,12 +40,12 @@ Users currently have no way to deselect a vote — clicking the already-selected
   ```
 
 ### Task 3: Backend — add `remove_vote` RPC handler
-- [ ] In `ppback/hub/hub.go`, add `"remove_vote"` to the switch in `handleRPC` (around line 184):
+- [x] In `ppback/hub/hub.go`, add `"remove_vote"` to the switch in `handleRPC` (around line 184):
   ```go
   case "remove_vote":
       return h.rpcRemoveVote(client, data)
   ```
-- [ ] Add handler (modeled after `rpcSubmitVote`, lines 324–353), but without the value field validation and using `room.RemoveVote`:
+- [x] Add handler (modeled after `rpcSubmitVote`, lines 324–353), but without the value field validation and using `room.RemoveVote`:
   ```go
   func (h *Hub) rpcRemoveVote(client *centrifuge.Client, data []byte) ([]byte, error) {
       var req model.RemoveVoteRequest

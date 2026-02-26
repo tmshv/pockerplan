@@ -182,6 +182,8 @@ func (h *Hub) handleRPC(client *centrifuge.Client, method string, data []byte) (
 		return h.rpcJoinRoom(client, data)
 	case "submit_vote":
 		return h.rpcSubmitVote(client, data)
+	case "remove_vote":
+		return h.rpcRemoveVote(client, data)
 	case "add_ticket":
 		return h.rpcAddTicket(data)
 	case "start_reveal":
@@ -348,6 +350,33 @@ func (h *Hub) rpcSubmitVote(client *centrifuge.Client, data []byte) ([]byte, err
 		return nil, &centrifuge.Error{Code: 400, Message: err.Error()}
 	}
 
+	h.broadcastRoomState(req.RoomID)
+	return []byte(`{}`), nil
+}
+
+func (h *Hub) rpcRemoveVote(client *centrifuge.Client, data []byte) ([]byte, error) {
+	var req model.RemoveVoteRequest
+	if err := json.Unmarshal(data, &req); err != nil {
+		return nil, centrifuge.ErrorBadRequest
+	}
+	if req.RoomID == "" || req.UserID == "" {
+		return nil, centrifuge.ErrorBadRequest
+	}
+	h.mu.RLock()
+	info, ok := h.clients[client.ID()]
+	h.mu.RUnlock()
+	if !ok || info.UserID != req.UserID || info.RoomID != req.RoomID {
+		return nil, centrifuge.ErrorPermissionDenied
+	}
+	err := h.rooms.WithRoom(req.RoomID, func(r *model.Room) error {
+		return room.RemoveVote(r, req.UserID)
+	})
+	if err != nil {
+		if errors.Is(err, room.ErrRoomNotFound) {
+			return nil, errorNotFound
+		}
+		return nil, &centrifuge.Error{Code: 400, Message: err.Error()}
+	}
 	h.broadcastRoomState(req.RoomID)
 	return []byte(`{}`), nil
 }
