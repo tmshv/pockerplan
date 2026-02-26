@@ -31,8 +31,7 @@ export function MarkdownEditor({
     if (!containerRef.current) return;
 
     // Capture current editor content before recreating (preserves in-progress edits on theme change)
-    const initialDoc =
-      viewRef.current?.state.doc.toString() ?? value;
+    const initialDoc = viewRef.current?.state.doc.toString() ?? value;
 
     const extensions = [
       markdown(),

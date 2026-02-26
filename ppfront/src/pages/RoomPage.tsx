@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Link,
   useNavigate,
@@ -82,6 +82,8 @@ function RoomPageContent({ roomId }: { roomId: string }) {
 
   // Track the voted value locally because the snapshot hides vote values during voting.
   const [localVoteValue, setLocalVoteValue] = useState<string | null>(null);
+  // Sequence counter to prevent stale catch handlers from rolling back newer actions.
+  const voteActionSeq = useRef(0);
   useEffect(() => {
     if (!hasVoted) {
       setLocalVoteValue(null);
@@ -89,8 +91,11 @@ function RoomPageContent({ roomId }: { roomId: string }) {
   }, [hasVoted]);
   // Reset when the current ticket changes so a stale value from a previous ticket
   // is not shown as selected on a different ticket where the user also has a vote.
+  // Also increment the sequence so pending catch handlers from the previous ticket
+  // cannot roll back state on the new ticket.
   useEffect(() => {
     setLocalVoteValue(null);
+    voteActionSeq.current++;
   }, [roomState?.currentTicketId]);
   const selectedValue = hasVoted ? localVoteValue : null;
 
@@ -132,14 +137,25 @@ function RoomPageContent({ roomId }: { roomId: string }) {
 
   const handleVoteToggle = useCallback(
     (value: string) => {
+      const seq = ++voteActionSeq.current;
       if (selectedValue === value) {
-        removeVote().catch(() => {});
+        setLocalVoteValue(null);
+        removeVote().catch(() => {
+          if (voteActionSeq.current === seq) {
+            setLocalVoteValue(value);
+          }
+        });
       } else {
+        const prev = localVoteValue;
         setLocalVoteValue(value);
-        submitVote(value).catch(() => {});
+        submitVote(value).catch(() => {
+          if (voteActionSeq.current === seq) {
+            setLocalVoteValue(prev);
+          }
+        });
       }
     },
-    [selectedValue, removeVote, submitVote],
+    [selectedValue, localVoteValue, removeVote, submitVote],
   );
 
   const handleVoteShortcut = useCallback(

@@ -39,6 +39,8 @@ describe("TicketPanel", () => {
       votes: [],
     };
     const { container } = render(<TicketPanel ticket={ticket} />);
-    expect(container.querySelector(".ticket-panel")).toBeInTheDocument();
+    expect(
+      container.querySelector(".ticket-panel.free-vote"),
+    ).toBeInTheDocument();
   });
 });

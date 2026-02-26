@@ -136,7 +136,10 @@ export function useKeyboardShortcuts({
       // panel, and we still want Enter/Space/Arrow to work).
       if (isAdminRef.current && !isTextInputFocused()) {
         if (e.key === "Enter") {
-          if (roomStateRef.current === "voting" || roomStateRef.current === "counting_down") {
+          if (
+            roomStateRef.current === "voting" ||
+            roomStateRef.current === "counting_down"
+          ) {
             e.preventDefault();
             onRevealRef.current();
           }
@@ -170,7 +173,11 @@ export function useKeyboardShortcuts({
       if (isInteractiveElementFocused()) return;
 
       // Voting shortcuts - only during voting or counting_down state
-      if (roomStateRef.current !== "voting" && roomStateRef.current !== "counting_down") return;
+      if (
+        roomStateRef.current !== "voting" &&
+        roomStateRef.current !== "counting_down"
+      )
+        return;
 
       // Only accept printable single characters for vote buffer
       if (e.key.length !== 1) return;

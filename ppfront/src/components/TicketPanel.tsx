@@ -15,9 +15,7 @@ export function TicketPanel({ ticket }: TicketPanelProps) {
   }
 
   if (!ticket.content) {
-    return (
-      <div className="ticket-panel free-vote" />
-    );
+    return <div className="ticket-panel free-vote" />;
   }
 
   return (
