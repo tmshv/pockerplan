@@ -78,7 +78,7 @@ export function PokerTable({
           top: cy - ry,
           width: rx * 2,
           height: ry * 2,
-          borderRadius: "50%",
+          borderRadius: 32,
           background: "var(--poker-table-color, #2d6a4f)",
           border: "4px solid var(--poker-table-border, #1b4332)",
         }}

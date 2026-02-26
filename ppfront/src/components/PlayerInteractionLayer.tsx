@@ -67,7 +67,7 @@ export function PlayerInteractionLayer({
           }
           onAnimationEnd={() => handleAnimationEnd(t.id)}
         >
-          📝
+          💩
         </span>
       ))}
     </div>
