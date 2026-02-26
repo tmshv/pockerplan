@@ -271,8 +271,7 @@ function RoomPageContent({ roomId }: { roomId: string }) {
         <ThemeToggle />
       </div>
 
-      <div className="room-layout">
-        <div className="room-main">
+      <div className="room-main">
           <PokerTable
             users={users}
             votes={currentTicket?.votes ?? []}
@@ -318,7 +317,6 @@ function RoomPageContent({ roomId }: { roomId: string }) {
             />
           )}
         </div>
-      </div>
 
       {isCountingDown && (
         <CountdownOverlay

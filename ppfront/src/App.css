@@ -161,14 +161,21 @@
 /* Room page layout */
 
 .room-page {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    "header header"
+    "main   sidebar";
   align-items: stretch;
-  justify-content: flex-start;
+  gap: 2.5rem 3rem;
   flex: 1;
   min-height: 0;
   overflow: hidden;
 }
 
 .room-header {
+  grid-area: header;
   display: flex;
   align-items: center;
   gap: 1.5rem;
@@ -221,16 +228,8 @@
   margin-left: auto;
 }
 
-.room-layout {
-  display: grid;
-  grid-template-columns: 3fr 1fr;
-  gap: 3rem;
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-}
-
 .room-main {
+  grid-area: main;
   display: flex;
   flex-direction: column;
   gap: 2.5rem;
@@ -240,10 +239,11 @@
 }
 
 .room-sidebar {
-  overflow-y: auto;
+  grid-area: sidebar;
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  overflow-y: auto;
   min-height: 0;
   min-width: 0;
 }
