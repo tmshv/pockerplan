@@ -614,19 +614,23 @@ func TestRemoveVote(t *testing.T) {
 		t.Fatalf("submit_vote: %v", err)
 	}
 
-	r, _ := env.rooms.Get(created.RoomID)
-	var ticket *model.Ticket
-	for _, t2 := range r.Tickets {
-		if t2.ID == r.CurrentTicketID {
-			ticket = t2
-			break
+	if err := env.rooms.WithRoom(created.RoomID, func(r *model.Room) error {
+		var ticket *model.Ticket
+		for _, t2 := range r.Tickets {
+			if t2.ID == r.CurrentTicketID {
+				ticket = t2
+				break
+			}
 		}
-	}
-	if ticket == nil {
-		t.Fatal("current ticket not found")
-	}
-	if _, ok := ticket.Votes[created.UserID]; !ok {
-		t.Fatal("expected vote to exist before removal")
+		if ticket == nil {
+			t.Fatal("current ticket not found")
+		}
+		if _, ok := ticket.Votes[created.UserID]; !ok {
+			t.Fatal("expected vote to exist before removal")
+		}
+		return nil
+	}); err != nil {
+		t.Fatalf("get room: %v", err)
 	}
 
 	// Remove the vote
@@ -638,15 +642,23 @@ func TestRemoveVote(t *testing.T) {
 		t.Fatalf("remove_vote: %v", err)
 	}
 
-	r, _ = env.rooms.Get(created.RoomID)
-	for _, t2 := range r.Tickets {
-		if t2.ID == r.CurrentTicketID {
-			ticket = t2
-			break
+	if err := env.rooms.WithRoom(created.RoomID, func(r *model.Room) error {
+		var ticket *model.Ticket
+		for _, t2 := range r.Tickets {
+			if t2.ID == r.CurrentTicketID {
+				ticket = t2
+				break
+			}
 		}
-	}
-	if _, ok := ticket.Votes[created.UserID]; ok {
-		t.Error("expected vote to be removed")
+		if ticket == nil {
+			t.Fatal("current ticket not found after remove")
+		}
+		if _, ok := ticket.Votes[created.UserID]; ok {
+			t.Error("expected vote to be removed")
+		}
+		return nil
+	}); err != nil {
+		t.Fatalf("get room: %v", err)
 	}
 }
 
