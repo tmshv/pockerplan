@@ -116,7 +116,7 @@ Users currently have no way to deselect a vote — clicking the already-selected
 Note: `VotingPanel.tsx` needs no changes — it already calls `onVote(v)` on every click.
 
 ### Task 7: Backend tests for `RemoveVote`
-- [ ] In `ppback/room/room_test.go` (follow the pattern of `TestSubmitVote` and neighbors), add:
+- [x] In `ppback/room/room_test.go` (follow the pattern of `TestSubmitVote` and neighbors), add:
   - `TestRemoveVote` — user submits a vote, then removes it; ticket has no votes for that user
   - `TestRemoveVoteNoVote` — user removes without having voted; no error (delete on absent key is a no-op)
   - `TestRemoveVoteNotVoting` — rejects when room state is `revealed` or `idle`; returns `ErrNotVoting`

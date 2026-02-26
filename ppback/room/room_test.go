@@ -781,6 +781,101 @@ func TestSubmitVoteDuringCountingDown(t *testing.T) {
 	}
 }
 
+// --- RemoveVote tests ---
+
+func TestRemoveVote(t *testing.T) {
+	r := newTestRoom()
+	AddUser(r, &model.User{ID: "u1", Name: "Alice", AvatarID: "cat"})
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "Task 1"})
+	_ = SetCurrentTicket(r, "t1")
+	_ = SubmitVote(r, "u1", "5")
+
+	err := RemoveVote(r, "u1")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	ticket := findTicket(r, "t1")
+	if _, ok := ticket.Votes["u1"]; ok {
+		t.Error("expected vote to be removed")
+	}
+}
+
+func TestRemoveVoteNoVote(t *testing.T) {
+	r := newTestRoom()
+	AddUser(r, &model.User{ID: "u1", Name: "Alice", AvatarID: "cat"})
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "Task 1"})
+	_ = SetCurrentTicket(r, "t1")
+
+	// Removing without having voted should be a no-op
+	err := RemoveVote(r, "u1")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	ticket := findTicket(r, "t1")
+	if len(ticket.Votes) != 0 {
+		t.Errorf("expected 0 votes, got %d", len(ticket.Votes))
+	}
+}
+
+func TestRemoveVoteNotVoting(t *testing.T) {
+	r := newTestRoom()
+	AddUser(r, &model.User{ID: "u1", Name: "Alice", AvatarID: "cat"})
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "Task 1"})
+	_ = SetCurrentTicket(r, "t1")
+	_ = SubmitVote(r, "u1", "5")
+	_ = RevealVotes(r)
+
+	// State is now revealed — should reject
+	err := RemoveVote(r, "u1")
+	if err != ErrNotVoting {
+		t.Errorf("expected ErrNotVoting, got %v", err)
+	}
+}
+
+func TestRemoveVoteNotVotingIdle(t *testing.T) {
+	r := newTestRoom()
+	AddUser(r, &model.User{ID: "u1", Name: "Alice", AvatarID: "cat"})
+
+	// Room is idle
+	err := RemoveVote(r, "u1")
+	if err != ErrNotVoting {
+		t.Errorf("expected ErrNotVoting, got %v", err)
+	}
+}
+
+func TestRemoveVoteUnknownUser(t *testing.T) {
+	r := newTestRoom()
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "Task 1"})
+	_ = SetCurrentTicket(r, "t1")
+
+	err := RemoveVote(r, "nonexistent")
+	if err != ErrUserNotFound {
+		t.Errorf("expected ErrUserNotFound, got %v", err)
+	}
+}
+
+func TestRemoveVoteDuringCountingDown(t *testing.T) {
+	r := newTestRoom()
+	AddUser(r, &model.User{ID: "u1", Name: "Alice", AvatarID: "cat"})
+	AddTicket(r, &model.Ticket{ID: "t1", Content: "Task 1"})
+	_ = SetCurrentTicket(r, "t1")
+	_ = SubmitVote(r, "u1", "5")
+	_ = StartCountdown(r)
+
+	// Should be able to remove vote during countdown
+	err := RemoveVote(r, "u1")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	ticket := findTicket(r, "t1")
+	if _, ok := ticket.Votes["u1"]; ok {
+		t.Error("expected vote to be removed during countdown")
+	}
+}
+
 func TestSubmitVoteChangeVoteDuringCountingDown(t *testing.T) {
 	r := newTestRoom()
 	AddUser(r, &model.User{ID: "u1", Name: "Alice", AvatarID: "cat"})
