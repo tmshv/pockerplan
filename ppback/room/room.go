@@ -62,6 +62,26 @@ func SubmitVote(r *model.Room, userID, value string) error {
 	return nil
 }
 
+// RemoveVote removes the current user's vote from the current ticket.
+func RemoveVote(r *model.Room, userID string) error {
+	if r.State != model.RoomStateVoting && r.State != model.RoomStateCountingDown {
+		return ErrNotVoting
+	}
+	if r.CurrentTicketID == "" {
+		return ErrNoCurrentTicket
+	}
+	if _, ok := r.Users[userID]; !ok {
+		return ErrUserNotFound
+	}
+	ticket := findTicket(r, r.CurrentTicketID)
+	if ticket == nil {
+		return ErrTicketNotFound
+	}
+	delete(ticket.Votes, userID)
+	touch(r)
+	return nil
+}
+
 // RevealVotes transitions the room from voting or counting_down to revealed.
 func RevealVotes(r *model.Room) error {
 	if r.State != model.RoomStateVoting && r.State != model.RoomStateCountingDown {

@@ -16,7 +16,7 @@ Users currently have no way to deselect a vote — clicking the already-selected
   ```
 
 ### Task 2: Backend — add `RemoveVote` function
-- [ ] In `ppback/room/room.go` (after `SubmitVote`, around line 63), add:
+- [x] In `ppback/room/room.go` (after `SubmitVote`, around line 63), add:
   ```go
   // RemoveVote removes the current user's vote from the current ticket.
   func RemoveVote(r *model.Room, userID string) error {
