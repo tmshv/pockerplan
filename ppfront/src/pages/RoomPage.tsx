@@ -56,6 +56,7 @@ function RoomPageContent({ roomId }: { roomId: string }) {
     connected,
     error,
     submitVote,
+    removeVote,
     addTicket,
     updateRoomName,
     revealVotes,
@@ -220,7 +221,13 @@ function RoomPageContent({ roomId }: { roomId: string }) {
               scaleId={roomState?.scale ?? ""}
               selectedValue={myVote?.value ?? null}
               disabled={false}
-              onVote={submitVote}
+              onVote={(value) => {
+                if (myVote?.value === value) {
+                  removeVote();
+                } else {
+                  submitVote(value);
+                }
+              }}
             />
           )}
 

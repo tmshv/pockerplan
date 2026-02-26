@@ -101,8 +101,8 @@ Users currently have no way to deselect a vote — clicking the already-selected
 - [x] Add `removeVote` to the returned object
 
 ### Task 6: Frontend — wire up toggle in `RoomPage.tsx`
-- [ ] Destructure `removeVote` from `useRoomContext()` (alongside `submitVote`)
-- [ ] Replace `onVote={submitVote}` (line 223) with a toggle handler:
+- [x] Destructure `removeVote` from `useRoomContext()` (alongside `submitVote`)
+- [x] Replace `onVote={submitVote}` (line 223) with a toggle handler:
   ```tsx
   onVote={(value) => {
     if (myVote?.value === value) {
