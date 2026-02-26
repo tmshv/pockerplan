@@ -156,6 +156,11 @@ func StartFreeVote(r *model.Room, ticketID string) error {
 		}
 	}
 
+	// Clear thinking flags when starting a new vote round.
+	for _, u := range r.Users {
+		u.Thinking = false
+	}
+
 	// Reuse an existing empty-content ticket that was skipped or pending,
 	// but not revealed (to preserve completed free-vote results).
 	for _, t := range r.Tickets {
@@ -355,4 +360,15 @@ func findTicket(r *model.Room, id string) *model.Ticket {
 
 func touch(r *model.Room) {
 	r.LastActivityAt = time.Now()
+}
+
+// SetUserThinking updates the thinking flag for a user and records activity.
+func SetUserThinking(r *model.Room, userID string, thinking bool) error {
+	u, ok := r.Users[userID]
+	if !ok {
+		return ErrUserNotFound
+	}
+	u.Thinking = thinking
+	touch(r)
+	return nil
 }

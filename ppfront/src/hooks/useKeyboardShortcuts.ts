@@ -12,6 +12,7 @@ interface UseKeyboardShortcutsOptions {
   onPrevTicket: () => void;
   hasPrevTicket: boolean;
   hasNextTicket: boolean;
+  onInteraction?: () => void;
 }
 
 const DEBOUNCE_MS = 500;
@@ -53,6 +54,7 @@ export function useKeyboardShortcuts({
   onPrevTicket,
   hasPrevTicket,
   hasNextTicket,
+  onInteraction,
 }: UseKeyboardShortcutsOptions) {
   const bufferRef = useRef("");
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -70,6 +72,7 @@ export function useKeyboardShortcuts({
   const roomStateRef = useRef(roomState);
   const currentTicketIdRef = useRef(currentTicketId);
   const isAdminRef = useRef(isAdmin);
+  const onInteractionRef = useRef(onInteraction);
 
   onVoteRef.current = onVote;
   onRevealRef.current = onReveal;
@@ -81,6 +84,7 @@ export function useKeyboardShortcuts({
   roomStateRef.current = roomState;
   currentTicketIdRef.current = currentTicketId;
   isAdminRef.current = isAdmin;
+  onInteractionRef.current = onInteraction;
 
   useEffect(() => {
     function clearBuffer() {
@@ -123,6 +127,7 @@ export function useKeyboardShortcuts({
       }
       const match = tryMatch(bufferRef.current);
       if (match) {
+        onInteractionRef.current?.();
         onVoteRef.current(match);
       }
       clearBuffer();
@@ -188,6 +193,7 @@ export function useKeyboardShortcuts({
       const exactMatch = tryMatch(newBuffer);
       if (exactMatch && !canMatchMore(newBuffer)) {
         // Unique match - fire immediately
+        onInteractionRef.current?.();
         onVoteRef.current(exactMatch);
         clearBuffer();
         return;

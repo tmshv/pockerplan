@@ -55,11 +55,11 @@ export function PokerTable({
     votes.some((v) => v.userId === userId);
 
   function getStatusBadge(user: User) {
-    if (user.thinking) {
-      return <span className="poker-table-badge poker-table-badge--thinking">💭</span>;
-    }
     if (hasVoted(user.id)) {
       return <span className="poker-table-badge poker-table-badge--voted">✓</span>;
+    }
+    if (user.thinking) {
+      return <span className="poker-table-badge poker-table-badge--thinking">💭</span>;
     }
     return <span className="poker-table-badge poker-table-badge--empty">🃏</span>;
   }

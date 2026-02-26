@@ -197,6 +197,7 @@ function RoomPageContent({ roomId }: { roomId: string }) {
     onPrevTicket: handlePrevTicketShortcut,
     hasPrevTicket,
     hasNextTicket,
+    onInteraction,
   });
 
   if (error) {

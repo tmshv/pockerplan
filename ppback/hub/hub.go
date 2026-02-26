@@ -310,7 +310,12 @@ func (h *Hub) rpcJoinRoom(client *centrifuge.Client, data []byte) ([]byte, error
 			u.IsAdmin = existing.IsAdmin
 		}
 		room.AddUser(r, u)
+		// Build join response without draining PendingEvents so the subsequent
+		// broadcastRoomState delivers them to existing subscribers.
+		saved := r.PendingEvents
+		r.PendingEvents = nil
 		snap = h.buildSnapshot(r)
+		r.PendingEvents = saved
 		return nil
 	})
 	if err != nil {
@@ -680,12 +685,7 @@ func (h *Hub) rpcSetThinking(client *centrifuge.Client, data []byte) ([]byte, er
 	}
 
 	err := h.rooms.WithRoom(req.RoomID, func(r *model.Room) error {
-		u, ok := r.Users[req.UserID]
-		if !ok {
-			return room.ErrUserNotFound
-		}
-		u.Thinking = req.Thinking
-		return nil
+		return room.SetUserThinking(r, req.UserID, req.Thinking)
 	})
 	if err != nil {
 		if errors.Is(err, room.ErrRoomNotFound) {
