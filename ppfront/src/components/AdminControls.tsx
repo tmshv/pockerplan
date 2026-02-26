@@ -2,6 +2,7 @@ import type { RoomState } from "../types";
 
 interface AdminControlsProps {
   roomState: RoomState;
+  ticketsEnabled: boolean;
   hasPrevTicket: boolean;
   hasNextTicket: boolean;
   hasTickets: boolean;
@@ -14,6 +15,7 @@ interface AdminControlsProps {
 
 export function AdminControls({
   roomState,
+  ticketsEnabled,
   hasPrevTicket,
   hasNextTicket,
   hasTickets,
@@ -42,22 +44,24 @@ export function AdminControls({
         <button type="button" onClick={onReset} disabled={roomState === "idle"}>
           Reset Votes
         </button>
-        <div className="ticket-nav-buttons">
-          <button
-            type="button"
-            onClick={onPrevTicket}
-            disabled={!hasPrevTicket}
-          >
-            Prev Ticket
-          </button>
-          <button
-            type="button"
-            onClick={onNextTicket}
-            disabled={!hasNextTicket}
-          >
-            Next Ticket
-          </button>
-        </div>
+        {ticketsEnabled && (
+          <div className="ticket-nav-buttons">
+            <button
+              type="button"
+              onClick={onPrevTicket}
+              disabled={!hasPrevTicket}
+            >
+              Prev Ticket
+            </button>
+            <button
+              type="button"
+              onClick={onNextTicket}
+              disabled={!hasNextTicket}
+            >
+              Next Ticket
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

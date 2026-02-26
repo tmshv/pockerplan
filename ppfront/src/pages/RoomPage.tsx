@@ -72,6 +72,7 @@ function RoomPageContent({ roomId }: { roomId: string }) {
   const isAdmin = !!info?.adminSecret;
   const userId = info?.userId ?? "";
 
+  const ticketsEnabled = roomState?.ticketsEnabled ?? false;
   const tickets = roomState?.tickets ?? [];
   const users = roomState?.users ?? [];
   const currentTicket =
@@ -106,11 +107,13 @@ function RoomPageContent({ roomId }: { roomId: string }) {
   const currentTicketIndex = roomState?.currentTicketId
     ? tickets.findIndex((t) => t.id === roomState.currentTicketId)
     : -1;
-  const hasPrevTicket = currentTicketIndex > 0 && !isCountingDown;
+  const hasPrevTicket = ticketsEnabled && currentTicketIndex > 0 && !isCountingDown;
   const hasNextTicket =
+    ticketsEnabled &&
     (currentTicketIndex === -1
       ? tickets.length > 0
-      : currentTicketIndex < tickets.length - 1) && !isCountingDown;
+      : currentTicketIndex < tickets.length - 1) &&
+    !isCountingDown;
 
   const scaleValues = useMemo(() => {
     const scale = scales.find((s) => s.id === roomState?.scale);
@@ -260,7 +263,7 @@ function RoomPageContent({ roomId }: { roomId: string }) {
 
       <div className="room-layout">
         <div className="room-main">
-          <TicketPanel ticket={currentTicket} />
+          {ticketsEnabled && <TicketPanel ticket={currentTicket} />}
         </div>
 
         <div className="room-sidebar">
@@ -283,12 +286,14 @@ function RoomPageContent({ roomId }: { roomId: string }) {
             revealed={isRevealed}
           />
 
-          <TicketList
-            tickets={tickets}
-            currentTicketId={roomState?.currentTicketId ?? ""}
-            isAdmin={isAdmin}
-            onSelectTicket={isCountingDown ? undefined : setTicket}
-          />
+          {ticketsEnabled && (
+            <TicketList
+              tickets={tickets}
+              currentTicketId={roomState?.currentTicketId ?? ""}
+              isAdmin={isAdmin}
+              onSelectTicket={isCountingDown ? undefined : setTicket}
+            />
+          )}
         </div>
       </div>
 
@@ -303,6 +308,7 @@ function RoomPageContent({ roomId }: { roomId: string }) {
         <FloatingAdminPanel
           roomId={roomId}
           roomState={roomState?.state ?? "idle"}
+          ticketsEnabled={ticketsEnabled}
           hasPrevTicket={hasPrevTicket}
           hasNextTicket={hasNextTicket}
           hasTickets={tickets.some((t) => t.content !== "")}

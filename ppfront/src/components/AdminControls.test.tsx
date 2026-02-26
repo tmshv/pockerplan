@@ -10,6 +10,7 @@ describe("AdminControls", () => {
     render(
       <AdminControls
         roomState="idle"
+        ticketsEnabled={false}
         hasPrevTicket={false}
         hasNextTicket={true}
         hasTickets={true}
@@ -27,6 +28,7 @@ describe("AdminControls", () => {
     render(
       <AdminControls
         roomState="voting"
+        ticketsEnabled={false}
         hasPrevTicket={false}
         hasNextTicket={true}
         hasTickets={true}
@@ -44,6 +46,7 @@ describe("AdminControls", () => {
     render(
       <AdminControls
         roomState="idle"
+        ticketsEnabled={false}
         hasPrevTicket={false}
         hasNextTicket={true}
         hasTickets={true}
@@ -61,6 +64,7 @@ describe("AdminControls", () => {
     render(
       <AdminControls
         roomState="voting"
+        ticketsEnabled={true}
         hasPrevTicket={false}
         hasNextTicket={false}
         hasTickets={true}
@@ -78,6 +82,7 @@ describe("AdminControls", () => {
     render(
       <AdminControls
         roomState="voting"
+        ticketsEnabled={true}
         hasPrevTicket={false}
         hasNextTicket={true}
         hasTickets={true}
@@ -96,6 +101,7 @@ describe("AdminControls", () => {
     render(
       <AdminControls
         roomState="voting"
+        ticketsEnabled={false}
         hasPrevTicket={false}
         hasNextTicket={true}
         hasTickets={true}
@@ -115,6 +121,7 @@ describe("AdminControls", () => {
     render(
       <AdminControls
         roomState="voting"
+        ticketsEnabled={false}
         hasPrevTicket={false}
         hasNextTicket={true}
         hasTickets={true}
@@ -134,6 +141,7 @@ describe("AdminControls", () => {
     render(
       <AdminControls
         roomState="voting"
+        ticketsEnabled={true}
         hasPrevTicket={false}
         hasNextTicket={true}
         hasTickets={true}
@@ -153,6 +161,7 @@ describe("AdminControls", () => {
     render(
       <AdminControls
         roomState="voting"
+        ticketsEnabled={true}
         hasPrevTicket={true}
         hasNextTicket={true}
         hasTickets={true}
@@ -171,6 +180,7 @@ describe("AdminControls", () => {
     render(
       <AdminControls
         roomState="idle"
+        ticketsEnabled={false}
         hasPrevTicket={false}
         hasNextTicket={false}
         hasTickets={false}
@@ -190,6 +200,7 @@ describe("AdminControls", () => {
     render(
       <AdminControls
         roomState="idle"
+        ticketsEnabled={false}
         hasPrevTicket={false}
         hasNextTicket={false}
         hasTickets={true}
@@ -209,6 +220,7 @@ describe("AdminControls", () => {
     render(
       <AdminControls
         roomState="voting"
+        ticketsEnabled={false}
         hasPrevTicket={false}
         hasNextTicket={false}
         hasTickets={false}
@@ -228,6 +240,7 @@ describe("AdminControls", () => {
     render(
       <AdminControls
         roomState="revealed"
+        ticketsEnabled={false}
         hasPrevTicket={false}
         hasNextTicket={false}
         hasTickets={false}
@@ -247,6 +260,7 @@ describe("AdminControls", () => {
     render(
       <AdminControls
         roomState="revealed"
+        ticketsEnabled={false}
         hasPrevTicket={false}
         hasNextTicket={false}
         hasTickets={true}
@@ -267,6 +281,7 @@ describe("AdminControls", () => {
     render(
       <AdminControls
         roomState="idle"
+        ticketsEnabled={false}
         hasPrevTicket={false}
         hasNextTicket={false}
         hasTickets={false}

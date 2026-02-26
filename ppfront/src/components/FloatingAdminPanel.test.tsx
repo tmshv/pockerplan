@@ -8,6 +8,7 @@ vi.mock("./MarkdownEditor");
 const defaultProps = {
   roomId: "room-1",
   roomState: "voting" as const,
+  ticketsEnabled: true,
   hasPrevTicket: false,
   hasNextTicket: true,
   hasTickets: true,

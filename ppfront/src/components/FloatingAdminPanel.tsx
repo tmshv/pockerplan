@@ -7,6 +7,7 @@ import { TicketForm } from "./TicketForm";
 interface FloatingAdminPanelProps {
   roomId: string;
   roomState: RoomState;
+  ticketsEnabled: boolean;
   hasPrevTicket: boolean;
   hasNextTicket: boolean;
   hasTickets: boolean;
@@ -21,6 +22,7 @@ interface FloatingAdminPanelProps {
 export function FloatingAdminPanel({
   roomId,
   roomState,
+  ticketsEnabled,
   hasPrevTicket,
   hasNextTicket,
   hasTickets,
@@ -48,6 +50,7 @@ export function FloatingAdminPanel({
           <ShareButton roomId={roomId} />
           <AdminControls
             roomState={roomState}
+            ticketsEnabled={ticketsEnabled}
             hasPrevTicket={hasPrevTicket}
             hasNextTicket={hasNextTicket}
             hasTickets={hasTickets}
@@ -57,7 +60,7 @@ export function FloatingAdminPanel({
             onNextTicket={onNextTicket}
             onStartFreeVote={onStartFreeVote}
           />
-          <TicketForm onAdd={onAddTicket} />
+          {ticketsEnabled && <TicketForm onAdd={onAddTicket} />}
         </div>
       )}
     </div>

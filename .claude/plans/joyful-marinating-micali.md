@@ -239,21 +239,55 @@ Three UX enhancements to pockerplan:
 
 ---
 
+## Task 1: `--ticket` Server Flag
+
+- [x] `main.go`: Add `Tickets bool` to CLI struct with `default:"false" env:"TICKETS" help:"Enable tickets feature."`
+- [x] `main.go`: Pass `cli.Tickets` to `hub.New()`
+- [x] `ppback/model/types.go`: Add `TicketsEnabled bool` field to `RoomSnapshot`
+- [x] `ppback/hub/hub.go`: Add `ticketsEnabled bool` field to Hub struct, accept in `New()`
+- [x] `ppback/hub/hub.go`: Add `buildSnapshot(r *model.Room) *model.RoomSnapshot` helper that wraps `room.Snapshot(r)` and sets `TicketsEnabled`; replace all `room.Snapshot(r)` calls in hub with `h.buildSnapshot(r)`
+- [x] `ppfront/src/types/index.ts`: Add `ticketsEnabled: boolean` to `RoomSnapshot`
+- [x] `ppfront/src/pages/RoomPage.tsx`: Extract `ticketsEnabled = roomState?.ticketsEnabled ?? false`; wrap `<TicketPanel>` and `<TicketList>` in `{ticketsEnabled && ...}`; pass `ticketsEnabled` to `FloatingAdminPanel`; set `hasPrevTicket`/`hasNextTicket` to false when `!ticketsEnabled`
+- [x] `ppfront/src/components/FloatingAdminPanel.tsx`: Accept `ticketsEnabled: boolean` prop; hide `<TicketForm>` and prev/next ticket buttons when `!ticketsEnabled`
+
+## Task 2: Poker Table View
+
+- [ ] `ppback/model/types.go`: Add `Thinking bool` to `User` struct; add `SetThinkingRequest` struct
+- [ ] `ppback/hub/hub.go`: Add `"set_thinking"` case in `handleRPC` → `rpcSetThinking`; implement `rpcSetThinking`
+- [ ] `ppback/room/room.go`: In `ResetVotes()`, clear `Thinking` for all users
+- [ ] `ppfront/src/types/index.ts`: Add `thinking?: boolean` to `User`
+- [ ] `ppfront/src/components/PokerTable.tsx`: New component - oval table with users positioned around ellipse, status badges, drag support
+- [ ] `ppfront/src/hooks/useThinkingHeartbeat.ts`: New hook - debounced thinking state management
+- [ ] `ppfront/src/hooks/useRoom.ts`: Add `setThinking(active: boolean): Promise<void>` action
+- [ ] `ppfront/src/pages/RoomPage.tsx`: Integrate PokerTable, useThinkingHeartbeat, userPositions ref
+- [ ] `ppfront/src/components/VotingPanel.tsx`: Accept optional `onInteraction?: () => void` prop, call on `onMouseEnter`
+
+## Task 3: Player Interaction Animation
+
+- [ ] `ppback/model/types.go`: Add `RoomEvent` struct, `PendingEvents []RoomEvent` to `Room`, `Events []RoomEvent` to `RoomSnapshot`, `InteractPlayerRequest` struct
+- [ ] `ppback/room/room.go`: In `Snapshot()`, include and clear pending events
+- [ ] `ppback/hub/hub.go`: Add `"interact_player"` case → `rpcInteractPlayer`; implement `rpcInteractPlayer`
+- [ ] `ppfront/src/types/index.ts`: Add `RoomEvent` interface and `events?: RoomEvent[]` to `RoomSnapshot`
+- [ ] `ppfront/src/hooks/useRoom.ts`: Add `interactPlayer(action: string, targetUserId: string): Promise<void>` action
+- [ ] `ppfront/src/components/PlayerInteractionLayer.tsx`: New component - animated emoji throws with CSS keyframes
+- [ ] `ppfront/src/pages/RoomPage.tsx`: Pass `userPositions` and `interactPlayer` to PokerTable; process events; render PlayerInteractionLayer
+- [ ] `ppfront/src/components/PokerTable.tsx`: Add `onInteract` prop; call `onInteract("paper_throw", targetUserId)` on drop
+
 ## Verification
 
-### Task 1: Tickets flag
+### Verification 1: Tickets flag
 1. `go run . --addr :8080` (no `--ticket`) → join room → confirm no ticket UI, prev/next absent.
 2. `go run . --addr :8080 --ticket` → confirm ticket panel, list, and form appear.
 3. Without tickets: admin can start free vote, reset, reveal — verify these still work.
 
-### Task 2: Poker table
+### Verification 2: Poker table
 1. Open room with 3–5 users → confirm all appear around the oval, names visible.
 2. Hover over vote cards → confirm 💭 thinking indicator appears on other clients within ~1s.
 3. After 3s of no interaction → thinking clears.
 4. Vote → thinking clears immediately for that user, ✓ badge appears.
 5. Reset votes → all thinking indicators clear.
 
-### Task 3: Player interaction (paper throw)
+### Verification 3: Player interaction (paper throw)
 1. Two browser windows in same room → drag from self avatar, drop on other.
 2. Confirm both windows show the 📝 flying animation with arc.
 3. Animation disappears after ~1.4s.

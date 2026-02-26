@@ -21,6 +21,7 @@ import (
 var cli struct {
 	Addr      string `default:":8080" env:"ADDR" help:"Listen address."`
 	Countdown int    `default:"3" env:"COUNTDOWN" help:"Countdown seconds before reveal."`
+	Tickets   bool   `default:"false" env:"TICKETS" help:"Enable tickets feature."`
 }
 
 //go:embed ppfront/dist
@@ -50,7 +51,7 @@ func main() {
 	rm.StartCleanup(10*time.Minute, cleanupDone)
 
 	// Centrifuge hub
-	h, err := hub.New(rm, cli.Countdown, logger.With().Str("component", "hub").Logger())
+	h, err := hub.New(rm, cli.Countdown, cli.Tickets, logger.With().Str("component", "hub").Logger())
 	if err != nil {
 		logger.Fatal().Err(err).Msg("create hub")
 	}

@@ -28,7 +28,7 @@ func newTestEnv(t *testing.T) *testEnv {
 	t.Helper()
 	rm := room.NewManager()
 	logger := zerolog.Nop()
-	h, err := New(rm, 3, logger)
+	h, err := New(rm, 3, false, logger)
 	if err != nil {
 		t.Fatalf("create hub: %v", err)
 	}

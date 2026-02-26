@@ -30,12 +30,13 @@ type clientInfo struct {
 
 // Hub wraps the centrifuge node and the room manager.
 type Hub struct {
-	node      *centrifuge.Node
-	rooms     *room.Manager
-	countdown int
-	logger    zerolog.Logger
-	mu        sync.RWMutex
-	clients   map[string]clientInfo // centrifuge client ID -> clientInfo
+	node           *centrifuge.Node
+	rooms          *room.Manager
+	countdown      int
+	ticketsEnabled bool
+	logger         zerolog.Logger
+	mu             sync.RWMutex
+	clients        map[string]clientInfo // centrifuge client ID -> clientInfo
 }
 
 // centrifugeLogLevel maps centrifuge log levels to zerolog levels.
@@ -57,7 +58,7 @@ func centrifugeLogLevel(lvl centrifuge.LogLevel) zerolog.Level {
 }
 
 // New creates and configures a new Hub.
-func New(rm *room.Manager, countdown int, logger zerolog.Logger) (*Hub, error) {
+func New(rm *room.Manager, countdown int, ticketsEnabled bool, logger zerolog.Logger) (*Hub, error) {
 	node, err := centrifuge.New(centrifuge.Config{
 		LogLevel: centrifuge.LogLevelInfo,
 		LogHandler: func(e centrifuge.LogEntry) {
@@ -71,11 +72,12 @@ func New(rm *room.Manager, countdown int, logger zerolog.Logger) (*Hub, error) {
 	}
 
 	h := &Hub{
-		node:      node,
-		rooms:     rm,
-		countdown: countdown,
-		logger:    logger,
-		clients:   make(map[string]clientInfo),
+		node:           node,
+		rooms:          rm,
+		countdown:      countdown,
+		ticketsEnabled: ticketsEnabled,
+		logger:         logger,
+		clients:        make(map[string]clientInfo),
 	}
 
 	node.OnConnecting(func(ctx context.Context, e centrifuge.ConnectEvent) (centrifuge.ConnectReply, error) {
@@ -152,11 +154,18 @@ func (h *Hub) unregisterClient(clientID string) (clientInfo, bool) {
 	return info, ok
 }
 
+// buildSnapshot returns a sanitized snapshot with the hub-level TicketsEnabled flag set.
+func (h *Hub) buildSnapshot(r *model.Room) *model.RoomSnapshot {
+	snap := room.Snapshot(r)
+	snap.TicketsEnabled = h.ticketsEnabled
+	return snap
+}
+
 // broadcastRoomState publishes the current room state to all subscribers.
 func (h *Hub) broadcastRoomState(roomID string) {
 	var snap *model.RoomSnapshot
 	err := h.rooms.WithRoom(roomID, func(r *model.Room) error {
-		snap = room.Snapshot(r)
+		snap = h.buildSnapshot(r)
 		return nil
 	})
 	if err != nil {
@@ -297,7 +306,7 @@ func (h *Hub) rpcJoinRoom(client *centrifuge.Client, data []byte) ([]byte, error
 			u.IsAdmin = existing.IsAdmin
 		}
 		room.AddUser(r, u)
-		snap = room.Snapshot(r)
+		snap = h.buildSnapshot(r)
 		return nil
 	})
 	if err != nil {

@@ -130,6 +130,7 @@ type RoomSnapshot struct {
 	Users           []*User           `json:"users"`
 	Tickets         []*TicketSnapshot `json:"tickets"`
 	CurrentTicketID string            `json:"currentTicketId"`
+	TicketsEnabled  bool              `json:"ticketsEnabled"`
 }
 
 type TicketSnapshot struct {
