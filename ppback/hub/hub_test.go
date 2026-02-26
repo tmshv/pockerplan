@@ -688,7 +688,7 @@ func TestRemoveVotePermissionDenied(t *testing.T) {
 		t.Fatalf("next_ticket: %v", err)
 	}
 
-	// user tries to remove admin's vote (wrong userId)
+	// admin tries to remove another user's vote (userID in request does not match authenticated client)
 	removeData, _ := json.Marshal(model.RemoveVoteRequest{
 		RoomID: created.RoomID,
 		UserID: joined.UserID,

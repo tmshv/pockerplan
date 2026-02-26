@@ -87,6 +87,11 @@ function RoomPageContent({ roomId }: { roomId: string }) {
       setLocalVoteValue(null);
     }
   }, [hasVoted]);
+  // Reset when the current ticket changes so a stale value from a previous ticket
+  // is not shown as selected on a different ticket where the user also has a vote.
+  useEffect(() => {
+    setLocalVoteValue(null);
+  }, [roomState?.currentTicketId]);
   const selectedValue = hasVoted ? localVoteValue : null;
 
   const isRevealed = roomState?.state === "revealed";
