@@ -97,7 +97,7 @@ function RoomPageContent({ roomId }: { roomId: string }) {
     setLocalVoteValue(null);
     voteActionSeq.current++;
   }, [roomState?.currentTicketId]);
-  const selectedValue = hasVoted ? localVoteValue : null;
+  const selectedValue = localVoteValue;
 
   const isRevealed = roomState?.state === "revealed";
   const isVoting = roomState?.state === "voting";
