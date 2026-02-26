@@ -8,6 +8,7 @@ import type {
   JoinRoomResponse,
   RoomSnapshot,
   SetTicketRequest,
+  RemoveVoteRequest,
   SubmitVoteRequest,
   UpdateRoomNameRequest,
 } from "../types";
@@ -30,6 +31,7 @@ export interface UseRoomResult {
   error: RoomError | null;
   loading: boolean;
   submitVote: (value: string) => Promise<void>;
+  removeVote: () => Promise<void>;
   addTicket: (content: string) => Promise<string>;
   updateRoomName: (name: string) => Promise<void>;
   revealVotes: () => Promise<void>;
@@ -191,6 +193,15 @@ export function useRoom(roomId: string | undefined): UseRoomResult {
     [roomId],
   );
 
+  const removeVote = useCallback(async () => {
+    if (!roomId) return;
+    const info = loadRoomInfo(roomId);
+    if (!info) throw new Error("Not joined");
+    const client = getCentrifuge();
+    const req: RemoveVoteRequest = { roomId, userId: info.userId };
+    await client.rpc("remove_vote", req);
+  }, [roomId]);
+
   const addTicket = useCallback(
     async (content: string): Promise<string> => {
       if (!roomId) throw new Error("No room");
@@ -286,6 +297,7 @@ export function useRoom(roomId: string | undefined): UseRoomResult {
     error,
     loading,
     submitVote,
+    removeVote,
     addTicket,
     updateRoomName,
     revealVotes,

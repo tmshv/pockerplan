@@ -85,9 +85,9 @@ Users currently have no way to deselect a vote — clicking the already-selected
   ```
 
 ### Task 5: Frontend — add `removeVote` to `useRoom.ts`
-- [ ] Import `RemoveVoteRequest` alongside `SubmitVoteRequest` (line 11)
-- [ ] Add `removeVote: () => Promise<void>` to `UseRoomResult` interface (line 32)
-- [ ] Add `removeVote` function (after `submitVote`, around line 192):
+- [x] Import `RemoveVoteRequest` alongside `SubmitVoteRequest` (line 11)
+- [x] Add `removeVote: () => Promise<void>` to `UseRoomResult` interface (line 32)
+- [x] Add `removeVote` function (after `submitVote`, around line 192):
   ```ts
   const removeVote = useCallback(async () => {
     if (!roomId) return;
@@ -98,7 +98,7 @@ Users currently have no way to deselect a vote — clicking the already-selected
     await client.rpc("remove_vote", req);
   }, [roomId]);
   ```
-- [ ] Add `removeVote` to the returned object
+- [x] Add `removeVote` to the returned object
 
 ### Task 6: Frontend — wire up toggle in `RoomPage.tsx`
 - [ ] Destructure `removeVote` from `useRoomContext()` (alongside `submitVote`)
