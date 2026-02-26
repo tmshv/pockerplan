@@ -76,7 +76,7 @@ Users currently have no way to deselect a vote — clicking the already-selected
   ```
 
 ### Task 4: Frontend — add `RemoveVoteRequest` type
-- [ ] In `ppfront/src/types/index.ts` (after `SubmitVoteRequest`, line 87), add:
+- [x] In `ppfront/src/types/index.ts` (after `SubmitVoteRequest`, line 87), add:
   ```ts
   export interface RemoveVoteRequest {
     roomId: string;

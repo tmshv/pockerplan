@@ -86,6 +86,11 @@ export interface SubmitVoteRequest {
   value: string;
 }
 
+export interface RemoveVoteRequest {
+  roomId: string;
+  userId: string;
+}
+
 export interface AddTicketRequest {
   roomId: string;
   adminSecret: string;
