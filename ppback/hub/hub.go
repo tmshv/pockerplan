@@ -11,6 +11,7 @@ import (
 	"unicode/utf8"
 
 	"pockerplan/ppback/avatar"
+	"pockerplan/ppback/campfire"
 	"pockerplan/ppback/model"
 	"pockerplan/ppback/room"
 	"pockerplan/ppback/scale"
@@ -215,6 +216,8 @@ func (h *Hub) handleRPC(client *centrifuge.Client, method string, data []byte) (
 		return h.rpcSetThinking(client, data)
 	case "interact_player":
 		return h.rpcInteractPlayer(client, data)
+	case "theme_interact":
+		return h.rpcThemeInteract(client, data)
 	default:
 		return nil, centrifuge.ErrorMethodNotFound
 	}
@@ -737,6 +740,45 @@ func (h *Hub) rpcInteractPlayer(client *centrifuge.Client, data []byte) ([]byte,
 			return nil, errorNotFound
 		}
 		return nil, centrifuge.ErrorInternal
+	}
+
+	h.broadcastRoomState(req.RoomID)
+	return []byte(`{}`), nil
+}
+
+func (h *Hub) rpcThemeInteract(client *centrifuge.Client, data []byte) ([]byte, error) {
+	var req model.ThemeInteractRequest
+	if err := json.Unmarshal(data, &req); err != nil {
+		return nil, centrifuge.ErrorBadRequest
+	}
+	if req.RoomID == "" || req.UserID == "" || req.Action == "" {
+		return nil, centrifuge.ErrorBadRequest
+	}
+
+	h.mu.RLock()
+	info, ok := h.clients[client.ID()]
+	h.mu.RUnlock()
+	if !ok || info.UserID != req.UserID || info.RoomID != req.RoomID {
+		return nil, centrifuge.ErrorPermissionDenied
+	}
+
+	switch req.Action {
+	case "feed_fire":
+		var ffReq model.FeedFireRequest
+		if err := json.Unmarshal(req.Data, &ffReq); err != nil {
+			return nil, centrifuge.ErrorBadRequest
+		}
+		err := h.rooms.WithRoom(req.RoomID, func(r *model.Room) error {
+			return campfire.FeedFire(r, req.UserID, ffReq.TreeID, ffReq.FromX, ffReq.FromY)
+		})
+		if err != nil {
+			if errors.Is(err, room.ErrRoomNotFound) {
+				return nil, errorNotFound
+			}
+			return nil, &centrifuge.Error{Code: 400, Message: err.Error()}
+		}
+	default:
+		return nil, centrifuge.ErrorMethodNotFound
 	}
 
 	h.broadcastRoomState(req.RoomID)

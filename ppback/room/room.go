@@ -346,6 +346,7 @@ func Snapshot(r *model.Room) *model.RoomSnapshot {
 		Tickets:         tickets,
 		CurrentTicketID: r.CurrentTicketID,
 		Events:          events,
+		ThemeState:      r.ThemeState,
 	}
 }
 

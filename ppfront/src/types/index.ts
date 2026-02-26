@@ -28,12 +28,39 @@ export interface Avatar {
   label: string;
 }
 
-// Player interaction event
+// Theme types
+
+export type ThemeType = "campfire";
+
+export interface TreeSnapshot {
+  id: number;
+  x: number;
+  y: number;
+  size: number;
+  burnedAt?: string;
+}
+
+export interface CampfireState {
+  fireLevel: number;
+  lastFedAt: string | null;
+  trees: TreeSnapshot[];
+}
+
+export type ThemeState = { theme: "campfire"; data: CampfireState };
+
+export interface FeedFirePayload {
+  treeId: number;
+  fromX: number;
+  fromY: number;
+}
+
+// Player/theme interaction event
 export interface RoomEvent {
-  type: string;   // "player_interaction"
-  action: string; // "paper_throw"; extendable later
+  type: string;   // "player_interaction" | "theme_interaction"
+  action: string; // "paper_throw", "feed_fire", etc.
   fromId: string;
   toId: string;
+  payload?: FeedFirePayload | unknown;
 }
 
 // Sanitized room snapshot sent to clients
@@ -48,6 +75,7 @@ export interface RoomSnapshot {
   currentTicketId: string;
   ticketsEnabled: boolean;
   events?: RoomEvent[];
+  themeState?: ThemeState;
 }
 
 // Sanitized ticket in a snapshot

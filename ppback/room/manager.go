@@ -1,6 +1,7 @@
 package room
 
 import (
+	"pockerplan/ppback/campfire"
 	"pockerplan/ppback/model"
 	"sync"
 	"time"
@@ -40,6 +41,8 @@ func (m *Manager) Create(scaleID string, countdown int) (*model.Room, error) {
 		LastActivityAt: now,
 	}
 
+	campfire.Init(r)
+
 	m.mu.Lock()
 	m.rooms[r.ID] = r
 	m.mu.Unlock()
@@ -59,7 +62,8 @@ func (m *Manager) Get(id string) (*model.Room, error) {
 }
 
 // WithRoom executes fn while holding the write lock. This ensures all
-// mutations to a room are serialized.
+// mutations to a room are serialized. It also runs lazy theme normalization
+// (fire decay, tree respawn) before fn is called.
 func (m *Manager) WithRoom(id string, fn func(r *model.Room) error) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -67,6 +71,7 @@ func (m *Manager) WithRoom(id string, fn func(r *model.Room) error) error {
 	if !ok {
 		return ErrRoomNotFound
 	}
+	campfire.Normalize(r)
 	return fn(r)
 }
 

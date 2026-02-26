@@ -1,7 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { avatars } from "../data/avatars";
-import { hashString, makeRng } from "../lib/random";
-import type { User, VoteInfo } from "../types";
+import type { CampfireState, FeedFirePayload, RoomEvent, User, VoteInfo } from "../types";
 
 interface PokerTableProps {
   roomId: string;
@@ -9,8 +8,11 @@ interface PokerTableProps {
   votes: VoteInfo[];
   revealed: boolean;
   currentUserId: string;
+  campfire: CampfireState | null;
+  campfireEvents: RoomEvent[];
   onPositionsChange: (positions: Map<string, { x: number; y: number }>) => void;
   onInteract: (action: string, targetUserId: string) => void;
+  onFeedFire: (treeId: number, fromX: number, fromY: number) => void;
 }
 
 function getAvatarEmoji(avatarId: string): string {
@@ -21,43 +23,53 @@ const SIZE = 400;
 const cx = SIZE / 2;
 const cy = SIZE / 2;
 const playerRadius = 140;
-const treeCount = 9;
-const treeMinRadius = 160;
-const treeMaxRadius = 190;
 
 export function PokerTable({
-  roomId,
   users,
   votes,
   revealed: _revealed,
   currentUserId,
+  campfire,
+  campfireEvents,
   onPositionsChange,
   onInteract,
+  onFeedFire,
 }: PokerTableProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const dragSourceRef = useRef<string | null>(null);
 
-  const trees = useMemo(() => {
-    const rng = makeRng(hashString(roomId));
-    return Array.from({ length: treeCount }, (_, i) => {
-      const baseAngle = (i / treeCount) * 2 * Math.PI;
-      const angleJitter = (rng() - 0.5) * (2 * Math.PI / treeCount) * 0.8;
-      const angle = baseAngle + angleJitter;
-      const r = treeMinRadius + rng() * (treeMaxRadius - treeMinRadius);
-      return {
-        x: cx + r * Math.cos(angle),
-        y: cy + r * Math.sin(angle),
-        size: 1.2 + rng() * 0.6,
-      };
-    });
-  }, [roomId]);
-
-  const [burnedTrees, setBurnedTrees] = useState<Set<number>>(new Set());
   const [flyingTrees, setFlyingTrees] = useState<
     { id: string; fromX: number; fromY: number; dx: number; dy: number }[]
   >([]);
   const flyIdRef = useRef(0);
-  const [fireLevel, setFireLevel] = useState(0);
+
+  // Derive campfire data from server state.
+  const aliveTrees = (campfire?.trees ?? []).filter((t) => !t.burnedAt);
+  const fireLevel = campfire?.fireLevel ?? 0;
+
+  // React to incoming campfire events by enqueueing flying-tree animations.
+  useEffect(() => {
+    const feedFireEvents = campfireEvents.filter((e) => e.action === "feed_fire");
+    if (feedFireEvents.length === 0) return;
+
+    setFlyingTrees((prev) => {
+      const next = [...prev];
+      for (const ev of feedFireEvents) {
+        const payload = ev.payload as FeedFirePayload | undefined;
+        if (!payload) continue;
+        next.push({
+          id: `fly-${flyIdRef.current++}`,
+          fromX: payload.fromX,
+          fromY: payload.fromY,
+          dx: cx - payload.fromX,
+          dy: cy - payload.fromY,
+        });
+      }
+      return next;
+    });
+  // Only re-run when the campfireEvents reference changes (new snapshot).
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [campfireEvents]);
 
   const N = users.length;
   const positions = users.map((u, i) => {
@@ -98,33 +110,32 @@ export function PokerTable({
       className="poker-table-container"
       style={{ width: SIZE, height: SIZE, position: "relative" }}
     >
-      {/* Trees */}
-      {trees.map((t, i) => {
-        if (burnedTrees.has(i)) return null;
-        return (
-          <span
-            key={i}
-            draggable
-            style={{
-              position: "absolute",
-              left: t.x,
-              top: t.y,
-              transform: "translate(-50%, -50%)",
-              fontSize: `${t.size}rem`,
-              lineHeight: 1,
-              cursor: "grab",
-              userSelect: "none",
-            }}
-            onDragStart={(e) => {
-              e.dataTransfer.setData("tree-index", String(i));
-            }}
-          >
-            🌲
-          </span>
-        );
-      })}
+      {/* Trees (server-authoritative positions) */}
+      {aliveTrees.map((t) => (
+        <span
+          key={t.id}
+          draggable
+          style={{
+            position: "absolute",
+            left: t.x,
+            top: t.y,
+            transform: "translate(-50%, -50%)",
+            fontSize: `${t.size}rem`,
+            lineHeight: 1,
+            cursor: "grab",
+            userSelect: "none",
+          }}
+          onDragStart={(e) => {
+            e.dataTransfer.setData("tree-id", String(t.id));
+            e.dataTransfer.setData("tree-x", String(t.x));
+            e.dataTransfer.setData("tree-y", String(t.y));
+          }}
+        >
+          🌲
+        </span>
+      ))}
 
-      {/* Flying trees (parabola toward campfire) */}
+      {/* Flying trees (local animation only) */}
       {flyingTrees.map((ft) => (
         <span
           key={ft.id}
@@ -161,21 +172,11 @@ export function PokerTable({
         onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => {
           e.preventDefault();
-          const idx = parseInt(e.dataTransfer.getData("tree-index"), 10);
-          if (!isNaN(idx) && !burnedTrees.has(idx)) {
-            const t = trees[idx];
-            setBurnedTrees((prev) => new Set(prev).add(idx));
-            setFlyingTrees((prev) => [
-              ...prev,
-              {
-                id: `fly-${flyIdRef.current++}`,
-                fromX: t.x,
-                fromY: t.y,
-                dx: cx - t.x,
-                dy: cy - t.y,
-              },
-            ]);
-            setFireLevel((lvl) => Math.min(lvl + 1, 5));
+          const treeId = parseInt(e.dataTransfer.getData("tree-id"), 10);
+          const fromX = parseFloat(e.dataTransfer.getData("tree-x"));
+          const fromY = parseFloat(e.dataTransfer.getData("tree-y"));
+          if (!isNaN(treeId) && !isNaN(fromX) && !isNaN(fromY)) {
+            onFeedFire(treeId, fromX, fromY);
           }
         }}
       >

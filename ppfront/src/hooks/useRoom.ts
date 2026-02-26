@@ -43,6 +43,7 @@ export interface UseRoomResult {
   startFreeVote: () => Promise<void>;
   setThinking: (active: boolean) => Promise<void>;
   interactPlayer: (action: string, targetUserId: string) => Promise<void>;
+  themeInteract: (action: string, data: unknown) => Promise<void>;
 }
 
 function classifyError(
@@ -324,6 +325,22 @@ export function useRoom(roomId: string | undefined): UseRoomResult {
     [roomId],
   );
 
+  const themeInteract = useCallback(
+    async (action: string, data: unknown) => {
+      if (!roomId) return;
+      const info = loadRoomInfo(roomId);
+      if (!info?.userId) return;
+      const client = getCentrifuge();
+      await client.rpc("theme_interact", {
+        roomId,
+        userId: info.userId,
+        action,
+        data,
+      });
+    },
+    [roomId],
+  );
+
   return {
     roomState,
     connected,
@@ -342,5 +359,6 @@ export function useRoom(roomId: string | undefined): UseRoomResult {
     startFreeVote,
     setThinking,
     interactPlayer,
+    themeInteract,
   };
 }

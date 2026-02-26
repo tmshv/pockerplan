@@ -1,6 +1,60 @@
 package model
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
+
+// ThemeType identifies which theme a room uses.
+type ThemeType string
+
+const ThemeTypeCampfire ThemeType = "campfire"
+
+// ThemeState is a generic envelope stored on the Room.
+type ThemeState struct {
+	Theme ThemeType       `json:"theme"`
+	Data  json.RawMessage `json:"data"`
+}
+
+// TreeState represents a single tree in the campfire theme.
+// Nil BurnedAt/RespawnAt means the tree is alive.
+type TreeState struct {
+	ID        int        `json:"id"`
+	X         float64    `json:"x"`
+	Y         float64    `json:"y"`
+	Size      float64    `json:"size"`
+	BurnedAt  *time.Time `json:"burnedAt,omitempty"`
+	RespawnAt *time.Time `json:"respawnAt,omitempty"`
+}
+
+// CampfireState holds fire level and tree positions.
+type CampfireState struct {
+	FireLevel int         `json:"fireLevel"`
+	LastFedAt time.Time   `json:"lastFedAt"`
+	Trees     []TreeState `json:"trees"`
+}
+
+// FeedFirePayload is embedded in a RoomEvent when a tree is thrown onto the fire.
+type FeedFirePayload struct {
+	TreeID int     `json:"treeId"`
+	FromX  float64 `json:"fromX"`
+	FromY  float64 `json:"fromY"`
+}
+
+// ThemeInteractRequest is the RPC request body for "theme_interact".
+type ThemeInteractRequest struct {
+	RoomID string          `json:"roomId"`
+	UserID string          `json:"userId"`
+	Action string          `json:"action"`
+	Data   json.RawMessage `json:"data"`
+}
+
+// FeedFireRequest is the action-specific data for the "feed_fire" action.
+type FeedFireRequest struct {
+	TreeID int     `json:"treeId"`
+	FromX  float64 `json:"fromX"`
+	FromY  float64 `json:"fromY"`
+}
 
 type RoomState string
 
@@ -42,10 +96,11 @@ type User struct {
 }
 
 type RoomEvent struct {
-	Type   string `json:"type"`   // always "player_interaction"
-	Action string `json:"action"` // "paper_throw"; extendable later
-	FromID string `json:"fromId"`
-	ToID   string `json:"toId"`
+	Type    string          `json:"type"`             // "player_interaction" or "theme_interaction"
+	Action  string          `json:"action"`           // "paper_throw", "feed_fire", etc.
+	FromID  string          `json:"fromId"`
+	ToID    string          `json:"toId"`
+	Payload json.RawMessage `json:"payload,omitempty"`
 }
 
 type Room struct {
@@ -61,6 +116,7 @@ type Room struct {
 	PendingEvents   []RoomEvent      `json:"pendingEvents,omitempty"`
 	CreatedAt       time.Time        `json:"createdAt"`
 	LastActivityAt  time.Time        `json:"lastActivityAt"`
+	ThemeState      *ThemeState      `json:"themeState,omitempty"`
 }
 
 // RPC request types
@@ -154,6 +210,7 @@ type RoomSnapshot struct {
 	CurrentTicketID string            `json:"currentTicketId"`
 	TicketsEnabled  bool              `json:"ticketsEnabled"`
 	Events          []RoomEvent       `json:"events,omitempty"`
+	ThemeState      *ThemeState       `json:"themeState,omitempty"`
 }
 
 type TicketSnapshot struct {

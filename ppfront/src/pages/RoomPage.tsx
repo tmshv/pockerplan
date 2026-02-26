@@ -71,11 +71,19 @@ function RoomPageContent({ roomId }: { roomId: string }) {
     startFreeVote,
     setThinking,
     interactPlayer,
+    themeInteract,
   } = useRoomContext();
 
   const info = loadRoomInfo(roomId);
   const isAdmin = !!info?.adminSecret;
   const userId = info?.userId ?? "";
+
+  const campfireState = roomState?.themeState?.theme === "campfire"
+    ? roomState.themeState.data
+    : null;
+  const campfireEvents = (roomState?.events ?? []).filter(
+    (e) => e.type === "theme_interaction",
+  );
 
   const ticketsEnabled = roomState?.ticketsEnabled ?? false;
   const tickets = roomState?.tickets ?? [];
@@ -278,11 +286,16 @@ function RoomPageContent({ roomId }: { roomId: string }) {
             votes={currentTicket?.votes ?? []}
             revealed={isRevealed}
             currentUserId={userId}
+            campfire={campfireState}
+            campfireEvents={campfireEvents}
             onPositionsChange={(positions) => {
               userPositions.current = positions;
             }}
             onInteract={(action, targetUserId) => {
               interactPlayer(action, targetUserId).catch(() => {});
+            }}
+            onFeedFire={(treeId, fromX, fromY) => {
+              themeInteract("feed_fire", { treeId, fromX, fromY }).catch(() => {});
             }}
           />
           {ticketsEnabled && <TicketPanel ticket={currentTicket} />}
