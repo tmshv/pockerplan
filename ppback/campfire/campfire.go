@@ -131,15 +131,15 @@ func FeedFire(r *model.Room, userID string, treeID int, fromX, fromY float64) er
 	return nil
 }
 
-// Normalize runs fire decay and tree respawn. Call this before every mutation.
-func Normalize(r *model.Room) {
+// Normalize runs fire decay and tree respawn. Returns true if anything changed.
+func Normalize(r *model.Room) bool {
 	if r.ThemeState == nil || r.ThemeState.Theme != model.ThemeTypeCampfire {
-		return
+		return false
 	}
 
 	var state model.CampfireState
 	if err := json.Unmarshal(r.ThemeState.Data, &state); err != nil {
-		return
+		return false
 	}
 
 	now := time.Now()
@@ -186,4 +186,5 @@ func Normalize(r *model.Room) {
 			r.ThemeState.Data = json.RawMessage(data)
 		}
 	}
+	return changed
 }

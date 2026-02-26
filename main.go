@@ -58,6 +58,7 @@ func main() {
 	if err := h.Run(); err != nil {
 		logger.Fatal().Err(err).Msg("run hub")
 	}
+	h.StartCampfireLoop(5*time.Second, cleanupDone)
 
 	// HTTP server
 	srv := server.New(h, frontFS, logger.With().Str("component", "server").Logger())

@@ -130,6 +130,25 @@ func (h *Hub) Run() error {
 	return h.node.Run()
 }
 
+// StartCampfireLoop ticks every interval, applies campfire decay/respawn to all
+// rooms, and broadcasts state for any room that changed.
+func (h *Hub) StartCampfireLoop(interval time.Duration, done <-chan struct{}) {
+	go func() {
+		ticker := time.NewTicker(interval)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ticker.C:
+				for _, id := range h.rooms.NormalizeCampfireRooms() {
+					h.broadcastRoomState(id)
+				}
+			case <-done:
+				return
+			}
+		}
+	}()
+}
+
 // Shutdown gracefully shuts down the centrifuge node.
 func (h *Hub) Shutdown() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

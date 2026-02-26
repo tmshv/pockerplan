@@ -62,8 +62,7 @@ func (m *Manager) Get(id string) (*model.Room, error) {
 }
 
 // WithRoom executes fn while holding the write lock. This ensures all
-// mutations to a room are serialized. It also runs lazy theme normalization
-// (fire decay, tree respawn) before fn is called.
+// mutations to a room are serialized.
 func (m *Manager) WithRoom(id string, fn func(r *model.Room) error) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -71,8 +70,21 @@ func (m *Manager) WithRoom(id string, fn func(r *model.Room) error) error {
 	if !ok {
 		return ErrRoomNotFound
 	}
-	campfire.Normalize(r)
 	return fn(r)
+}
+
+// NormalizeCampfireRooms runs campfire decay/respawn on all rooms while
+// holding the write lock. Returns the IDs of rooms whose state changed.
+func (m *Manager) NormalizeCampfireRooms() []string {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	var changed []string
+	for id, r := range m.rooms {
+		if campfire.Normalize(r) {
+			changed = append(changed, id)
+		}
+	}
+	return changed
 }
 
 // Delete removes a room.
