@@ -37,7 +37,7 @@ describe("HomePage", () => {
 
   it("renders the create room form", () => {
     renderHomePage();
-    expect(screen.getByText("Planning Poker")).toBeInTheDocument();
+    expect(screen.getByText("pockerplan")).toBeInTheDocument();
     expect(screen.getByLabelText("Your Name")).toBeInTheDocument();
     expect(screen.getByLabelText("Estimation Scale")).toBeInTheDocument();
     expect(

@@ -62,7 +62,7 @@ describe("App routing", () => {
 
   it("renders HomePage at /", () => {
     renderWithRoute("/");
-    expect(screen.getByText("Planning Poker")).toBeInTheDocument();
+    expect(screen.getByText("pockerplan")).toBeInTheDocument();
   });
 
   it("renders JoinPage at /room/:id/join", () => {

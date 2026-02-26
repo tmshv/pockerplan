@@ -52,7 +52,7 @@ export function HomePage() {
   return (
     <div className="page home-page">
       <ThemeToggle />
-      <h1>Planning Poker</h1>
+      <h1>pockerplan</h1>
       <form
         onSubmit={(e) => {
           e.preventDefault();

@@ -251,7 +251,7 @@ function RoomPageContent({ roomId }: { roomId: string }) {
     <div className="page room-page">
       <div className="room-header">
         <Link to="/" className="app-name-link">
-          Planning Poker
+          pockerplan
         </Link>
         <RoomNameEditor
           name={roomState?.name ?? ""}
