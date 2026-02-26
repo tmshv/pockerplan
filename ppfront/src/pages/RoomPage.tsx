@@ -273,6 +273,7 @@ function RoomPageContent({ roomId }: { roomId: string }) {
 
       <div className="room-main">
           <PokerTable
+            roomId={roomId}
             users={users}
             votes={currentTicket?.votes ?? []}
             revealed={isRevealed}

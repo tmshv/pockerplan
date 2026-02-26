@@ -1,8 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { avatars } from "../data/avatars";
 import type { User, VoteInfo } from "../types";
 
 interface PokerTableProps {
+  roomId: string;
   users: User[];
   votes: VoteInfo[];
   revealed: boolean;
@@ -15,7 +16,34 @@ function getAvatarEmoji(avatarId: string): string {
   return avatars.find((a) => a.id === avatarId)?.emoji ?? "🙂";
 }
 
+/** FNV-1a hash → unsigned 32-bit int */
+function hashString(str: string): number {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < str.length; i++) {
+    h = Math.imul(h ^ str.charCodeAt(i), 0x01000193);
+  }
+  return h >>> 0;
+}
+
+/** LCG seeded RNG, returns values in [0, 1) */
+function makeRng(seed: number) {
+  let s = seed | 0;
+  return () => {
+    s = (Math.imul(s, 1664525) + 1013904223) | 0;
+    return (s >>> 0) / 2 ** 32;
+  };
+}
+
+const SIZE = 400;
+const cx = SIZE / 2;
+const cy = SIZE / 2;
+const playerRadius = 140;
+const treeCount = 9;
+const treeMinRadius = 160;
+const treeMaxRadius = 190;
+
 export function PokerTable({
+  roomId,
   users,
   votes,
   revealed: _revealed,
@@ -26,18 +54,29 @@ export function PokerTable({
   const containerRef = useRef<HTMLDivElement>(null);
   const dragSourceRef = useRef<string | null>(null);
 
-  const cx = 300;
-  const cy = 160;
-  const rx = 220;
-  const ry = 110;
+  const trees = useMemo(() => {
+    const rng = makeRng(hashString(roomId));
+    return Array.from({ length: treeCount }, (_, i) => {
+      const baseAngle = (i / treeCount) * 2 * Math.PI;
+      const angleJitter = (rng() - 0.5) * (2 * Math.PI / treeCount) * 0.8;
+      const angle = baseAngle + angleJitter;
+      const r = treeMinRadius + rng() * (treeMaxRadius - treeMinRadius);
+      return {
+        x: cx + r * Math.cos(angle),
+        y: cy + r * Math.sin(angle),
+        size: 1.2 + rng() * 0.6,
+      };
+    });
+  }, [roomId]);
 
   const N = users.length;
-
   const positions = users.map((u, i) => {
     const angle = (i / Math.max(N, 1)) * 2 * Math.PI - Math.PI / 2;
-    const x = cx + rx * Math.cos(angle);
-    const y = cy + ry * Math.sin(angle);
-    return { user: u, x, y };
+    return {
+      user: u,
+      x: cx + playerRadius * Math.cos(angle),
+      y: cy + playerRadius * Math.sin(angle),
+    };
   });
 
   useEffect(() => {
@@ -51,8 +90,7 @@ export function PokerTable({
     onPositionsChange(map);
   });
 
-  const hasVoted = (userId: string) =>
-    votes.some((v) => v.userId === userId);
+  const hasVoted = (userId: string) => votes.some((v) => v.userId === userId);
 
   function getStatusBadge(user: User) {
     if (hasVoted(user.id)) {
@@ -68,21 +106,44 @@ export function PokerTable({
     <div
       ref={containerRef}
       className="poker-table-container"
-      style={{ width: 600, height: 320, position: "relative" }}
+      style={{ width: SIZE, height: SIZE, position: "relative" }}
     >
+      {/* Trees */}
+      {trees.map((t, i) => (
+        <span
+          key={i}
+          style={{
+            position: "absolute",
+            left: t.x,
+            top: t.y,
+            transform: "translate(-50%, -50%)",
+            fontSize: `${t.size}rem`,
+            lineHeight: 1,
+            pointerEvents: "none",
+            userSelect: "none",
+          }}
+        >
+          🌲
+        </span>
+      ))}
+
+      {/* Campfire */}
       <div
-        className="poker-table-oval"
         style={{
           position: "absolute",
-          left: cx - rx,
-          top: cy - ry,
-          width: rx * 2,
-          height: ry * 2,
-          borderRadius: 32,
-          background: "var(--poker-table-color, #2d6a4f)",
-          border: "4px solid var(--poker-table-border, #1b4332)",
+          left: cx - 50,
+          top: cy - 50,
+          width: 100,
+          height: 100,
+          pointerEvents: "none",
+          userSelect: "none",
         }}
-      />
+      >
+        <span className="campfire-glow" />
+        <span className="campfire-flame campfire-flame--large">🔥</span>
+      </div>
+
+      {/* Players */}
       {positions.map(({ user, x, y }) => {
         const isSelf = user.id === currentUserId;
         return (
@@ -141,13 +202,7 @@ export function PokerTable({
               <span style={{ fontSize: "2rem", lineHeight: 1 }}>
                 {getAvatarEmoji(user.avatarId)}
               </span>
-              <span
-                style={{
-                  position: "absolute",
-                  bottom: -4,
-                  right: -4,
-                }}
-              >
+              <span style={{ position: "absolute", bottom: -4, right: -4 }}>
                 {getStatusBadge(user)}
               </span>
             </div>
