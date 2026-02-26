@@ -77,8 +77,10 @@ func RemoveVote(r *model.Room, userID string) error {
 	if ticket == nil {
 		return ErrTicketNotFound
 	}
-	delete(ticket.Votes, userID)
-	touch(r)
+	if _, had := ticket.Votes[userID]; had {
+		delete(ticket.Votes, userID)
+		touch(r)
+	}
 	return nil
 }
 

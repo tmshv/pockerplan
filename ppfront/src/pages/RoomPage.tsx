@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Link,
   useNavigate,
@@ -78,6 +78,17 @@ function RoomPageContent({ roomId }: { roomId: string }) {
     tickets.find((t) => t.id === roomState?.currentTicketId) ?? null;
 
   const myVote = currentTicket?.votes.find((v) => v.userId === userId);
+  const hasVoted = myVote !== undefined;
+
+  // Track the voted value locally because the snapshot hides vote values during voting.
+  const [localVoteValue, setLocalVoteValue] = useState<string | null>(null);
+  useEffect(() => {
+    if (!hasVoted) {
+      setLocalVoteValue(null);
+    }
+  }, [hasVoted]);
+  const selectedValue = hasVoted ? localVoteValue : null;
+
   const isRevealed = roomState?.state === "revealed";
   const isVoting = roomState?.state === "voting";
   const isCountingDown = roomState?.state === "counting_down";
@@ -119,6 +130,18 @@ function RoomPageContent({ roomId }: { roomId: string }) {
       submitVote(value).catch(() => {});
     },
     [submitVote],
+  );
+
+  const handleVoteToggle = useCallback(
+    (value: string) => {
+      if (selectedValue === value) {
+        removeVote().catch(() => {});
+      } else {
+        setLocalVoteValue(value);
+        submitVote(value).catch(() => {});
+      }
+    },
+    [selectedValue, removeVote, submitVote],
   );
 
   const handleNextTicketShortcut = useCallback(() => {
@@ -219,15 +242,9 @@ function RoomPageContent({ roomId }: { roomId: string }) {
           {(isVoting || isCountingDown) && (
             <VotingPanel
               scaleId={roomState?.scale ?? ""}
-              selectedValue={myVote?.value ?? null}
+              selectedValue={selectedValue}
               disabled={false}
-              onVote={(value) => {
-                if (myVote?.value === value) {
-                  removeVote();
-                } else {
-                  submitVote(value);
-                }
-              }}
+              onVote={handleVoteToggle}
             />
           )}
 

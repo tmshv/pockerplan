@@ -581,6 +581,161 @@ func TestSubscribeInvalidChannel(t *testing.T) {
 	}
 }
 
+func TestRemoveVote(t *testing.T) {
+	env := newTestEnv(t)
+
+	client := env.newClient(t)
+	created := rpcCreateRoom(t, client, "fibonacci", "Alice", "cat")
+
+	// Add ticket and start voting
+	addData, _ := json.Marshal(model.AddTicketRequest{
+		RoomID:      created.RoomID,
+		AdminSecret: created.AdminSecret,
+		Content:     "Task",
+	})
+	if _, err := client.RPC(context.Background(), "add_ticket", addData); err != nil {
+		t.Fatalf("add_ticket: %v", err)
+	}
+	nextData, _ := json.Marshal(model.AdminActionRequest{
+		RoomID:      created.RoomID,
+		AdminSecret: created.AdminSecret,
+	})
+	if _, err := client.RPC(context.Background(), "next_ticket", nextData); err != nil {
+		t.Fatalf("next_ticket: %v", err)
+	}
+
+	// Submit a vote
+	voteData, _ := json.Marshal(model.SubmitVoteRequest{
+		RoomID: created.RoomID,
+		UserID: created.UserID,
+		Value:  "5",
+	})
+	if _, err := client.RPC(context.Background(), "submit_vote", voteData); err != nil {
+		t.Fatalf("submit_vote: %v", err)
+	}
+
+	r, _ := env.rooms.Get(created.RoomID)
+	var ticket *model.Ticket
+	for _, t2 := range r.Tickets {
+		if t2.ID == r.CurrentTicketID {
+			ticket = t2
+			break
+		}
+	}
+	if ticket == nil {
+		t.Fatal("current ticket not found")
+	}
+	if _, ok := ticket.Votes[created.UserID]; !ok {
+		t.Fatal("expected vote to exist before removal")
+	}
+
+	// Remove the vote
+	removeData, _ := json.Marshal(model.RemoveVoteRequest{
+		RoomID: created.RoomID,
+		UserID: created.UserID,
+	})
+	if _, err := client.RPC(context.Background(), "remove_vote", removeData); err != nil {
+		t.Fatalf("remove_vote: %v", err)
+	}
+
+	r, _ = env.rooms.Get(created.RoomID)
+	for _, t2 := range r.Tickets {
+		if t2.ID == r.CurrentTicketID {
+			ticket = t2
+			break
+		}
+	}
+	if _, ok := ticket.Votes[created.UserID]; ok {
+		t.Error("expected vote to be removed")
+	}
+}
+
+func TestRemoveVotePermissionDenied(t *testing.T) {
+	env := newTestEnv(t)
+
+	admin := env.newClient(t)
+	created := rpcCreateRoom(t, admin, "fibonacci", "Alice", "cat")
+
+	user := env.newClient(t)
+	joined := rpcJoinRoom(t, user, created.RoomID, "Bob", "dog", "")
+
+	// Add ticket and start voting
+	addData, _ := json.Marshal(model.AddTicketRequest{
+		RoomID:      created.RoomID,
+		AdminSecret: created.AdminSecret,
+		Content:     "Task",
+	})
+	if _, err := admin.RPC(context.Background(), "add_ticket", addData); err != nil {
+		t.Fatalf("add_ticket: %v", err)
+	}
+	nextData, _ := json.Marshal(model.AdminActionRequest{
+		RoomID:      created.RoomID,
+		AdminSecret: created.AdminSecret,
+	})
+	if _, err := admin.RPC(context.Background(), "next_ticket", nextData); err != nil {
+		t.Fatalf("next_ticket: %v", err)
+	}
+
+	// user tries to remove admin's vote (wrong userId)
+	removeData, _ := json.Marshal(model.RemoveVoteRequest{
+		RoomID: created.RoomID,
+		UserID: joined.UserID,
+	})
+	_, err := admin.RPC(context.Background(), "remove_vote", removeData)
+	if err == nil {
+		t.Error("expected error when userID does not match authenticated client")
+	}
+}
+
+func TestRemoveVoteNotVoting(t *testing.T) {
+	env := newTestEnv(t)
+
+	admin := env.newClient(t)
+	created := rpcCreateRoom(t, admin, "fibonacci", "Alice", "cat")
+
+	// Add ticket, vote, reveal — now state is revealed
+	addData, _ := json.Marshal(model.AddTicketRequest{
+		RoomID:      created.RoomID,
+		AdminSecret: created.AdminSecret,
+		Content:     "Task",
+	})
+	if _, err := admin.RPC(context.Background(), "add_ticket", addData); err != nil {
+		t.Fatalf("add_ticket: %v", err)
+	}
+	nextData, _ := json.Marshal(model.AdminActionRequest{
+		RoomID:      created.RoomID,
+		AdminSecret: created.AdminSecret,
+	})
+	if _, err := admin.RPC(context.Background(), "next_ticket", nextData); err != nil {
+		t.Fatalf("next_ticket: %v", err)
+	}
+	voteData, _ := json.Marshal(model.SubmitVoteRequest{
+		RoomID: created.RoomID,
+		UserID: created.UserID,
+		Value:  "5",
+	})
+	if _, err := admin.RPC(context.Background(), "submit_vote", voteData); err != nil {
+		t.Fatalf("submit_vote: %v", err)
+	}
+	revealData, _ := json.Marshal(model.AdminActionRequest{
+		RoomID:      created.RoomID,
+		AdminSecret: created.AdminSecret,
+	})
+	if _, err := admin.RPC(context.Background(), "reveal_votes", revealData); err != nil {
+		t.Fatalf("reveal_votes: %v", err)
+	}
+
+	// Attempt to remove vote after reveal
+	removeData, _ := json.Marshal(model.RemoveVoteRequest{
+		RoomID: created.RoomID,
+		UserID: created.UserID,
+	})
+	_, err := admin.RPC(context.Background(), "remove_vote", removeData)
+	if err == nil {
+		t.Error("expected error when room is not in voting state")
+	}
+}
+
 func TestSubscribeNonexistentRoom(t *testing.T) {
 	env := newTestEnv(t)
 	client := env.newClient(t)
