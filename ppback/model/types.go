@@ -87,6 +87,11 @@ type SubmitVoteRequest struct {
 	Value  string `json:"value"`
 }
 
+type RemoveVoteRequest struct {
+	RoomID string `json:"roomId"`
+	UserID string `json:"userId"`
+}
+
 type AddTicketRequest struct {
 	RoomID      string `json:"roomId"`
 	AdminSecret string `json:"adminSecret"`

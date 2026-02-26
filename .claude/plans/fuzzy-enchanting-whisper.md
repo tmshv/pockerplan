@@ -7,7 +7,7 @@ Users currently have no way to deselect a vote — clicking the already-selected
 ## Changes
 
 ### Task 1: Backend — add `RemoveVoteRequest` type
-- [ ] In `ppback/model/types.go` (after `SubmitVoteRequest`, line 88), add:
+- [x] In `ppback/model/types.go` (after `SubmitVoteRequest`, line 88), add:
   ```go
   type RemoveVoteRequest struct {
       RoomID string `json:"roomId"`
