@@ -6,9 +6,9 @@ import type {
   AddTicketResponse,
   AdminActionRequest,
   JoinRoomResponse,
+  RemoveVoteRequest,
   RoomSnapshot,
   SetTicketRequest,
-  RemoveVoteRequest,
   SubmitVoteRequest,
   UpdateRoomNameRequest,
 } from "../types";

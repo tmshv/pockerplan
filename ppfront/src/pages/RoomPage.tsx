@@ -125,13 +125,6 @@ function RoomPageContent({ roomId }: { roomId: string }) {
     resetVotes().catch(() => {});
   }, [resetVotes]);
 
-  const handleVoteShortcut = useCallback(
-    (value: string) => {
-      submitVote(value).catch(() => {});
-    },
-    [submitVote],
-  );
-
   const handleVoteToggle = useCallback(
     (value: string) => {
       if (selectedValue === value) {
@@ -142,6 +135,13 @@ function RoomPageContent({ roomId }: { roomId: string }) {
       }
     },
     [selectedValue, removeVote, submitVote],
+  );
+
+  const handleVoteShortcut = useCallback(
+    (value: string) => {
+      handleVoteToggle(value);
+    },
+    [handleVoteToggle],
   );
 
   const handleNextTicketShortcut = useCallback(() => {
@@ -216,7 +216,9 @@ function RoomPageContent({ roomId }: { roomId: string }) {
   return (
     <div className="page room-page">
       <div className="room-header">
-        <Link to="/" className="app-name-link">Planning Poker</Link>
+        <Link to="/" className="app-name-link">
+          Planning Poker
+        </Link>
         <RoomNameEditor
           name={roomState?.name ?? ""}
           isAdmin={isAdmin}
@@ -224,7 +226,9 @@ function RoomPageContent({ roomId }: { roomId: string }) {
         />
         {roomState?.state && roomState.state !== "idle" && (
           <span className={`room-state state-${roomState.state}`}>
-            {roomState.state === "counting_down" ? "Revealing…" : roomState.state}
+            {roomState.state === "counting_down"
+              ? "Revealing…"
+              : roomState.state}
           </span>
         )}
         {!connected && (
@@ -280,7 +284,7 @@ function RoomPageContent({ roomId }: { roomId: string }) {
           roomState={roomState?.state ?? "idle"}
           hasPrevTicket={hasPrevTicket}
           hasNextTicket={hasNextTicket}
-          hasTickets={tickets.some(t => t.content !== "")}
+          hasTickets={tickets.some((t) => t.content !== "")}
           onReveal={isCountingDown ? revealVotes : startReveal}
           onReset={resetVotes}
           onPrevTicket={prevTicket}
