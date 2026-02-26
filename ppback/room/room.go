@@ -121,6 +121,9 @@ func ResetVotes(r *model.Room) error {
 	ticket.Votes = make(map[string]model.Vote)
 	ticket.Status = model.TicketStatusVoting
 	r.State = model.RoomStateVoting
+	for _, u := range r.Users {
+		u.Thinking = false
+	}
 	touch(r)
 	return nil
 }
@@ -303,6 +306,7 @@ func Snapshot(r *model.Room) *model.RoomSnapshot {
 			AvatarID:  u.AvatarID,
 			IsAdmin:   u.IsAdmin,
 			Connected: u.Connected,
+			Thinking:  u.Thinking,
 		})
 	}
 

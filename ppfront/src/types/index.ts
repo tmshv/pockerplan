@@ -11,6 +11,7 @@ export interface User {
   avatarId: string;
   isAdmin: boolean;
   connected: boolean;
+  thinking?: boolean;
 }
 
 // Estimation scale definition

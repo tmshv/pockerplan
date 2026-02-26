@@ -41,6 +41,7 @@ export interface UseRoomResult {
   prevTicket: () => Promise<void>;
   setTicket: (ticketId: string) => Promise<void>;
   startFreeVote: () => Promise<void>;
+  setThinking: (active: boolean) => Promise<void>;
 }
 
 function classifyError(
@@ -291,6 +292,21 @@ export function useRoom(roomId: string | undefined): UseRoomResult {
     [roomId],
   );
 
+  const setThinking = useCallback(
+    async (active: boolean) => {
+      if (!roomId) return;
+      const info = loadRoomInfo(roomId);
+      if (!info?.userId) return;
+      const client = getCentrifuge();
+      await client.rpc("set_thinking", {
+        roomId,
+        userId: info.userId,
+        thinking: active,
+      });
+    },
+    [roomId],
+  );
+
   return {
     roomState,
     connected,
@@ -307,5 +323,6 @@ export function useRoom(roomId: string | undefined): UseRoomResult {
     prevTicket,
     setTicket,
     startFreeVote,
+    setThinking,
   };
 }

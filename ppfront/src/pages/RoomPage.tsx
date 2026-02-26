@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import { CountdownOverlay } from "../components/CountdownOverlay";
 import { FloatingAdminPanel } from "../components/FloatingAdminPanel";
+import { PokerTable } from "../components/PokerTable";
 import { RoomNameEditor } from "../components/RoomNameEditor";
 import { ThemeToggle } from "../components/ThemeToggle";
 import { TicketList } from "../components/TicketList";
@@ -17,6 +18,7 @@ import { VotingPanel } from "../components/VotingPanel";
 import { RoomProvider, useRoomContext } from "../context/RoomContext";
 import { scales } from "../data/scales";
 import { useKeyboardShortcuts } from "../hooks/useKeyboardShortcuts";
+import { useThinkingHeartbeat } from "../hooks/useThinkingHeartbeat";
 import { loadRoomInfo, saveRoomInfo } from "../hooks/useUser";
 
 export function RoomPage() {
@@ -66,6 +68,7 @@ function RoomPageContent({ roomId }: { roomId: string }) {
     prevTicket,
     setTicket,
     startFreeVote,
+    setThinking,
   } = useRoomContext();
 
   const info = loadRoomInfo(roomId);
@@ -103,6 +106,10 @@ function RoomPageContent({ roomId }: { roomId: string }) {
   const isRevealed = roomState?.state === "revealed";
   const isVoting = roomState?.state === "voting";
   const isCountingDown = roomState?.state === "counting_down";
+
+  const userPositions = useRef<Map<string, { x: number; y: number }>>(new Map());
+
+  const { onInteraction } = useThinkingHeartbeat({ setThinking, isVoting });
 
   const currentTicketIndex = roomState?.currentTicketId
     ? tickets.findIndex((t) => t.id === roomState.currentTicketId)
@@ -263,6 +270,16 @@ function RoomPageContent({ roomId }: { roomId: string }) {
 
       <div className="room-layout">
         <div className="room-main">
+          <PokerTable
+            users={users}
+            votes={currentTicket?.votes ?? []}
+            revealed={isRevealed}
+            currentUserId={userId}
+            onPositionsChange={(positions) => {
+              userPositions.current = positions;
+            }}
+            onDrop={() => {}}
+          />
           {ticketsEnabled && <TicketPanel ticket={currentTicket} />}
         </div>
 
@@ -273,6 +290,7 @@ function RoomPageContent({ roomId }: { roomId: string }) {
               selectedValue={selectedValue}
               disabled={false}
               onVote={handleVoteToggle}
+              onInteraction={onInteraction}
             />
           )}
 

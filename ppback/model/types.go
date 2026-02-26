@@ -38,6 +38,7 @@ type User struct {
 	AvatarID  string `json:"avatarId"`
 	IsAdmin   bool   `json:"isAdmin"`
 	Connected bool   `json:"connected"`
+	Thinking  bool   `json:"thinking"`
 }
 
 type Room struct {
@@ -117,6 +118,12 @@ type SetTicketRequest struct {
 	RoomID      string `json:"roomId"`
 	AdminSecret string `json:"adminSecret"`
 	TicketID    string `json:"ticketId"`
+}
+
+type SetThinkingRequest struct {
+	RoomID   string `json:"roomId"`
+	UserID   string `json:"userId"`
+	Thinking bool   `json:"thinking"`
 }
 
 // RoomSnapshot is the sanitized room state sent to clients.

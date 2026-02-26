@@ -252,15 +252,15 @@ Three UX enhancements to pockerplan:
 
 ## Task 2: Poker Table View
 
-- [ ] `ppback/model/types.go`: Add `Thinking bool` to `User` struct; add `SetThinkingRequest` struct
-- [ ] `ppback/hub/hub.go`: Add `"set_thinking"` case in `handleRPC` → `rpcSetThinking`; implement `rpcSetThinking`
-- [ ] `ppback/room/room.go`: In `ResetVotes()`, clear `Thinking` for all users
-- [ ] `ppfront/src/types/index.ts`: Add `thinking?: boolean` to `User`
-- [ ] `ppfront/src/components/PokerTable.tsx`: New component - oval table with users positioned around ellipse, status badges, drag support
-- [ ] `ppfront/src/hooks/useThinkingHeartbeat.ts`: New hook - debounced thinking state management
-- [ ] `ppfront/src/hooks/useRoom.ts`: Add `setThinking(active: boolean): Promise<void>` action
-- [ ] `ppfront/src/pages/RoomPage.tsx`: Integrate PokerTable, useThinkingHeartbeat, userPositions ref
-- [ ] `ppfront/src/components/VotingPanel.tsx`: Accept optional `onInteraction?: () => void` prop, call on `onMouseEnter`
+- [x] `ppback/model/types.go`: Add `Thinking bool` to `User` struct; add `SetThinkingRequest` struct
+- [x] `ppback/hub/hub.go`: Add `"set_thinking"` case in `handleRPC` → `rpcSetThinking`; implement `rpcSetThinking`
+- [x] `ppback/room/room.go`: In `ResetVotes()`, clear `Thinking` for all users
+- [x] `ppfront/src/types/index.ts`: Add `thinking?: boolean` to `User`
+- [x] `ppfront/src/components/PokerTable.tsx`: New component - oval table with users positioned around ellipse, status badges, drag support
+- [x] `ppfront/src/hooks/useThinkingHeartbeat.ts`: New hook - debounced thinking state management
+- [x] `ppfront/src/hooks/useRoom.ts`: Add `setThinking(active: boolean): Promise<void>` action
+- [x] `ppfront/src/pages/RoomPage.tsx`: Integrate PokerTable, useThinkingHeartbeat, userPositions ref
+- [x] `ppfront/src/components/VotingPanel.tsx`: Accept optional `onInteraction?: () => void` prop, call on `onMouseEnter`
 
 ## Task 3: Player Interaction Animation
 

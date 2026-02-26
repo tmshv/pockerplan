@@ -6,6 +6,7 @@ interface VotingPanelProps {
   selectedValue: string | null;
   disabled: boolean;
   onVote: (value: string) => void;
+  onInteraction?: () => void;
 }
 
 export function VotingPanel({
@@ -13,12 +14,13 @@ export function VotingPanel({
   selectedValue,
   disabled,
   onVote,
+  onInteraction,
 }: VotingPanelProps) {
   const scale = scales.find((s) => s.id === scaleId);
   const values = scale?.values ?? [];
 
   return (
-    <div className="voting-panel">
+    <div className="voting-panel" onMouseEnter={onInteraction}>
       <h3>Your Vote</h3>
       <div className="vote-cards" role="group" aria-label="Vote cards">
         {values.map((v) => (

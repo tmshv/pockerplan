@@ -211,6 +211,8 @@ func (h *Hub) handleRPC(client *centrifuge.Client, method string, data []byte) (
 		return h.rpcUpdateRoomName(data)
 	case "start_free_vote":
 		return h.rpcStartFreeVote(data)
+	case "set_thinking":
+		return h.rpcSetThinking(client, data)
 	default:
 		return nil, centrifuge.ErrorMethodNotFound
 	}
@@ -653,6 +655,44 @@ func (h *Hub) rpcStartFreeVote(data []byte) ([]byte, error) {
 			return nil, centrifuge.ErrorPermissionDenied
 		}
 		return nil, &centrifuge.Error{Code: 400, Message: err.Error()}
+	}
+
+	h.broadcastRoomState(req.RoomID)
+	return []byte(`{}`), nil
+}
+
+func (h *Hub) rpcSetThinking(client *centrifuge.Client, data []byte) ([]byte, error) {
+	var req model.SetThinkingRequest
+	if err := json.Unmarshal(data, &req); err != nil {
+		return nil, centrifuge.ErrorBadRequest
+	}
+	if req.RoomID == "" || req.UserID == "" {
+		return nil, centrifuge.ErrorBadRequest
+	}
+
+	h.mu.RLock()
+	info, ok := h.clients[client.ID()]
+	h.mu.RUnlock()
+	if !ok || info.UserID != req.UserID || info.RoomID != req.RoomID {
+		return nil, centrifuge.ErrorPermissionDenied
+	}
+
+	err := h.rooms.WithRoom(req.RoomID, func(r *model.Room) error {
+		u, ok := r.Users[req.UserID]
+		if !ok {
+			return room.ErrUserNotFound
+		}
+		u.Thinking = req.Thinking
+		return nil
+	})
+	if err != nil {
+		if errors.Is(err, room.ErrRoomNotFound) {
+			return nil, errorNotFound
+		}
+		if errors.Is(err, room.ErrUserNotFound) {
+			return nil, errorNotFound
+		}
+		return nil, centrifuge.ErrorInternal
 	}
 
 	h.broadcastRoomState(req.RoomID)
