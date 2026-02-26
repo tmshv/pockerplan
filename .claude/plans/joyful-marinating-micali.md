@@ -264,14 +264,14 @@ Three UX enhancements to pockerplan:
 
 ## Task 3: Player Interaction Animation
 
-- [ ] `ppback/model/types.go`: Add `RoomEvent` struct, `PendingEvents []RoomEvent` to `Room`, `Events []RoomEvent` to `RoomSnapshot`, `InteractPlayerRequest` struct
-- [ ] `ppback/room/room.go`: In `Snapshot()`, include and clear pending events
-- [ ] `ppback/hub/hub.go`: Add `"interact_player"` case → `rpcInteractPlayer`; implement `rpcInteractPlayer`
-- [ ] `ppfront/src/types/index.ts`: Add `RoomEvent` interface and `events?: RoomEvent[]` to `RoomSnapshot`
-- [ ] `ppfront/src/hooks/useRoom.ts`: Add `interactPlayer(action: string, targetUserId: string): Promise<void>` action
-- [ ] `ppfront/src/components/PlayerInteractionLayer.tsx`: New component - animated emoji throws with CSS keyframes
-- [ ] `ppfront/src/pages/RoomPage.tsx`: Pass `userPositions` and `interactPlayer` to PokerTable; process events; render PlayerInteractionLayer
-- [ ] `ppfront/src/components/PokerTable.tsx`: Add `onInteract` prop; call `onInteract("paper_throw", targetUserId)` on drop
+- [x] `ppback/model/types.go`: Add `RoomEvent` struct, `PendingEvents []RoomEvent` to `Room`, `Events []RoomEvent` to `RoomSnapshot`, `InteractPlayerRequest` struct
+- [x] `ppback/room/room.go`: In `Snapshot()`, include and clear pending events
+- [x] `ppback/hub/hub.go`: Add `"interact_player"` case → `rpcInteractPlayer`; implement `rpcInteractPlayer`
+- [x] `ppfront/src/types/index.ts`: Add `RoomEvent` interface and `events?: RoomEvent[]` to `RoomSnapshot`
+- [x] `ppfront/src/hooks/useRoom.ts`: Add `interactPlayer(action: string, targetUserId: string): Promise<void>` action
+- [x] `ppfront/src/components/PlayerInteractionLayer.tsx`: New component - animated emoji throws with CSS keyframes
+- [x] `ppfront/src/pages/RoomPage.tsx`: Pass `userPositions` and `interactPlayer` to PokerTable; process events; render PlayerInteractionLayer
+- [x] `ppfront/src/components/PokerTable.tsx`: Add `onInteract` prop; call `onInteract("paper_throw", targetUserId)` on drop
 
 ## Verification
 

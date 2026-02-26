@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import { CountdownOverlay } from "../components/CountdownOverlay";
 import { FloatingAdminPanel } from "../components/FloatingAdminPanel";
+import { PlayerInteractionLayer } from "../components/PlayerInteractionLayer";
 import { PokerTable } from "../components/PokerTable";
 import { RoomNameEditor } from "../components/RoomNameEditor";
 import { ThemeToggle } from "../components/ThemeToggle";
@@ -69,6 +70,7 @@ function RoomPageContent({ roomId }: { roomId: string }) {
     setTicket,
     startFreeVote,
     setThinking,
+    interactPlayer,
   } = useRoomContext();
 
   const info = loadRoomInfo(roomId);
@@ -278,7 +280,9 @@ function RoomPageContent({ roomId }: { roomId: string }) {
             onPositionsChange={(positions) => {
               userPositions.current = positions;
             }}
-            onDrop={() => {}}
+            onInteract={(action, targetUserId) => {
+              interactPlayer(action, targetUserId).catch(() => {});
+            }}
           />
           {ticketsEnabled && <TicketPanel ticket={currentTicket} />}
         </div>
@@ -338,6 +342,11 @@ function RoomPageContent({ roomId }: { roomId: string }) {
           onStartFreeVote={startFreeVote}
         />
       )}
+
+      <PlayerInteractionLayer
+        events={roomState?.events ?? []}
+        userPositions={userPositions.current}
+      />
     </div>
   );
 }

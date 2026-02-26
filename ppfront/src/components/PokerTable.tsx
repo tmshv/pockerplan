@@ -8,7 +8,7 @@ interface PokerTableProps {
   revealed: boolean;
   currentUserId: string;
   onPositionsChange: (positions: Map<string, { x: number; y: number }>) => void;
-  onDrop: (targetUserId: string) => void;
+  onInteract: (action: string, targetUserId: string) => void;
 }
 
 function getAvatarEmoji(avatarId: string): string {
@@ -21,7 +21,7 @@ export function PokerTable({
   revealed: _revealed,
   currentUserId,
   onPositionsChange,
-  onDrop,
+  onInteract,
 }: PokerTableProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const dragSourceRef = useRef<string | null>(null);
@@ -130,7 +130,7 @@ export function PokerTable({
                 ? (e) => {
                     e.preventDefault();
                     if (dragSourceRef.current && dragSourceRef.current !== user.id) {
-                      onDrop(user.id);
+                      onInteract("paper_throw", user.id);
                     }
                     dragSourceRef.current = null;
                   }

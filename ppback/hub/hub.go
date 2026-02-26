@@ -213,6 +213,8 @@ func (h *Hub) handleRPC(client *centrifuge.Client, method string, data []byte) (
 		return h.rpcStartFreeVote(data)
 	case "set_thinking":
 		return h.rpcSetThinking(client, data)
+	case "interact_player":
+		return h.rpcInteractPlayer(client, data)
 	default:
 		return nil, centrifuge.ErrorMethodNotFound
 	}
@@ -683,6 +685,48 @@ func (h *Hub) rpcSetThinking(client *centrifuge.Client, data []byte) ([]byte, er
 			return room.ErrUserNotFound
 		}
 		u.Thinking = req.Thinking
+		return nil
+	})
+	if err != nil {
+		if errors.Is(err, room.ErrRoomNotFound) {
+			return nil, errorNotFound
+		}
+		if errors.Is(err, room.ErrUserNotFound) {
+			return nil, errorNotFound
+		}
+		return nil, centrifuge.ErrorInternal
+	}
+
+	h.broadcastRoomState(req.RoomID)
+	return []byte(`{}`), nil
+}
+
+func (h *Hub) rpcInteractPlayer(client *centrifuge.Client, data []byte) ([]byte, error) {
+	var req model.InteractPlayerRequest
+	if err := json.Unmarshal(data, &req); err != nil {
+		return nil, centrifuge.ErrorBadRequest
+	}
+	if req.RoomID == "" || req.UserID == "" || req.TargetUserID == "" || req.Action == "" {
+		return nil, centrifuge.ErrorBadRequest
+	}
+
+	h.mu.RLock()
+	info, ok := h.clients[client.ID()]
+	h.mu.RUnlock()
+	if !ok || info.UserID != req.UserID || info.RoomID != req.RoomID {
+		return nil, centrifuge.ErrorPermissionDenied
+	}
+
+	err := h.rooms.WithRoom(req.RoomID, func(r *model.Room) error {
+		if _, ok := r.Users[req.TargetUserID]; !ok {
+			return room.ErrUserNotFound
+		}
+		r.PendingEvents = append(r.PendingEvents, model.RoomEvent{
+			Type:   "player_interaction",
+			Action: req.Action,
+			FromID: req.UserID,
+			ToID:   req.TargetUserID,
+		})
 		return nil
 	})
 	if err != nil {

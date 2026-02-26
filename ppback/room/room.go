@@ -328,6 +328,9 @@ func Snapshot(r *model.Room) *model.RoomSnapshot {
 		tickets = append(tickets, ts)
 	}
 
+	events := r.PendingEvents
+	r.PendingEvents = nil
+
 	return &model.RoomSnapshot{
 		ID:              r.ID,
 		Name:            r.Name,
@@ -337,6 +340,7 @@ func Snapshot(r *model.Room) *model.RoomSnapshot {
 		Users:           users,
 		Tickets:         tickets,
 		CurrentTicketID: r.CurrentTicketID,
+		Events:          events,
 	}
 }
 

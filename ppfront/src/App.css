@@ -721,3 +721,24 @@
   background: var(--color-primary-bg);
   color: var(--color-primary);
 }
+
+/* Player interaction animation */
+
+@keyframes paper-fly {
+  0%   { transform: translate(0, 0) rotate(0deg); opacity: 1; font-size: 2rem; }
+  50%  { transform: translate(calc(var(--dx) * 0.5), calc(var(--dy) * 0.5 - 80px)) rotate(180deg); }
+  100% { transform: translate(var(--dx), var(--dy)) rotate(360deg) scale(0.3); opacity: 0; }
+}
+
+.player-interaction-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 150;
+}
+
+.paper-throw {
+  position: absolute;
+  animation: paper-fly 1.4s ease-in-out forwards;
+  line-height: 1;
+}

@@ -28,6 +28,14 @@ export interface Avatar {
   label: string;
 }
 
+// Player interaction event
+export interface RoomEvent {
+  type: string;   // "player_interaction"
+  action: string; // "paper_throw"; extendable later
+  fromId: string;
+  toId: string;
+}
+
 // Sanitized room snapshot sent to clients
 export interface RoomSnapshot {
   id: string;
@@ -39,6 +47,7 @@ export interface RoomSnapshot {
   tickets: TicketSnapshot[];
   currentTicketId: string;
   ticketsEnabled: boolean;
+  events?: RoomEvent[];
 }
 
 // Sanitized ticket in a snapshot

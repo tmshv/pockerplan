@@ -41,6 +41,13 @@ type User struct {
 	Thinking  bool   `json:"thinking"`
 }
 
+type RoomEvent struct {
+	Type   string `json:"type"`   // always "player_interaction"
+	Action string `json:"action"` // "paper_throw"; extendable later
+	FromID string `json:"fromId"`
+	ToID   string `json:"toId"`
+}
+
 type Room struct {
 	ID              string           `json:"id"`
 	Name            string           `json:"name"`
@@ -51,6 +58,7 @@ type Room struct {
 	Users           map[string]*User `json:"users"`
 	Tickets         []*Ticket        `json:"tickets"`
 	CurrentTicketID string           `json:"currentTicketId"`
+	PendingEvents   []RoomEvent      `json:"pendingEvents,omitempty"`
 	CreatedAt       time.Time        `json:"createdAt"`
 	LastActivityAt  time.Time        `json:"lastActivityAt"`
 }
@@ -126,6 +134,13 @@ type SetThinkingRequest struct {
 	Thinking bool   `json:"thinking"`
 }
 
+type InteractPlayerRequest struct {
+	RoomID       string `json:"roomId"`
+	UserID       string `json:"userId"`
+	TargetUserID string `json:"targetUserId"`
+	Action       string `json:"action"` // e.g. "paper_throw"
+}
+
 // RoomSnapshot is the sanitized room state sent to clients.
 // When state is "voting", vote values are hidden.
 type RoomSnapshot struct {
@@ -138,6 +153,7 @@ type RoomSnapshot struct {
 	Tickets         []*TicketSnapshot `json:"tickets"`
 	CurrentTicketID string            `json:"currentTicketId"`
 	TicketsEnabled  bool              `json:"ticketsEnabled"`
+	Events          []RoomEvent       `json:"events,omitempty"`
 }
 
 type TicketSnapshot struct {
