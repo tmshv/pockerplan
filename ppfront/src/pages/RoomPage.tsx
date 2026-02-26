@@ -192,11 +192,17 @@ function RoomPageContent({ roomId }: { roomId: string }) {
   return (
     <div className="page room-page">
       <div className="room-header">
+        <Link to="/" className="app-name-link">Planning Poker</Link>
         <RoomNameEditor
           name={roomState?.name ?? ""}
           isAdmin={isAdmin}
           onSave={updateRoomName}
         />
+        {roomState?.state && roomState.state !== "idle" && (
+          <span className={`room-state state-${roomState.state}`}>
+            {roomState.state === "counting_down" ? "Revealing…" : roomState.state}
+          </span>
+        )}
         {!connected && (
           <span className="connection-status">Reconnecting...</span>
         )}

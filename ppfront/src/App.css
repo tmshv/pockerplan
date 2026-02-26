@@ -179,6 +179,47 @@
   font-size: 0.9em;
 }
 
+/* App name link in room header */
+.app-name-link {
+  font-size: 0.9em;
+  color: var(--color-text-dimmed);
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.app-name-link:hover {
+  color: var(--color-text);
+}
+
+/* Room state badge in header */
+.room-state {
+  display: inline-block;
+  font-size: 0.85em;
+  padding: 0.2em 0.6em;
+  border-radius: 4px;
+  background: var(--color-status-pending);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.room-state.state-voting {
+  background: var(--color-status-voting);
+}
+
+.room-state.state-revealed {
+  background: var(--color-status-revealed);
+}
+
+.room-state.state-counting_down {
+  background: var(--color-status-voting);
+}
+
+/* Push theme toggle to the far right */
+.room-header .theme-toggle {
+  margin-left: auto;
+}
+
 .room-layout {
   display: grid;
   grid-template-columns: 3fr 1fr;

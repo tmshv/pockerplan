@@ -16,11 +16,7 @@ export function TicketPanel({ ticket }: TicketPanelProps) {
 
   if (!ticket.content) {
     return (
-      <div className="ticket-panel free-vote">
-        <span className={`ticket-status status-${ticket.status}`}>
-          {ticket.status}
-        </span>
-      </div>
+      <div className="ticket-panel free-vote" />
     );
   }
 
@@ -29,9 +25,6 @@ export function TicketPanel({ ticket }: TicketPanelProps) {
       <div className="ticket-description">
         <Markdown>{ticket.content}</Markdown>
       </div>
-      <span className={`ticket-status status-${ticket.status}`}>
-        {ticket.status}
-      </span>
     </div>
   );
 }
