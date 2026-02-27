@@ -1,13 +1,10 @@
-import type { User, VoteInfo } from "../types";
+import type { VoteInfo } from "../types";
 
 interface VoteResultsProps {
   votes: VoteInfo[];
-  users: User[];
 }
 
-export function VoteResults({ votes, users }: VoteResultsProps) {
-  const userMap = new Map(users.map((u) => [u.id, u]));
-
+export function VoteResults({ votes }: VoteResultsProps) {
   const valueCounts = new Map<string, number>();
   for (const vote of votes) {
     if (vote.value && vote.value !== "?") {
@@ -48,16 +45,6 @@ export function VoteResults({ votes, users }: VoteResultsProps) {
             </div>
           ))}
       </div>
-      <ul className="vote-detail-list">
-        {votes.map((vote) => {
-          const user = userMap.get(vote.userId);
-          return (
-            <li key={vote.userId}>
-              {user?.name ?? vote.userId}: {vote.value ?? "—"}
-            </li>
-          );
-        })}
-      </ul>
     </div>
   );
 }

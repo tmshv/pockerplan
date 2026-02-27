@@ -313,7 +313,7 @@ function RoomPageContent({ roomId }: { roomId: string }) {
           )}
 
           {isRevealed && currentTicket && (
-            <VoteResults votes={currentTicket.votes} users={users} />
+            <VoteResults votes={currentTicket.votes} />
           )}
 
           <UserList
