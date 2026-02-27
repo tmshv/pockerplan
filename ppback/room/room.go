@@ -2,6 +2,7 @@ package room
 
 import (
 	"errors"
+	"sort"
 	"pockerplan/ppback/model"
 	"pockerplan/ppback/scale"
 	"time"
@@ -312,8 +313,12 @@ func Snapshot(r *model.Room) *model.RoomSnapshot {
 			IsAdmin:   u.IsAdmin,
 			Connected: u.Connected,
 			Thinking:  u.Thinking,
+			JoinedAt:  u.JoinedAt,
 		})
 	}
+	sort.Slice(users, func(i, j int) bool {
+		return users[i].JoinedAt.Before(users[j].JoinedAt)
+	})
 
 	tickets := make([]*model.TicketSnapshot, 0, len(r.Tickets))
 	for _, t := range r.Tickets {
@@ -330,6 +335,9 @@ func Snapshot(r *model.Room) *model.RoomSnapshot {
 			}
 			ts.Votes = append(ts.Votes, vi)
 		}
+		sort.Slice(ts.Votes, func(i, j int) bool {
+			return ts.Votes[i].UserID < ts.Votes[j].UserID
+		})
 		tickets = append(tickets, ts)
 	}
 

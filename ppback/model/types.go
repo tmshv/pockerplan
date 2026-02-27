@@ -87,12 +87,13 @@ type Ticket struct {
 }
 
 type User struct {
-	ID        string `json:"id"`
-	Name      string `json:"name"`
-	AvatarID  string `json:"avatarId"`
-	IsAdmin   bool   `json:"isAdmin"`
-	Connected bool   `json:"connected"`
-	Thinking  bool   `json:"thinking"`
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	AvatarID  string    `json:"avatarId"`
+	IsAdmin   bool      `json:"isAdmin"`
+	Connected bool      `json:"connected"`
+	Thinking  bool      `json:"thinking"`
+	JoinedAt  time.Time `json:"-"`
 }
 
 type RoomEvent struct {

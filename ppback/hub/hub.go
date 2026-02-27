@@ -272,6 +272,7 @@ func (h *Hub) rpcCreateRoom(client *centrifuge.Client, data []byte) ([]byte, err
 		Name:     req.UserName,
 		AvatarID: req.AvatarID,
 		IsAdmin:  true,
+		JoinedAt: time.Now(),
 	}
 
 	var state model.RoomState
@@ -327,9 +328,11 @@ func (h *Hub) rpcJoinRoom(client *centrifuge.Client, data []byte) ([]byte, error
 			ID:       userID,
 			Name:     req.UserName,
 			AvatarID: req.AvatarID,
+			JoinedAt: time.Now(),
 		}
 		if exists {
 			u.IsAdmin = existing.IsAdmin
+			u.JoinedAt = existing.JoinedAt
 		}
 		room.AddUser(r, u)
 		// Build join response without draining PendingEvents so the subsequent
