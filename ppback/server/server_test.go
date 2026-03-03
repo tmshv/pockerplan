@@ -212,6 +212,27 @@ func TestSPAFallbackDeepRoute(t *testing.T) {
 	}
 }
 
+func TestWebSocket_RejectsCrossOrigin(t *testing.T) {
+	srv, cleanup := newTestServer(t)
+	defer cleanup()
+
+	// Provide a valid 16-byte Base64 WebSocket key so origin validation is reached.
+	wsKey := "MTIzNDU2Nzg5MDEyMzQ1Ng==" // base64("1234567890123456")
+
+	req := httptest.NewRequest(http.MethodGet, "/connection/websocket", nil)
+	req.Header.Set("Origin", "https://evil.example.com")
+	req.Header.Set("Upgrade", "websocket")
+	req.Header.Set("Connection", "Upgrade")
+	req.Header.Set("Sec-WebSocket-Version", "13")
+	req.Header.Set("Sec-WebSocket-Key", wsKey)
+	req.Host = "localhost:8080"
+	w := httptest.NewRecorder()
+	srv.ServeHTTP(w, req)
+	if w.Code != http.StatusForbidden {
+		t.Errorf("expected 403 Forbidden for cross-origin request, got %d", w.Code)
+	}
+}
+
 func TestWebSocketEndpointExists(t *testing.T) {
 	srv, cleanup := newTestServer(t)
 	defer cleanup()

@@ -92,7 +92,13 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (s *Server) routes() {
 	// WebSocket endpoint for centrifuge
 	wsHandler := centrifuge.NewWebsocketHandler(s.hub.Node(), centrifuge.WebsocketConfig{
-		CheckOrigin: func(r *http.Request) bool { return true },
+		CheckOrigin: func(r *http.Request) bool {
+			origin := r.Header.Get("Origin")
+			if origin == "" {
+				return true // allow non-browser clients (e.g., CLI tools)
+			}
+			return origin == "http://"+r.Host || origin == "https://"+r.Host
+		},
 	})
 	s.mux.Handle("/connection/websocket", wsHandler)
 
