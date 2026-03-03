@@ -23,7 +23,7 @@ var cli struct {
 	Countdown    int           `default:"3" env:"COUNTDOWN" help:"Countdown seconds before reveal."`
 	Tickets      bool          `default:"false" env:"TICKETS" help:"Enable tickets feature."`
 	RoomTTL      time.Duration `default:"24h" env:"ROOM_TTL" help:"How long inactive rooms are kept."`
-	CleanupEvery time.Duration `default:"10m" env:"CLEANUP_EVERY" help:"How often the room cleanup runs."`
+	CleanupInterval time.Duration `default:"10m" env:"CLEANUP_EVERY" help:"How often the room cleanup runs."`
 }
 
 //go:embed ppfront/dist
@@ -50,7 +50,7 @@ func main() {
 	// Room manager with periodic cleanup
 	rm := room.NewManagerWithTTL(cli.RoomTTL)
 	cleanupDone := make(chan struct{})
-	rm.StartCleanup(cli.CleanupEvery, cleanupDone)
+	rm.StartCleanup(cli.CleanupInterval, cleanupDone)
 
 	// Centrifuge hub
 	h, err := hub.New(rm, cli.Countdown, cli.Tickets, logger.With().Str("component", "hub").Logger())
