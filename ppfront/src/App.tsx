@@ -1,4 +1,5 @@
 import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
+import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./context/ThemeContext";
 import { UserProvider } from "./context/UserContext";
 import { HomePage } from "./pages/HomePage";
@@ -25,12 +26,14 @@ function App() {
     <ThemeProvider>
       <UserProvider>
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/room/:id/join" element={<JoinPage />} />
-            <Route path="/room/:id" element={<RoomPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <ErrorBoundary>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/room/:id/join" element={<JoinPage />} />
+              <Route path="/room/:id" element={<RoomPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </ErrorBoundary>
         </BrowserRouter>
       </UserProvider>
     </ThemeProvider>

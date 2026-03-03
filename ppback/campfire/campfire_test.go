@@ -138,6 +138,20 @@ func TestNormalize_Decay(t *testing.T) {
 	}
 }
 
+func TestNormalize_InvalidJSON(t *testing.T) {
+	r := &model.Room{
+		ThemeState: &model.ThemeState{
+			Theme: model.ThemeTypeCampfire,
+			Data:  json.RawMessage(`{invalid json`),
+		},
+	}
+	// Should return false and not panic
+	got := Normalize(r)
+	if got {
+		t.Error("expected false on invalid JSON, got true")
+	}
+}
+
 func TestNormalize_Respawn(t *testing.T) {
 	r := newCampfireRoom()
 	s0 := getState(t, r)

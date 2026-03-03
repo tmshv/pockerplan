@@ -25,12 +25,16 @@ export function useThinkingHeartbeat({
     if (!isVoting) return;
     if (!activeRef.current) {
       activeRef.current = true;
-      setThinking(true).catch(() => {});
+      setThinking(true).catch((err: unknown) => {
+      if (import.meta.env.DEV) console.debug("setThinking failed:", err);
+    });
     }
     clearTimer();
     timerRef.current = setTimeout(() => {
       activeRef.current = false;
-      setThinking(false).catch(() => {});
+      setThinking(false).catch((err: unknown) => {
+      if (import.meta.env.DEV) console.debug("setThinking failed:", err);
+    });
     }, THINKING_TIMEOUT_MS);
   }, [isVoting, setThinking]);
 
@@ -38,7 +42,9 @@ export function useThinkingHeartbeat({
     if (!isVoting && activeRef.current) {
       clearTimer();
       activeRef.current = false;
-      setThinking(false).catch(() => {});
+      setThinking(false).catch((err: unknown) => {
+      if (import.meta.env.DEV) console.debug("setThinking failed:", err);
+    });
     }
     if (!isVoting) {
       clearTimer();

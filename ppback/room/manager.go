@@ -18,11 +18,16 @@ type Manager struct {
 	ttl   time.Duration
 }
 
-// NewManager creates a new room manager.
+// NewManager creates a new room manager with the default TTL.
 func NewManager() *Manager {
+	return NewManagerWithTTL(defaultTTL)
+}
+
+// NewManagerWithTTL creates a new room manager with the given room TTL.
+func NewManagerWithTTL(ttl time.Duration) *Manager {
 	return &Manager{
 		rooms: make(map[string]*model.Room),
-		ttl:   defaultTTL,
+		ttl:   ttl,
 	}
 }
 
