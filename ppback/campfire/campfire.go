@@ -9,12 +9,17 @@ import (
 )
 
 const (
-	treeCount      = 9
-	treeMinRadius  = 160.0
-	treeMaxRadius  = 190.0
-	cx             = 200.0 // SIZE/2 where SIZE=400
-	cy             = 200.0
-	fireDecayEvery = 30 * time.Second
+	treeCount = 9
+
+	// Canvas dimensions — the campfire is rendered on a canvasSize×canvasSize pixel canvas.
+	// cx/cy are the canvas center; tree radii are fractions of the canvas radius.
+	canvasSize   = 400.0
+	cx           = canvasSize / 2
+	cy           = canvasSize / 2
+	treeMinRadius = canvasSize * 0.40
+	treeMaxRadius = canvasSize * 0.475
+
+	fireDecayEvery   = 30 * time.Second
 	treeRespawnAfter = 60 * time.Second
 
 	maxFireLevel = 5
