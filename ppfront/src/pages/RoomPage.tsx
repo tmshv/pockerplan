@@ -285,9 +285,6 @@ function RoomPageContent({ roomId }: { roomId: string }) {
               : roomState.state}
           </span>
         )}
-        {!connected && (
-          <span className="connection-status">Reconnecting...</span>
-        )}
         <ThemeToggle />
       </div>
 
@@ -376,6 +373,17 @@ function RoomPageContent({ roomId }: { roomId: string }) {
         events={roomState?.events ?? []}
         userPositions={userPositions.current}
       />
+
+      <ConnectionStatusBar connected={connected} />
+    </div>
+  );
+}
+
+function ConnectionStatusBar({ connected }: { connected: boolean }) {
+  return (
+    <div className={`connection-status-bar ${connected ? "connected" : "reconnecting"}`}>
+      <span className="connection-dot" />
+      <span>{connected ? "Connected" : "Reconnecting…"}</span>
     </div>
   );
 }

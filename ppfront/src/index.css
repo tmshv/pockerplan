@@ -25,6 +25,7 @@
   --color-border-faint: #333;
   --color-error: #e53e3e;
   --color-warning: #e5a53e;
+  --color-success: #4ade80;
   --color-status-voting: #2d5a27;
   --color-status-revealed: #5a4227;
   --color-status-pending: #333;
@@ -59,6 +60,7 @@
   --color-border-faint: #f3f4f6;
   --color-error: #dc2626;
   --color-warning: #d97706;
+  --color-success: #16a34a;
   --color-status-voting: #bbf7d0;
   --color-status-revealed: #fef3c7;
   --color-status-pending: #e5e7eb;

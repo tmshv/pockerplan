@@ -216,11 +216,6 @@
   gap: 1.5rem;
 }
 
-.connection-status {
-  color: var(--color-warning);
-  font-size: 0.9em;
-}
-
 /* App name link in room header */
 .app-name-link {
   font-size: 1.5em;
@@ -783,4 +778,44 @@
   position: absolute;
   animation: paper-fly 1.4s linear forwards;
   line-height: 1;
+}
+
+.connection-status-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.3em 1em;
+  font-size: 0.8em;
+  background: var(--color-border-faint);
+  color: var(--color-text-muted);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.connection-status-bar.reconnecting {
+  background: rgba(229, 165, 62, 0.1);
+  color: var(--color-warning);
+  border-top-color: var(--color-warning);
+}
+
+.connection-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-success);
+  flex-shrink: 0;
+}
+
+.connection-status-bar.reconnecting .connection-dot {
+  background: var(--color-warning);
+  animation: dot-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes dot-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.25; }
 }
