@@ -510,12 +510,12 @@ cd ppfront && npm run format
   │                                          │
   ├─── WS connect ──────────────────────────►│
   ├─── subscribe("room:{roomId}") ──────────►│ проверяет существование комнаты
-  │◄─── subscribed ─────────────────────────┤
+  │◄─── subscribed ──────────────────────────┤
   ├─── rpc("join_room", {...}) ─────────────►│ регистрирует client↔user↔room
-  │◄─── JoinRoomResponse ───────────────────┤
-  │◄─── publication (RoomSnapshot) ─────────┤ broadcast всем в комнате
+  │◄─── JoinRoomResponse ────────────────────┤
+  │◄─── publication (RoomSnapshot) ──────────┤ broadcast всем в комнате
   │                    ...                   │
   ├─── rpc("submit_vote", {...}) ───────────►│
-  │◄─── {} ─────────────────────────────────┤
-  │◄─── publication (RoomSnapshot) ─────────┤ broadcast всем в комнате
+  │◄─── {} ──────────────────────────────────┤
+  │◄─── publication (RoomSnapshot) ──────────┤ broadcast всем в комнате
 ```
