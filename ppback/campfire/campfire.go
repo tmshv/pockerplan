@@ -6,6 +6,8 @@ import (
 	"math"
 	"pockerplan/ppback/model"
 	"time"
+
+	"github.com/rs/zerolog/log"
 )
 
 const (
@@ -144,6 +146,7 @@ func Normalize(r *model.Room) bool {
 
 	var state model.CampfireState
 	if err := json.Unmarshal(r.ThemeState.Data, &state); err != nil {
+		log.Error().Err(err).Str("roomID", r.ID).Msg("campfire: failed to unmarshal theme state")
 		return false
 	}
 
