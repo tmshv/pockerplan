@@ -1,6 +1,7 @@
 import type { Subscription } from "centrifuge";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getCentrifuge } from "../api/centrifuge";
+import { isRoomSnapshot } from "../lib/validate";
 import type {
   AddTicketRequest,
   AddTicketResponse,
@@ -101,8 +102,11 @@ export function useRoom(roomId: string | undefined): UseRoomResult {
     }, 10_000);
 
     sub.on("publication", (ctx) => {
-      const snapshot = ctx.data as RoomSnapshot;
-      setRoomState(snapshot);
+      if (!isRoomSnapshot(ctx.data)) {
+        console.error("useRoom: received malformed snapshot", ctx.data);
+        return;
+      }
+      setRoomState(ctx.data);
     });
 
     sub.on("subscribed", () => {
