@@ -139,20 +139,28 @@ function RoomPageContent({ roomId }: { roomId: string }) {
 
   const onCountdownComplete = useCallback(() => {
     if (isAdmin) {
-      revealVotes().catch(() => {});
+      revealVotes().catch((err: unknown) => {
+        console.warn("revealVotes failed:", err);
+      });
     }
   }, [isAdmin, revealVotes]);
 
   const handleRevealShortcut = useCallback(() => {
     if (isCountingDown) {
-      revealVotes().catch(() => {});
+      revealVotes().catch((err: unknown) => {
+        console.warn("revealVotes failed:", err);
+      });
     } else {
-      startReveal().catch(() => {});
+      startReveal().catch((err: unknown) => {
+        console.warn("startReveal failed:", err);
+      });
     }
   }, [isCountingDown, revealVotes, startReveal]);
 
   const handleResetShortcut = useCallback(() => {
-    resetVotes().catch(() => {});
+    resetVotes().catch((err: unknown) => {
+      console.warn("resetVotes failed:", err);
+    });
   }, [resetVotes]);
 
   const handleVoteToggle = useCallback(
@@ -186,11 +194,15 @@ function RoomPageContent({ roomId }: { roomId: string }) {
   );
 
   const handleNextTicketShortcut = useCallback(() => {
-    nextTicket().catch(() => {});
+    nextTicket().catch((err: unknown) => {
+      console.warn("nextTicket failed:", err);
+    });
   }, [nextTicket]);
 
   const handlePrevTicketShortcut = useCallback(() => {
-    prevTicket().catch(() => {});
+    prevTicket().catch((err: unknown) => {
+      console.warn("prevTicket failed:", err);
+    });
   }, [prevTicket]);
 
   useKeyboardShortcuts({
@@ -292,10 +304,14 @@ function RoomPageContent({ roomId }: { roomId: string }) {
               userPositions.current = positions;
             }}
             onInteract={(action, targetUserId) => {
-              interactPlayer(action, targetUserId).catch(() => {});
+              interactPlayer(action, targetUserId).catch((err: unknown) => {
+                console.warn("interactPlayer failed:", err);
+              });
             }}
             onFeedFire={(treeId, fromX, fromY) => {
-              themeInteract("feed_fire", { treeId, fromX, fromY }).catch(() => {});
+              themeInteract("feed_fire", { treeId, fromX, fromY }).catch((err: unknown) => {
+                console.warn("themeInteract failed:", err);
+              });
             }}
           />
           {ticketsEnabled && <TicketPanel ticket={currentTicket} />}
