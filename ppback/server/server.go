@@ -130,13 +130,16 @@ func (s *Server) handleAvatars(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
+	type response struct {
+		Status string `json:"status"`
+	}
 	w.Header().Set("Content-Type", "application/json")
 	if !s.hub.Healthy() {
 		w.WriteHeader(http.StatusServiceUnavailable)
-		w.Write([]byte(`{"status":"unavailable"}`))
+		json.NewEncoder(w).Encode(response{Status: "unavailable"})
 		return
 	}
-	w.Write([]byte(`{"status":"ok"}`))
+	json.NewEncoder(w).Encode(response{Status: "ok"})
 }
 
 // spaHandler returns an http.Handler that serves static files from frontFS
