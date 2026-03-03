@@ -131,6 +131,11 @@ func (s *Server) handleAvatars(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	if !s.hub.Healthy() {
+		w.WriteHeader(http.StatusServiceUnavailable)
+		w.Write([]byte(`{"status":"unavailable"}`))
+		return
+	}
 	w.Write([]byte(`{"status":"ok"}`))
 }
 

@@ -41,6 +41,18 @@ func newTestServer(t *testing.T) (*Server, func()) {
 	return srv, cleanup
 }
 
+func TestHealthEndpoint_OK(t *testing.T) {
+	srv, cleanup := newTestServer(t)
+	defer cleanup()
+
+	req := httptest.NewRequest(http.MethodGet, "/api/health", nil)
+	rw := httptest.NewRecorder()
+	srv.ServeHTTP(rw, req)
+	if rw.Code != http.StatusOK {
+		t.Errorf("expected 200, got %d", rw.Code)
+	}
+}
+
 func TestHealthEndpoint(t *testing.T) {
 	srv, cleanup := newTestServer(t)
 	defer cleanup()

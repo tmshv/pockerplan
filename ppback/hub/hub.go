@@ -130,6 +130,11 @@ func (h *Hub) Run() error {
 	return h.node.Run()
 }
 
+// Healthy returns true if the Centrifuge node is running.
+func (h *Hub) Healthy() bool {
+	return h.node != nil
+}
+
 // StartCampfireLoop ticks every interval, applies campfire decay/respawn to all
 // rooms, and broadcasts state for any room that changed.
 func (h *Hub) StartCampfireLoop(interval time.Duration, done <-chan struct{}) {
