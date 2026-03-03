@@ -8,6 +8,9 @@ export function getCentrifuge(): Centrifuge {
     const url = `${protocol}//${window.location.host}/connection/websocket`;
     client = new Centrifuge(url);
     client.connect();
+
+    // Ensure connection is closed when page unloads
+    window.addEventListener("beforeunload", disconnectCentrifuge, { once: true });
   }
   return client;
 }
